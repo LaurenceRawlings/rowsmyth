@@ -1,0 +1,19 @@
+# Enforce LF line endings for all text files
+* text=auto eol=lf
+
+# Language-specific diff drivers
+*.py  text diff=python
+*.yml text diff=yaml
+*.yaml text diff=yaml
+*.toml text
+*.md text
+*.rst text
+
+# Binary - suppress diffs
+uv.lock binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.whl binary
