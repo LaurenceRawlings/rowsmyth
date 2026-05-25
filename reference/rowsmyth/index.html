@@ -1,0 +1,2589 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Mythical test data for SQLAlchemy models">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.4">
+    
+    
+      
+        <title>Rowsmyth - rowsmyth</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.80dcb947.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4cae4f">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="green" data-md-color-accent="lightgreen">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-rowsmyth" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="rowsmyth" class="md-header__button md-logo" aria-label="rowsmyth" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            rowsmyth
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Rowsmyth
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/LaurenceRawlings/rowsmyth" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rowsmyth
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="rowsmyth" class="md-nav__button md-logo" aria-label="rowsmyth" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    rowsmyth
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/LaurenceRawlings/rowsmyth" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rowsmyth
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CHANGELOG/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        Security
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/design/" class="md-nav__link">
+        Design
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/usage/" class="md-nav__link">
+        Usage
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Rowsmyth
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Rowsmyth
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#declarative_base" class="md-nav__link">
+    declarative_base
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#variant" class="md-nav__link">
+    variant
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dataset" class="md-nav__link">
+    Dataset
+  </a>
+  
+    <nav class="md-nav" aria-label="Dataset">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create" class="md-nav__link">
+    create
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#random_seed" class="md-nav__link">
+    random_seed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#factorybuilder" class="md-nav__link">
+    FactoryBuilder
+  </a>
+  
+    <nav class="md-nav" aria-label="FactoryBuilder">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#methods_1" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create_1" class="md-nav__link">
+    create
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#has" class="md-nav__link">
+    has
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mix" class="md-nav__link">
+    mix
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#random_seed_1" class="md-nav__link">
+    random_seed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where" class="md-nav__link">
+    where
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tablespecmixin" class="md-nav__link">
+    TableSpecMixin
+  </a>
+  
+    <nav class="md-nav" aria-label="TableSpecMixin">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#static-methods" class="md-nav__link">
+    Static methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dataset_1" class="md-nav__link">
+    dataset
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#factory" class="md-nav__link">
+    factory
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generators" class="md-nav__link">
+    generators
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#declarative_base" class="md-nav__link">
+    declarative_base
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#variant" class="md-nav__link">
+    variant
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dataset" class="md-nav__link">
+    Dataset
+  </a>
+  
+    <nav class="md-nav" aria-label="Dataset">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create" class="md-nav__link">
+    create
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#random_seed" class="md-nav__link">
+    random_seed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#factorybuilder" class="md-nav__link">
+    FactoryBuilder
+  </a>
+  
+    <nav class="md-nav" aria-label="FactoryBuilder">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#methods_1" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create_1" class="md-nav__link">
+    create
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#has" class="md-nav__link">
+    has
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mix" class="md-nav__link">
+    mix
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#random_seed_1" class="md-nav__link">
+    random_seed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where" class="md-nav__link">
+    where
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tablespecmixin" class="md-nav__link">
+    TableSpecMixin
+  </a>
+  
+    <nav class="md-nav" aria-label="TableSpecMixin">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#static-methods" class="md-nav__link">
+    Static methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dataset_1" class="md-nav__link">
+    dataset
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#factory" class="md-nav__link">
+    factory
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generators" class="md-nav__link">
+    generators
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/LaurenceRawlings/rowsmyth/edit/main/reference/rowsmyth.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="module-rowsmyth">Module rowsmyth</h1>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">importlib.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">version</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._base</span><span class="w"> </span><span class="kn">import</span> <span class="n">TableSpecMixin</span><span class="p">,</span> <span class="n">declarative_base</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">FactoryBuilder</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._variant</span><span class="w"> </span><span class="kn">import</span> <span class="n">variant</span>
+
+<span class="n">__version__</span> <span class="o">=</span> <span class="n">version</span><span class="p">(</span><span class="s2">&quot;rowsmyth&quot;</span><span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+
+    <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;FactoryBuilder&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;TableSpecMixin&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;__version__&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;declarative_base&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;variant&quot;</span><span class="p">,</span>
+
+<span class="p">]</span>
+</code></pre></div>
+
+</details>
+<h2 id="variables">Variables</h2>
+<div class="codehilite"><pre><span></span><code><span class="n">__version__</span>
+</code></pre></div>
+
+<h2 id="functions">Functions</h2>
+<h3 id="declarative_base">declarative_base</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">declarative_base</span><span class="p">(</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="s1">&#39;MetaData | None&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">type_annotation_map</span><span class="p">:</span> <span class="s1">&#39;dict[Any, Any] | None&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">registry</span><span class="p">:</span> <span class="s1">&#39;_registry | None&#39;</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;type[TableSpecMixin]&#39;</span>
+</code></pre></div>
+
+<p>Create a new SQLAlchemy declarative base with rowsmyth capabilities.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>metadata</td>
+<td>None</td>
+<td>Optional <code>MetaData</code> instance shared by all models that<br>subclass the returned base. A new <code>MetaData</code> is created if<br>not provided.</td>
+<td>None</td>
+</tr>
+<tr>
+<td>type_annotation_map</td>
+<td>None</td>
+<td>Optional mapping of Python types to SQLAlchemy<br><code>TypeEngine</code> classes or instances, used by <code>Mapped[]</code><br>annotations.</td>
+<td>None</td>
+</tr>
+<tr>
+<td>registry</td>
+<td>None</td>
+<td>Optional pre-existing <code>registry</code> instance. When provided,<br>models using this base share the mapper registry with other bases<br>that reference the same registry.</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>A new declarative base class with <code>TableSpecMixin</code> mixed in.</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">declarative_base</span><span class="p">(</span>
+
+    <span class="n">metadata</span><span class="p">:</span> <span class="n">MetaData</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
+    <span class="n">type_annotation_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
+    <span class="n">registry</span><span class="p">:</span> <span class="n">_registry</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">TableSpecMixin</span><span class="p">]:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new SQLAlchemy declarative base with rowsmyth capabilities.</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        metadata: Optional ``MetaData`` instance shared by all models that</span>
+
+<span class="sd">            subclass the returned base. A new ``MetaData`` is created if</span>
+
+<span class="sd">            not provided.</span>
+
+<span class="sd">        type_annotation_map: Optional mapping of Python types to SQLAlchemy</span>
+
+<span class="sd">            ``TypeEngine`` classes or instances, used by ``Mapped[]``</span>
+
+<span class="sd">            annotations.</span>
+
+<span class="sd">        registry: Optional pre-existing ``registry`` instance. When provided,</span>
+
+<span class="sd">            models using this base share the mapper registry with other bases</span>
+
+<span class="sd">            that reference the same registry.</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        A new declarative base class with ``TableSpecMixin`` mixed in.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; from rowsmyth import declarative_base</span>
+
+<span class="sd">        &gt;&gt;&gt; Base = declarative_base()</span>
+
+<span class="sd">        &gt;&gt;&gt; issubclass(Base, TableSpecMixin)</span>
+
+<span class="sd">        True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">attrs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metadata</span>
+
+    <span class="k">if</span> <span class="n">type_annotation_map</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;type_annotation_map&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">type_annotation_map</span>
+
+    <span class="k">if</span> <span class="n">registry</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;registry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">registry</span>
+
+    <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="s2">&quot;Base&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">TableSpecMixin</span><span class="p">,</span> <span class="n">DeclarativeBase</span><span class="p">),</span> <span class="n">attrs</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h3 id="variant">variant</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">variant</span><span class="p">(</span>
+    <span class="n">fn</span><span class="p">:</span> <span class="n">F</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">F</span>
+</code></pre></div>
+
+<p>Mark a classmethod as a named variant for use with <code>.mix()</code>.</p>
+<p>A variant is a classmethod that returns a dict of column overrides
+applied to a weighted subset of generated instances.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fn</td>
+<td>None</td>
+<td>The classmethod to mark as a variant.</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>The same callable, with <code>_is_variant = True</code> set.</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">variant</span><span class="p">[</span><span class="n">F</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">object</span><span class="p">]](</span><span class="n">fn</span><span class="p">:</span> <span class="n">F</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">F</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mark a classmethod as a named variant for use with ``.mix()``.</span>
+
+<span class="sd">    A variant is a classmethod that returns a dict of column overrides</span>
+
+<span class="sd">    applied to a weighted subset of generated instances.</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        fn: The classmethod to mark as a variant.</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        The same callable, with ``_is_variant = True`` set.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; from rowsmyth import variant</span>
+
+<span class="sd">        &gt;&gt;&gt; @variant</span>
+
+<span class="sd">        ... def admin(cls):</span>
+
+<span class="sd">        ...     return {}</span>
+
+<span class="sd">        &gt;&gt;&gt; admin._is_variant</span>
+
+<span class="sd">        True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fn</span><span class="o">.</span><span class="n">_is_variant</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># ty: ignore[unresolved-attribute]</span>
+
+    <span class="k">return</span> <span class="n">fn</span>
+</code></pre></div>
+
+</details>
+<h2 id="classes">Classes</h2>
+<h3 id="dataset">Dataset</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Dataset</span><span class="p">(</span>
+    <span class="n">base</span><span class="p">:</span> <span class="s1">&#39;type&#39;</span><span class="p">,</span>
+    <span class="n">overrides</span><span class="p">:</span> <span class="s1">&#39;dict[type, Any] | None&#39;</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Generates one instance per registered model, respecting FK order.</p>
+<p>Obtain via <code>Base.dataset(*builders)</code>. Use when you need a minimal
+coherent dataset across all tables rather than a deep hierarchy rooted
+at one model.</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nl">Dataset</span><span class="p">:</span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Generates one instance per registered model, respecting FK order.</span>
+
+<span class="ss">    Obtain via ``Base.dataset(*builders)``. Use when you need a minimal</span>
+
+<span class="ss">    coherent dataset across all tables rather than a deep hierarchy rooted</span>
+
+<span class="ss">    at one model.</span>
+
+<span class="ss">    Example:</span>
+
+<span class="ss">        &gt;&gt;&gt; # result = Base.dataset(User.factory(5), Order.factory(10)).create()</span>
+
+<span class="ss">        &gt;&gt;&gt; # result[&quot;</span><span class="n">users</span><span class="ss">&quot;]   # -&gt; 5 User instances</span>
+
+<span class="ss">        &gt;&gt;&gt; # result[&quot;</span><span class="n">orders</span><span class="ss">&quot;]  # -&gt; 10 Order instances</span>
+
+<span class="ss">    &quot;&quot;&quot;</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">doctest</span><span class="p">:</span><span class="w"> </span><span class="o">+</span><span class="n">SKIP</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">base</span><span class="p">:</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="nl">overrides</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">type, Any</span><span class="o">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">base</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="nl">_overrides</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">type, Any</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">overrides</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="err">{}</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="nl">_seed</span><span class="p">:</span><span class="w"> </span><span class="nc">int</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">random_seed</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="err">:</span><span class="w"> </span><span class="nc">int</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">Dataset</span><span class="p">:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Fix the random seed for reproducible output.</span>
+
+<span class="ss">        Args:</span>
+
+<span class="ss">            value: Integer seed passed to both ``random`` and ``Faker``.</span>
+
+<span class="ss">        Returns:</span>
+
+<span class="ss">            ``self`` for chaining.</span>
+
+<span class="ss">        &quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">value</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">self</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="k">create</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, list[Any</span><span class="o">]</span><span class="err">]:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Generate and persist one instance per registered model.</span>
+
+<span class="ss">        Instances are created in FK dependency order (parents before children).</span>
+
+<span class="ss">        FK columns are wired automatically by sampling randomly from the parent pool.</span>
+
+<span class="ss">        Returns:</span>
+
+<span class="ss">            Dict keyed by table name mapping to lists of persisted instances.</span>
+
+<span class="ss">        Raises:</span>
+
+<span class="ss">            ValueError: If a parent model has 0 instances but a child model</span>
+
+<span class="ss">                has an FK pointing to it.</span>
+
+<span class="ss">        &quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">from</span><span class="w"> </span><span class="p">.</span><span class="n">_builder</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="n">FactoryBuilder</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_seed</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">            </span><span class="n">_seed_random</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">_seed</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">builders</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">mapper</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_base</span><span class="p">.</span><span class="n">registry</span><span class="p">.</span><span class="nl">mappers</span><span class="p">:</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">ty</span><span class="p">:</span><span class="w"> </span><span class="k">ignore</span><span class="o">[</span><span class="n">unresolved-attribute</span><span class="o">]</span>
+
+<span class="w">            </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mapper</span><span class="p">.</span><span class="n">class_</span>
+
+<span class="w">            </span><span class="n">builders</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">_overrides</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)))</span>
+
+<span class="w">        </span><span class="n">ordered</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_topo_sort</span><span class="p">(</span><span class="n">builders</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">models</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="n">b</span><span class="p">.</span><span class="n">model</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">ordered</span><span class="err">}</span>
+
+<span class="w">        </span><span class="k">session</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">build_session</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">factories</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="nl">m</span><span class="p">:</span><span class="w"> </span><span class="n">make_factory</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="k">session</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">models</span><span class="err">}</span>
+
+<span class="w">        </span><span class="nl">pool</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">type, list[Any</span><span class="o">]</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
+
+<span class="w">        </span><span class="k">result</span><span class="err">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, list[Any</span><span class="o">]</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">ordered</span><span class="p">:</span>
+
+<span class="w">            </span><span class="nl">instances</span><span class="p">:</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">Any</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span>
+
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">range</span><span class="p">(</span><span class="n">builder</span><span class="p">.</span><span class="n">_resolve_count</span><span class="p">())</span><span class="err">:</span>
+
+<span class="w">                </span><span class="nl">fk_overrides</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, Any</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
+
+<span class="w">                </span><span class="k">for</span><span class="w"> </span><span class="n">rel</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">__mapper__</span><span class="p">.</span><span class="nl">relationships</span><span class="p">:</span>
+
+<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="n">rel</span><span class="p">.</span><span class="n">direction</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nl">MANYTOONE</span><span class="p">:</span>
+
+<span class="w">                        </span><span class="k">continue</span>
+
+<span class="w">                    </span><span class="n">related</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rel</span><span class="p">.</span><span class="n">mapper</span><span class="p">.</span><span class="n">class_</span>
+
+<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="n">related</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">pool</span><span class="p">:</span>
+
+<span class="w">                        </span><span class="k">continue</span>
+
+<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">pool</span><span class="o">[</span><span class="n">related</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">                        </span><span class="n">model_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">__name__</span>
+
+<span class="w">                        </span><span class="n">related_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">related</span><span class="p">.</span><span class="n">__name__</span>
+
+<span class="w">                        </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span>
+
+<span class="w">                            </span><span class="n">f</span><span class="ss">&quot;Cannot wire {model_name}.{rel.key}: &quot;</span>
+
+<span class="w">                            </span><span class="n">f</span><span class="ss">&quot;{related_name} has 0 instances in the dataset. &quot;</span>
+
+<span class="w">                            </span><span class="n">f</span><span class="ss">&quot;Use {related_name}.factory(0) only for models &quot;</span>
+
+<span class="w">                            </span><span class="n">f</span><span class="ss">&quot;with no FK dependents.&quot;</span>
+
+<span class="w">                        </span><span class="p">)</span>
+
+<span class="w">                        </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">                    </span><span class="n">fk_overrides</span><span class="o">[</span><span class="n">rel.key</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">random</span><span class="p">.</span><span class="n">choice</span><span class="p">(</span><span class="n">pool</span><span class="o">[</span><span class="n">related</span><span class="o">]</span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">inst_overrides</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_resolve_variant</span><span class="p">(</span><span class="n">builder</span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">inst_overrides</span><span class="p">.</span><span class="k">update</span><span class="p">(</span><span class="n">fk_overrides</span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">factories</span><span class="o">[</span><span class="n">builder.model</span><span class="o">]</span><span class="p">(</span><span class="o">**</span><span class="n">inst_overrides</span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">instances</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">pool</span><span class="o">[</span><span class="n">builder.model</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">instances</span>
+
+<span class="w">            </span><span class="k">result</span><span class="o">[</span><span class="n">builder.model.__tablename__</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">instances</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">result</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_topo_sort</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">builders</span><span class="p">:</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">Any</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">Any</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">        </span><span class="n">model_to_builder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="n">b</span><span class="p">.</span><span class="nl">model</span><span class="p">:</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">builders</span><span class="err">}</span>
+
+<span class="w">        </span><span class="n">graph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_build_fk_dependency_graph</span><span class="p">(</span><span class="n">builders</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">ts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graphlib</span><span class="p">.</span><span class="n">TopologicalSorter</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">ordered_models</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">list</span><span class="p">(</span><span class="n">ts</span><span class="p">.</span><span class="n">static_order</span><span class="p">())</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="o">[</span><span class="n">model_to_builder[m</span><span class="o">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">ordered_models</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">model_to_builder</span><span class="err">]</span>
+</code></pre></div>
+
+</details>
+<hr />
+<h4 id="methods">Methods</h4>
+<h4 id="create">create</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;dict[str, list[Any]]&#39;</span>
+</code></pre></div>
+
+<p>Generate and persist one instance per registered model.</p>
+<p>Instances are created in FK dependency order (parents before children).
+FK columns are wired automatically by sampling randomly from the parent pool.</p>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>Dict keyed by table name mapping to lists of persisted instances.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Raises:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ValueError</td>
+<td>If a parent model has 0 instances but a child model<br>has an FK pointing to it.</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code>    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate and persist one instance per registered model.</span>
+
+<span class="sd">        Instances are created in FK dependency order (parents before children).</span>
+
+<span class="sd">        FK columns are wired automatically by sampling randomly from the parent pool.</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            Dict keyed by table name mapping to lists of persisted instances.</span>
+
+<span class="sd">        Raises:</span>
+
+<span class="sd">            ValueError: If a parent model has 0 instances but a child model</span>
+
+<span class="sd">                has an FK pointing to it.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">._builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">FactoryBuilder</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="n">_seed_random</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_seed</span><span class="p">)</span>
+
+        <span class="n">builders</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">mapper</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">mappers</span><span class="p">:</span>  <span class="c1"># ty: ignore[unresolved-attribute]</span>
+
+            <span class="n">model</span> <span class="o">=</span> <span class="n">mapper</span><span class="o">.</span><span class="n">class_</span>
+
+            <span class="n">builders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">FactoryBuilder</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+
+        <span class="n">ordered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_topo_sort</span><span class="p">(</span><span class="n">builders</span><span class="p">)</span>
+
+        <span class="n">models</span> <span class="o">=</span> <span class="p">{</span><span class="n">b</span><span class="o">.</span><span class="n">model</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">ordered</span><span class="p">}</span>
+
+        <span class="n">session</span> <span class="o">=</span> <span class="n">build_session</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
+
+        <span class="n">factories</span> <span class="o">=</span> <span class="p">{</span><span class="n">m</span><span class="p">:</span> <span class="n">make_factory</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">session</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">models</span><span class="p">}</span>
+
+        <span class="n">pool</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">builder</span> <span class="ow">in</span> <span class="n">ordered</span><span class="p">:</span>
+
+            <span class="n">instances</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">builder</span><span class="o">.</span><span class="n">_resolve_count</span><span class="p">()):</span>
+
+                <span class="n">fk_overrides</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+                <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">builder</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">__mapper__</span><span class="o">.</span><span class="n">relationships</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="n">rel</span><span class="o">.</span><span class="n">direction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">MANYTOONE</span><span class="p">:</span>
+
+                        <span class="k">continue</span>
+
+                    <span class="n">related</span> <span class="o">=</span> <span class="n">rel</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">class_</span>
+
+                    <span class="k">if</span> <span class="n">related</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pool</span><span class="p">:</span>
+
+                        <span class="k">continue</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">pool</span><span class="p">[</span><span class="n">related</span><span class="p">]:</span>
+
+                        <span class="n">model_name</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="vm">__name__</span>
+
+                        <span class="n">related_name</span> <span class="o">=</span> <span class="n">related</span><span class="o">.</span><span class="vm">__name__</span>
+
+                        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+
+                            <span class="sa">f</span><span class="s2">&quot;Cannot wire </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">rel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: &quot;</span>
+
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">related_name</span><span class="si">}</span><span class="s2"> has 0 instances in the dataset. &quot;</span>
+
+                            <span class="sa">f</span><span class="s2">&quot;Use </span><span class="si">{</span><span class="n">related_name</span><span class="si">}</span><span class="s2">.factory(0) only for models &quot;</span>
+
+                            <span class="sa">f</span><span class="s2">&quot;with no FK dependents.&quot;</span>
+
+                        <span class="p">)</span>
+
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+                    <span class="n">fk_overrides</span><span class="p">[</span><span class="n">rel</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">pool</span><span class="p">[</span><span class="n">related</span><span class="p">])</span>
+
+                <span class="n">inst_overrides</span> <span class="o">=</span> <span class="n">_resolve_variant</span><span class="p">(</span><span class="n">builder</span><span class="p">)</span>
+
+                <span class="n">inst_overrides</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">fk_overrides</span><span class="p">)</span>
+
+                <span class="n">instance</span> <span class="o">=</span> <span class="n">factories</span><span class="p">[</span><span class="n">builder</span><span class="o">.</span><span class="n">model</span><span class="p">](</span><span class="o">**</span><span class="n">inst_overrides</span><span class="p">)</span>
+
+                <span class="n">instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+
+            <span class="n">pool</span><span class="p">[</span><span class="n">builder</span><span class="o">.</span><span class="n">model</span><span class="p">]</span> <span class="o">=</span> <span class="n">instances</span>
+
+            <span class="n">result</span><span class="p">[</span><span class="n">builder</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">]</span> <span class="o">=</span> <span class="n">instances</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+
+</details>
+<h4 id="random_seed">random_seed</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">random_seed</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Dataset&#39;</span>
+</code></pre></div>
+
+<p>Fix the random seed for reproducible output.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>value</td>
+<td>None</td>
+<td>Integer seed passed to both <code>random</code> and <code>Faker</code>.</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td><code>self</code> for chaining.</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">random_seed</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Dataset</span><span class="o">:</span>
+
+<span class="w">        </span><span class="s2">&quot;</span><span class="se">&quot;&quot;</span><span class="s2">Fix the random seed for reproducible output.</span>
+
+<span class="s2">        Args:</span>
+
+<span class="s2">            value: Integer seed passed to both ``random`` and ``Faker``.</span>
+
+<span class="s2">        Returns:</span>
+
+<span class="s2">            ``self`` for chaining.</span>
+
+<span class="s2">        </span><span class="se">&quot;&quot;</span><span class="s2">&quot;</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">value</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">self</span>
+</code></pre></div>
+
+</details>
+<h3 id="factorybuilder">FactoryBuilder</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FactoryBuilder</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">:</span> <span class="s1">&#39;type&#39;</span><span class="p">,</span>
+    <span class="n">count</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">max_count</span><span class="p">:</span> <span class="s1">&#39;int | None&#39;</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Fluent builder for generating and persisting model instances.</p>
+<p>Obtain via <code>Model.factory(count)</code>. Chain configuration methods,
+then call <code>.create()</code> to generate and persist to an in-memory database.</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">class</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="o">:</span>
+
+<span class="w">    </span><span class="s2">&quot;</span><span class="se">&quot;&quot;</span><span class="s2">Fluent builder for generating and persisting model instances.</span>
+
+<span class="s2">    Obtain via ``Model.factory(count)``. Chain configuration methods,</span>
+
+<span class="s2">    then call ``.create()`` to generate and persist to an in-memory database.</span>
+
+<span class="s2">    Example:</span>
+
+<span class="s2">        &gt;&gt;&gt; # users = User.factory(10).has(Order.factory(1, 3)).create()</span>
+
+<span class="s2">    </span><span class="se">&quot;&quot;</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># doctest: +SKIP</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="o">:</span><span class="w"> </span><span class="k">type</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">max_count</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span>
+
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="o">:</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">min_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">count</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">max_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">max_count</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_children</span><span class="o">:</span><span class="w"> </span><span class="k">list</span><span class="err">[</span><span class="n">tuple</span><span class="err">[</span><span class="n">FactoryBuilder</span><span class="p">,</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">None</span><span class="err">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_mix</span><span class="o">:</span><span class="w"> </span><span class="n">dict</span><span class="err">[</span><span class="n">str</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_overrides</span><span class="o">:</span><span class="w"> </span><span class="n">dict</span><span class="err">[</span><span class="n">str</span><span class="p">,</span><span class="w"> </span><span class="k">Any</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_seed</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">has</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">builders</span><span class="o">:</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="p">,</span><span class="w"> </span><span class="n">via</span><span class="o">:</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="o">:</span>
+
+<span class="w">        </span><span class="s2">&quot;</span><span class="se">&quot;&quot;</span><span class="s2">Attach child builders whose rows are created for each parent instance.</span>
+
+<span class="s2">        Args:</span>
+
+<span class="s2">            *builders: ``FactoryBuilder`` instances for child models.</span>
+
+<span class="s2">            via: Relationship attribute name on the child model to use when</span>
+
+<span class="s2">                wiring the FK. Only required when the child has multiple</span>
+
+<span class="s2">                relationships pointing to the same parent model.</span>
+
+<span class="s2">        Returns:</span>
+
+<span class="s2">            ``self`` for chaining.</span>
+
+<span class="s2">        Example:</span>
+
+<span class="s2">            &gt;&gt;&gt; # User.factory(5).has(Order.factory(1, 3))</span>
+
+<span class="s2">        </span><span class="se">&quot;&quot;</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># doctest: +SKIP</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">builders</span><span class="o">:</span>
+
+<span class="w">            </span><span class="n">self</span><span class="p">.</span><span class="n">_children</span><span class="p">.</span><span class="n">append</span><span class="p">((</span><span class="n">builder</span><span class="p">,</span><span class="w"> </span><span class="n">via</span><span class="p">))</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">self</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">mix</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="n">proportions</span><span class="o">:</span><span class="w"> </span><span class="kt">float</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="o">:</span>
+
+<span class="w">        </span><span class="s2">&quot;</span><span class="se">&quot;&quot;</span><span class="s2">Set variant proportions for this builder.</span>
+
+<span class="s2">        Args:</span>
+
+<span class="s2">            **proportions: Variant name to proportion in ``(0, 1]``. Total</span>
+
+<span class="s2">                must not exceed 1.0. The remainder (``1 - sum``) is the</span>
+
+<span class="s2">                proportion of un-varied (default) instances.</span>
+
+<span class="s2">        Returns:</span>
+
+<span class="s2">            ``self`` for chaining.</span>
+
+<span class="s2">        Raises:</span>
+
+<span class="s2">            ValueError: If proportions sum to more than 1.0, or a named</span>
+
+<span class="s2">                variant is not defined on the model.</span>
+
+<span class="s2">        Example:</span>
+
+<span class="s2">            &gt;&gt;&gt; # User.factory(100).mix(admin=0.05, premium=0.20)</span>
+
+<span class="s2">        </span><span class="se">&quot;&quot;</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># doctest: +SKIP</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="k">name</span><span class="p">,</span><span class="w"> </span><span class="n">proportion</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">proportions</span><span class="p">.</span><span class="n">items</span><span class="p">()</span><span class="o">:</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">proportion</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">0.0</span><span class="o">:</span>
+
+<span class="w">                </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="s2">&quot;Proportion for &#39;{name}&#39; must be &gt; 0, got {proportion}&quot;</span>
+
+<span class="w">                </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">proportions</span><span class="p">.</span><span class="k">values</span><span class="p">())</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">1.0</span><span class="o">:</span>
+
+<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="s2">&quot;Proportions sum to {total:.2f}, must be ≤ 1.0&quot;</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="k">name</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">proportions</span><span class="o">:</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="k">name</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">__variants__</span><span class="o">:</span><span class="w">  </span><span class="c1"># ty: ignore[unresolved-attribute]</span>
+
+<span class="w">                </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span>
+
+<span class="w">                    </span><span class="n">f</span><span class="s2">&quot;Variant &#39;{name}&#39; not defined on {self.model.__name__}. &quot;</span>
+
+<span class="w">                    </span><span class="n">f</span><span class="s2">&quot;Defined: {list(self.model.__variants__)}&quot;</span><span class="w">  </span><span class="c1"># ty: ignore[unresolved-attribute]</span>
+
+<span class="w">                </span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_mix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">proportions</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">self</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_resolve_count</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">int</span><span class="o">:</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">max_count</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="o">:</span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">min_count</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">min_count</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">max_count</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_pick_variant</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">None</span><span class="o">:</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_mix</span><span class="o">:</span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">None</span>
+
+<span class="w">        </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">random</span><span class="p">.</span><span class="k">random</span><span class="p">()</span>
+
+<span class="w">        </span><span class="n">cumulative</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="k">name</span><span class="p">,</span><span class="w"> </span><span class="n">proportion</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_mix</span><span class="p">.</span><span class="n">items</span><span class="p">()</span><span class="o">:</span>
+
+<span class="w">            </span><span class="n">cumulative</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">proportion</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">cumulative</span><span class="o">:</span>
+
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="k">name</span>
+
+<span class="w">        </span><span class="c1"># Remainder proportion (1 - sum) maps to no variant. When proportions</span>
+
+<span class="w">        </span><span class="c1"># sum to exactly 1.0, floating-point imprecision may leave a tiny gap</span>
+
+<span class="w">        </span><span class="c1"># here for a negligible fraction of calls - that&#39;s acceptable.</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">None</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">random_seed</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="o">:</span>
+
+<span class="w">        </span><span class="s2">&quot;</span><span class="se">&quot;&quot;</span><span class="s2">Fix the random seed for reproducible output.</span>
+
+<span class="s2">        Args:</span>
+
+<span class="s2">            value: Integer seed passed to both ``random`` and ``Faker``.</span>
+
+<span class="s2">        Returns:</span>
+
+<span class="s2">            ``self`` for chaining.</span>
+
+<span class="s2">        Example:</span>
+
+<span class="s2">            &gt;&gt;&gt; # User.factory(10).random_seed(42).create()</span>
+
+<span class="s2">        </span><span class="se">&quot;&quot;</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># doctest: +SKIP</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">value</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">self</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="k">where</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">overrides</span><span class="o">:</span><span class="w"> </span><span class="n">dict</span><span class="err">[</span><span class="k">Any</span><span class="p">,</span><span class="w"> </span><span class="k">Any</span><span class="err">]</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="o">:</span>
+
+<span class="w">        </span><span class="s2">&quot;</span><span class="se">&quot;&quot;</span><span class="s2">Apply fixed column overrides to every generated instance.</span>
+
+<span class="s2">        Args:</span>
+
+<span class="s2">            overrides: Dict mapping column attributes (or string names) to</span>
+
+<span class="s2">                fixed values. These take precedence over generators and variants.</span>
+
+<span class="s2">        Returns:</span>
+
+<span class="s2">            ``self`` for chaining.</span>
+
+<span class="s2">        Example:</span>
+
+<span class="s2">            &gt;&gt;&gt; # User.factory(5).where({User.tier: &quot;</span><span class="n">premium</span><span class="s2">&quot;})</span>
+
+<span class="s2">        </span><span class="se">&quot;&quot;</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># doctest: +SKIP</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_overrides</span><span class="p">.</span><span class="k">update</span><span class="p">(</span><span class="n">overrides</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">self</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="k">create</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">list</span><span class="err">[</span><span class="k">Any</span><span class="err">]</span><span class="o">:</span>
+
+<span class="w">        </span><span class="s2">&quot;</span><span class="se">&quot;&quot;</span><span class="s2">Generate and persist all instances to an in-memory SQLite database.</span>
+
+<span class="s2">        Returns:</span>
+
+<span class="s2">            List of root model instances. Child instances (added via ``.has()``)</span>
+
+<span class="s2">            are persisted and accessible via SQLAlchemy relationships but are</span>
+
+<span class="s2">            not included in the returned list.</span>
+
+<span class="s2">        Example:</span>
+
+<span class="s2">            &gt;&gt;&gt; # users = User.factory(10).has(Order.factory(2)).create()</span>
+
+<span class="s2">            &gt;&gt;&gt; # len(users)  # -&gt; 10</span>
+
+<span class="s2">        </span><span class="se">&quot;&quot;</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># doctest: +SKIP</span>
+
+<span class="w">        </span><span class="k">from</span><span class="w"> </span><span class="p">.</span><span class="n">_execute</span><span class="w"> </span><span class="k">import</span><span class="w"> </span><span class="n">execute_builder</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">execute_builder</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_overrides</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_seed</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<hr />
+<h4 id="methods_1">Methods</h4>
+<h4 id="create_1">create</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;list[Any]&#39;</span>
+</code></pre></div>
+
+<p>Generate and persist all instances to an in-memory SQLite database.</p>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>List of root model instances. Child instances (added via <code>.has()</code>)<br>are persisted and accessible via SQLAlchemy relationships but are<br>not included in the returned list.</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code>    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate and persist all instances to an in-memory SQLite database.</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            List of root model instances. Child instances (added via ``.has()``)</span>
+
+<span class="sd">            are persisted and accessible via SQLAlchemy relationships but are</span>
+
+<span class="sd">            not included in the returned list.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            &gt;&gt;&gt; # users = User.factory(10).has(Order.factory(2)).create()</span>
+
+<span class="sd">            &gt;&gt;&gt; # len(users)  # -&gt; 10</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># doctest: +SKIP</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">._execute</span><span class="w"> </span><span class="kn">import</span> <span class="n">execute_builder</span>
+
+        <span class="k">return</span> <span class="n">execute_builder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h4 id="has">has</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">has</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">builders</span><span class="p">:</span> <span class="s1">&#39;FactoryBuilder&#39;</span><span class="p">,</span>
+    <span class="n">via</span><span class="p">:</span> <span class="s1">&#39;str | None&#39;</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;FactoryBuilder&#39;</span>
+</code></pre></div>
+
+<p>Attach child builders whose rows are created for each parent instance.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>*builders</td>
+<td>None</td>
+<td><code>FactoryBuilder</code> instances for child models.</td>
+<td>None</td>
+</tr>
+<tr>
+<td>via</td>
+<td>None</td>
+<td>Relationship attribute name on the child model to use when<br>wiring the FK. Only required when the child has multiple<br>relationships pointing to the same parent model.</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td><code>self</code> for chaining.</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">has</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">builders</span><span class="o">:</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="p">,</span><span class="w"> </span><span class="n">via</span><span class="o">:</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="o">:</span>
+
+<span class="w">        </span><span class="s2">&quot;</span><span class="se">&quot;&quot;</span><span class="s2">Attach child builders whose rows are created for each parent instance.</span>
+
+<span class="s2">        Args:</span>
+
+<span class="s2">            *builders: ``FactoryBuilder`` instances for child models.</span>
+
+<span class="s2">            via: Relationship attribute name on the child model to use when</span>
+
+<span class="s2">                wiring the FK. Only required when the child has multiple</span>
+
+<span class="s2">                relationships pointing to the same parent model.</span>
+
+<span class="s2">        Returns:</span>
+
+<span class="s2">            ``self`` for chaining.</span>
+
+<span class="s2">        Example:</span>
+
+<span class="s2">            &gt;&gt;&gt; # User.factory(5).has(Order.factory(1, 3))</span>
+
+<span class="s2">        </span><span class="se">&quot;&quot;</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># doctest: +SKIP</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">builders</span><span class="o">:</span>
+
+<span class="w">            </span><span class="n">self</span><span class="p">.</span><span class="n">_children</span><span class="p">.</span><span class="n">append</span><span class="p">((</span><span class="n">builder</span><span class="p">,</span><span class="w"> </span><span class="n">via</span><span class="p">))</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">self</span>
+</code></pre></div>
+
+</details>
+<h4 id="mix">mix</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">mix</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">proportions</span><span class="p">:</span> <span class="s1">&#39;float&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;FactoryBuilder&#39;</span>
+</code></pre></div>
+
+<p>Set variant proportions for this builder.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>**proportions</td>
+<td>None</td>
+<td>Variant name to proportion in <code>(0, 1]</code>. Total<br>must not exceed 1.0. The remainder (<code>1 - sum</code>) is the<br>proportion of un-varied (default) instances.</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td><code>self</code> for chaining.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Raises:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ValueError</td>
+<td>If proportions sum to more than 1.0, or a named<br>variant is not defined on the model.</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">mix</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="n">proportions</span><span class="o">:</span><span class="w"> </span><span class="kt">float</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="o">:</span>
+
+<span class="w">        </span><span class="s2">&quot;</span><span class="se">&quot;&quot;</span><span class="s2">Set variant proportions for this builder.</span>
+
+<span class="s2">        Args:</span>
+
+<span class="s2">            **proportions: Variant name to proportion in ``(0, 1]``. Total</span>
+
+<span class="s2">                must not exceed 1.0. The remainder (``1 - sum``) is the</span>
+
+<span class="s2">                proportion of un-varied (default) instances.</span>
+
+<span class="s2">        Returns:</span>
+
+<span class="s2">            ``self`` for chaining.</span>
+
+<span class="s2">        Raises:</span>
+
+<span class="s2">            ValueError: If proportions sum to more than 1.0, or a named</span>
+
+<span class="s2">                variant is not defined on the model.</span>
+
+<span class="s2">        Example:</span>
+
+<span class="s2">            &gt;&gt;&gt; # User.factory(100).mix(admin=0.05, premium=0.20)</span>
+
+<span class="s2">        </span><span class="se">&quot;&quot;</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># doctest: +SKIP</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="k">name</span><span class="p">,</span><span class="w"> </span><span class="n">proportion</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">proportions</span><span class="p">.</span><span class="n">items</span><span class="p">()</span><span class="o">:</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">proportion</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">0.0</span><span class="o">:</span>
+
+<span class="w">                </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="s2">&quot;Proportion for &#39;{name}&#39; must be &gt; 0, got {proportion}&quot;</span>
+
+<span class="w">                </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">proportions</span><span class="p">.</span><span class="k">values</span><span class="p">())</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">1.0</span><span class="o">:</span>
+
+<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="s2">&quot;Proportions sum to {total:.2f}, must be ≤ 1.0&quot;</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="k">name</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">proportions</span><span class="o">:</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="k">name</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">__variants__</span><span class="o">:</span><span class="w">  </span><span class="c1"># ty: ignore[unresolved-attribute]</span>
+
+<span class="w">                </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span>
+
+<span class="w">                    </span><span class="n">f</span><span class="s2">&quot;Variant &#39;{name}&#39; not defined on {self.model.__name__}. &quot;</span>
+
+<span class="w">                    </span><span class="n">f</span><span class="s2">&quot;Defined: {list(self.model.__variants__)}&quot;</span><span class="w">  </span><span class="c1"># ty: ignore[unresolved-attribute]</span>
+
+<span class="w">                </span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_mix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">proportions</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">self</span>
+</code></pre></div>
+
+</details>
+<h4 id="random_seed_1">random_seed</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">random_seed</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;FactoryBuilder&#39;</span>
+</code></pre></div>
+
+<p>Fix the random seed for reproducible output.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>value</td>
+<td>None</td>
+<td>Integer seed passed to both <code>random</code> and <code>Faker</code>.</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td><code>self</code> for chaining.</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">random_seed</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="o">:</span>
+
+<span class="w">        </span><span class="s2">&quot;</span><span class="se">&quot;&quot;</span><span class="s2">Fix the random seed for reproducible output.</span>
+
+<span class="s2">        Args:</span>
+
+<span class="s2">            value: Integer seed passed to both ``random`` and ``Faker``.</span>
+
+<span class="s2">        Returns:</span>
+
+<span class="s2">            ``self`` for chaining.</span>
+
+<span class="s2">        Example:</span>
+
+<span class="s2">            &gt;&gt;&gt; # User.factory(10).random_seed(42).create()</span>
+
+<span class="s2">        </span><span class="se">&quot;&quot;</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># doctest: +SKIP</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">value</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">self</span>
+</code></pre></div>
+
+</details>
+<h4 id="where">where</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">where</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">overrides</span><span class="p">:</span> <span class="s1">&#39;dict[Any, Any]&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;FactoryBuilder&#39;</span>
+</code></pre></div>
+
+<p>Apply fixed column overrides to every generated instance.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>overrides</td>
+<td>None</td>
+<td>Dict mapping column attributes (or string names) to<br>fixed values. These take precedence over generators and variants.</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td><code>self</code> for chaining.</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="k">where</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">overrides</span><span class="o">:</span><span class="w"> </span><span class="n">dict</span><span class="err">[</span><span class="k">Any</span><span class="p">,</span><span class="w"> </span><span class="k">Any</span><span class="err">]</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="o">:</span>
+
+<span class="w">        </span><span class="s2">&quot;</span><span class="se">&quot;&quot;</span><span class="s2">Apply fixed column overrides to every generated instance.</span>
+
+<span class="s2">        Args:</span>
+
+<span class="s2">            overrides: Dict mapping column attributes (or string names) to</span>
+
+<span class="s2">                fixed values. These take precedence over generators and variants.</span>
+
+<span class="s2">        Returns:</span>
+
+<span class="s2">            ``self`` for chaining.</span>
+
+<span class="s2">        Example:</span>
+
+<span class="s2">            &gt;&gt;&gt; # User.factory(5).where({User.tier: &quot;</span><span class="n">premium</span><span class="s2">&quot;})</span>
+
+<span class="s2">        </span><span class="se">&quot;&quot;</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># doctest: +SKIP</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_overrides</span><span class="p">.</span><span class="k">update</span><span class="p">(</span><span class="n">overrides</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">self</span>
+</code></pre></div>
+
+</details>
+<h3 id="tablespecmixin">TableSpecMixin</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TableSpecMixin</span><span class="p">(</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">class</span><span class="w"> </span><span class="n">TableSpecMixin</span><span class="o">:</span>
+
+<span class="w">    </span><span class="n">__variants__</span><span class="o">:</span><span class="w"> </span><span class="n">dict</span><span class="err">[</span><span class="n">str</span><span class="p">,</span><span class="w"> </span><span class="n">Callable</span><span class="err">[</span><span class="p">...,</span><span class="w"> </span><span class="k">Any</span><span class="err">]]</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init_subclass__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="n">kwargs</span><span class="o">:</span><span class="w"> </span><span class="k">Any</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="o">:</span>
+
+<span class="w">        </span><span class="k">super</span><span class="p">().</span><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">cls</span><span class="p">.</span><span class="n">__variants__</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span>
+
+<span class="w">            </span><span class="k">name</span><span class="o">:</span><span class="w"> </span><span class="n">val</span>
+
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="k">name</span><span class="p">,</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">vars</span><span class="p">(</span><span class="n">cls</span><span class="p">).</span><span class="n">items</span><span class="p">()</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">callable</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">getattr</span><span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_is_variant&quot;</span><span class="p">,</span><span class="w"> </span><span class="no">False</span><span class="p">)</span>
+
+<span class="w">        </span><span class="err">}</span>
+
+<span class="w">    </span><span class="nv">@_classproperty</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__comment__</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">None</span><span class="o">:</span><span class="w">  </span><span class="c1"># noqa: N805</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">__table__</span><span class="p">.</span><span class="k">comment</span><span class="w">  </span><span class="c1"># ty: ignore[unresolved-attribute]</span>
+
+<span class="w">    </span><span class="nv">@_classproperty</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__table_info__</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="err">[</span><span class="n">str</span><span class="p">,</span><span class="w"> </span><span class="k">Any</span><span class="err">]</span><span class="o">:</span><span class="w">  </span><span class="c1"># noqa: N805</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">__table__</span><span class="p">.</span><span class="n">info</span><span class="w">  </span><span class="c1"># ty: ignore[unresolved-attribute]</span>
+
+<span class="w">    </span><span class="nv">@_classproperty</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__column_info__</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="err">[</span><span class="n">str</span><span class="p">,</span><span class="w"> </span><span class="n">dict</span><span class="err">[</span><span class="n">str</span><span class="p">,</span><span class="w"> </span><span class="k">Any</span><span class="err">]]</span><span class="o">:</span><span class="w">  </span><span class="c1"># noqa: N805</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="err">{</span>
+
+<span class="w">            </span><span class="n">prop</span><span class="p">.</span><span class="k">key</span><span class="o">:</span><span class="w"> </span><span class="n">col</span><span class="p">.</span><span class="n">info</span>
+
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="n">prop</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">__mapper__</span><span class="p">.</span><span class="n">column_attrs</span><span class="w">  </span><span class="c1"># ty: ignore[unresolved-attribute]</span>
+
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">prop</span><span class="p">.</span><span class="k">columns</span>
+
+<span class="w">        </span><span class="err">}</span>
+
+<span class="w">    </span><span class="nv">@_classproperty</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__expectations__</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="err">[</span><span class="n">str</span><span class="p">,</span><span class="w"> </span><span class="n">str</span><span class="err">]</span><span class="o">:</span><span class="w">  </span><span class="c1"># noqa: N805</span>
+
+<span class="w">        </span><span class="k">from</span><span class="w"> </span><span class="n">sqlalchemy</span><span class="w"> </span><span class="k">import</span><span class="w"> </span><span class="n">CheckConstraint</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="err">{</span>
+
+<span class="w">            </span><span class="n">c</span><span class="p">.</span><span class="k">name</span><span class="o">:</span><span class="w"> </span><span class="n">str</span><span class="p">(</span><span class="n">c</span><span class="p">.</span><span class="n">sqltext</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">__table__</span><span class="p">.</span><span class="n">constraints</span><span class="w">  </span><span class="c1"># ty: ignore[unresolved-attribute]</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">CheckConstraint</span><span class="p">)</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="k">name</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">None</span>
+
+<span class="w">        </span><span class="err">}</span>
+
+<span class="w">    </span><span class="nv">@_classproperty</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__spark_schema__</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">Any</span><span class="o">:</span><span class="w">  </span><span class="c1"># noqa: N805</span>
+
+<span class="w">        </span><span class="k">from</span><span class="w"> </span><span class="p">.</span><span class="n">_spark</span><span class="w"> </span><span class="k">import</span><span class="w"> </span><span class="n">to_spark_schema</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">to_spark_schema</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w">  </span><span class="c1"># ty: ignore[invalid-argument-type]</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__repr__</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">str</span><span class="o">:</span>
+
+<span class="w">        </span><span class="n">attrs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;, &quot;</span><span class="p">.</span><span class="k">join</span><span class="p">(</span>
+
+<span class="w">            </span><span class="n">f</span><span class="s2">&quot;{c.key}={getattr(self, c.key)!r}&quot;</span>
+
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">__mapper__</span><span class="p">.</span><span class="k">columns</span><span class="w">  </span><span class="c1"># ty: ignore[unresolved-attribute]</span>
+
+<span class="w">        </span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">f</span><span class="s2">&quot;{self.__class__.__name__}({attrs})&quot;</span>
+
+<span class="w">    </span><span class="nv">@classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">generators</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="err">[</span><span class="k">Any</span><span class="p">,</span><span class="w"> </span><span class="k">Any</span><span class="err">]</span><span class="o">:</span>
+
+<span class="w">        </span><span class="s2">&quot;</span><span class="se">&quot;&quot;</span><span class="s2">Override to supply factory-boy declarations for column generation.</span>
+
+<span class="s2">        Returns:</span>
+
+<span class="s2">            A dict mapping column attributes (or string names) to factory-boy</span>
+
+<span class="s2">            declarations (e.g. ``factory.Faker(...)``). Keys can be the column</span>
+
+<span class="s2">            attribute itself (``cls.name``) or a plain string (``&quot;</span><span class="k">name</span><span class="s2">&quot;``).</span>
+
+<span class="s2">        Example:</span>
+
+<span class="s2">            &gt;&gt;&gt; TableSpecMixin.generators()</span>
+
+<span class="s2">            {}</span>
+
+<span class="s2">        </span><span class="se">&quot;&quot;</span><span class="s2">&quot;</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="err">{}</span>
+
+<span class="w">    </span><span class="nv">@classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">factory</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">max_count</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="o">:</span>
+
+<span class="w">        </span><span class="s2">&quot;</span><span class="se">&quot;&quot;</span><span class="s2">Return a FactoryBuilder for this model.</span>
+
+<span class="s2">        Args:</span>
+
+<span class="s2">            count: Exact number of instances to generate, or minimum when</span>
+
+<span class="s2">                ``max_count`` is also provided.</span>
+
+<span class="s2">            max_count: Upper bound for a random count in</span>
+
+<span class="s2">                ``[count, max_count]`` inclusive. ``None`` means exact.</span>
+
+<span class="s2">        Returns:</span>
+
+<span class="s2">            A ``FactoryBuilder`` ready to be configured with ``.has()``,</span>
+
+<span class="s2">            ``.mix()``, ``.where()`` and ``.create()``.</span>
+
+<span class="s2">        Example:</span>
+
+<span class="s2">            &gt;&gt;&gt; # User.factory(10)         # exactly 10</span>
+
+<span class="s2">            &gt;&gt;&gt; # User.factory(1, 5)       # random 1-5 per parent</span>
+
+<span class="s2">            &gt;&gt;&gt; # User.factory(5).create() # generate and persist</span>
+
+<span class="s2">        </span><span class="se">&quot;&quot;</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># doctest: +SKIP</span>
+
+<span class="w">        </span><span class="k">from</span><span class="w"> </span><span class="p">.</span><span class="n">_builder</span><span class="w"> </span><span class="k">import</span><span class="w"> </span><span class="n">FactoryBuilder</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="n">max_count</span><span class="p">)</span>
+
+<span class="w">    </span><span class="nv">@classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">dataset</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">builders</span><span class="o">:</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Dataset</span><span class="o">:</span>
+
+<span class="w">        </span><span class="s2">&quot;</span><span class="se">&quot;&quot;</span><span class="s2">Return a Dataset generating one row per registered model.</span>
+
+<span class="s2">        Args:</span>
+
+<span class="s2">            *builders: Optional ``FactoryBuilder`` overrides for specific</span>
+
+<span class="s2">                models. Models without an override get one instance using</span>
+
+<span class="s2">                their default generators.</span>
+
+<span class="s2">        Returns:</span>
+
+<span class="s2">            A ``Dataset`` whose ``.create()`` returns a dict keyed by table</span>
+
+<span class="s2">            name, values are lists of persisted model instances.</span>
+
+<span class="s2">        Raises:</span>
+
+<span class="s2">            TypeError: If any argument is not a ``FactoryBuilder``.</span>
+
+<span class="s2">            ValueError: If a builder&#39;s model is not registered to this Base.</span>
+
+<span class="s2">        Example:</span>
+
+<span class="s2">            &gt;&gt;&gt; # result = Base.dataset(User.factory(10)).create()</span>
+
+<span class="s2">            &gt;&gt;&gt; # result[&quot;</span><span class="n">users</span><span class="s2">&quot;]  # -&gt; list of 10 User instances</span>
+
+<span class="s2">        </span><span class="se">&quot;&quot;</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># doctest: +SKIP</span>
+
+<span class="w">        </span><span class="k">from</span><span class="w"> </span><span class="p">.</span><span class="n">_builder</span><span class="w"> </span><span class="k">import</span><span class="w"> </span><span class="n">FactoryBuilder</span>
+
+<span class="w">        </span><span class="k">from</span><span class="w"> </span><span class="p">.</span><span class="n">_dataset</span><span class="w"> </span><span class="k">import</span><span class="w"> </span><span class="n">Dataset</span>
+
+<span class="w">        </span><span class="n">base_models</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="n">mapper</span><span class="p">.</span><span class="n">class_</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">mapper</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">registry</span><span class="p">.</span><span class="n">mappers</span><span class="err">}</span><span class="w">  </span><span class="c1"># ty: ignore[unresolved-attribute]</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">builders</span><span class="o">:</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">isinstance</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="p">)</span><span class="o">:</span>
+
+<span class="w">                </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="s2">&quot;Expected a FactoryBuilder, got {type(b).__name__}&quot;</span>
+
+<span class="w">                </span><span class="n">raise</span><span class="w"> </span><span class="n">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">model</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">base_models</span><span class="o">:</span>
+
+<span class="w">                </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="s2">&quot;{b.model.__name__} is not registered to this Base.&quot;</span>
+
+<span class="w">                </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">overrides</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="n">b</span><span class="p">.</span><span class="n">model</span><span class="o">:</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">builders</span><span class="err">}</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Dataset</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="w"> </span><span class="n">overrides</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<hr />
+<h4 id="static-methods">Static methods</h4>
+<h4 id="dataset_1">dataset</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">dataset</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">builders</span><span class="p">:</span> <span class="s1">&#39;FactoryBuilder&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Dataset&#39;</span>
+</code></pre></div>
+
+<p>Return a Dataset generating one row per registered model.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>*builders</td>
+<td>None</td>
+<td>Optional <code>FactoryBuilder</code> overrides for specific<br>models. Models without an override get one instance using<br>their default generators.</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>A <code>Dataset</code> whose <code>.create()</code> returns a dict keyed by table<br>name, values are lists of persisted model instances.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Raises:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TypeError</td>
+<td>If any argument is not a <code>FactoryBuilder</code>.</td>
+</tr>
+<tr>
+<td>ValueError</td>
+<td>If a builder's model is not registered to this Base.</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code>    <span class="nd">@classmethod</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">dataset</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">builders</span><span class="p">:</span> <span class="n">FactoryBuilder</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dataset</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a Dataset generating one row per registered model.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            *builders: Optional ``FactoryBuilder`` overrides for specific</span>
+
+<span class="sd">                models. Models without an override get one instance using</span>
+
+<span class="sd">                their default generators.</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            A ``Dataset`` whose ``.create()`` returns a dict keyed by table</span>
+
+<span class="sd">            name, values are lists of persisted model instances.</span>
+
+<span class="sd">        Raises:</span>
+
+<span class="sd">            TypeError: If any argument is not a ``FactoryBuilder``.</span>
+
+<span class="sd">            ValueError: If a builder&#39;s model is not registered to this Base.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            &gt;&gt;&gt; # result = Base.dataset(User.factory(10)).create()</span>
+
+<span class="sd">            &gt;&gt;&gt; # result[&quot;users&quot;]  # -&gt; list of 10 User instances</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># doctest: +SKIP</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">._builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">FactoryBuilder</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">._dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span>
+
+        <span class="n">base_models</span> <span class="o">=</span> <span class="p">{</span><span class="n">mapper</span><span class="o">.</span><span class="n">class_</span> <span class="k">for</span> <span class="n">mapper</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">mappers</span><span class="p">}</span>  <span class="c1"># ty: ignore[unresolved-attribute]</span>
+
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">builders</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">FactoryBuilder</span><span class="p">):</span>
+
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Expected a FactoryBuilder, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">model</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">base_models</span><span class="p">:</span>
+
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is not registered to this Base.&quot;</span>
+
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">overrides</span> <span class="o">=</span> <span class="p">{</span><span class="n">b</span><span class="o">.</span><span class="n">model</span><span class="p">:</span> <span class="n">b</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">builders</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">Dataset</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">overrides</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h4 id="factory">factory</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">factory</span><span class="p">(</span>
+    <span class="n">count</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">max_count</span><span class="p">:</span> <span class="s1">&#39;int | None&#39;</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;FactoryBuilder&#39;</span>
+</code></pre></div>
+
+<p>Return a FactoryBuilder for this model.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>count</td>
+<td>None</td>
+<td>Exact number of instances to generate, or minimum when<br><code>max_count</code> is also provided.</td>
+<td>None</td>
+</tr>
+<tr>
+<td>max_count</td>
+<td>None</td>
+<td>Upper bound for a random count in<br><code>[count, max_count]</code> inclusive. <code>None</code> means exact.</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>A <code>FactoryBuilder</code> ready to be configured with <code>.has()</code>,<br><code>.mix()</code>, <code>.where()</code> and <code>.create()</code>.</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code>    <span class="nd">@classmethod</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">factory</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FactoryBuilder</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a FactoryBuilder for this model.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            count: Exact number of instances to generate, or minimum when</span>
+
+<span class="sd">                ``max_count`` is also provided.</span>
+
+<span class="sd">            max_count: Upper bound for a random count in</span>
+
+<span class="sd">                ``[count, max_count]`` inclusive. ``None`` means exact.</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            A ``FactoryBuilder`` ready to be configured with ``.has()``,</span>
+
+<span class="sd">            ``.mix()``, ``.where()`` and ``.create()``.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            &gt;&gt;&gt; # User.factory(10)         # exactly 10</span>
+
+<span class="sd">            &gt;&gt;&gt; # User.factory(1, 5)       # random 1-5 per parent</span>
+
+<span class="sd">            &gt;&gt;&gt; # User.factory(5).create() # generate and persist</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># doctest: +SKIP</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">._builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">FactoryBuilder</span>
+
+        <span class="k">return</span> <span class="n">FactoryBuilder</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">max_count</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h4 id="generators">generators</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generators</span><span class="p">(</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;dict[Any, Any]&#39;</span>
+</code></pre></div>
+
+<p>Override to supply factory-boy declarations for column generation.</p>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>A dict mapping column attributes (or string names) to factory-boy<br>declarations (e.g. <code>factory.Faker(...)</code>). Keys can be the column<br>attribute itself (<code>cls.name</code>) or a plain string (<code>"name"</code>).</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="nv">@classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">generators</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">Any, Any</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Override to supply factory-boy declarations for column generation.</span>
+
+<span class="ss">        Returns:</span>
+
+<span class="ss">            A dict mapping column attributes (or string names) to factory-boy</span>
+
+<span class="ss">            declarations (e.g. ``factory.Faker(...)``). Keys can be the column</span>
+
+<span class="ss">            attribute itself (``cls.name``) or a plain string (``&quot;</span><span class="n">name</span><span class="ss">&quot;``).</span>
+
+<span class="ss">        Example:</span>
+
+<span class="ss">            &gt;&gt;&gt; TableSpecMixin.generators()</span>
+
+<span class="ss">            {}</span>
+
+<span class="ss">        &quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="err">{}</span>
+</code></pre></div>
+
+</details>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+    
+      <nav class="md-footer__inner md-grid" aria-label="Footer">
+        
+          
+          <a href="../../docs/usage/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Usage" rel="prev">
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Previous
+                </span>
+                Usage
+              </div>
+            </div>
+          </a>
+        
+        
+      </nav>
+    
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+            
+            Powered by
+            <a href="http://timothycrosley.github.io/portray">portray.</a>
+            You too can
+            <a href="http://timothycrosley.github.io/portray">
+              portray</a>
+            your Python project well using automatic documentation.
+          </div>
+        
+      </div>
+    </div>
+  </footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.078830c0.min.js"></script>
+      
+    
+  </body>
+</html>
