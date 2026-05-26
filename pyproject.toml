@@ -1,7 +1,7 @@
 [project]
 name = "rowsmyth"
 dynamic = ["version"]
-description = "Mythical test data for SQLAlchemy models - no boilerplate required."
+description = "Forged test data for SQLAlchemy models - no boilerplate required."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
@@ -156,5 +156,5 @@ extra_markdown_modules = ["CHANGELOG.md", "CONTRIBUTING.md"]
 
 [tool.portray.mkdocs]
 site_name = "rowsmyth"
-site_description = "Mythical test data for SQLAlchemy models"
+site_description = "Forged test data for SQLAlchemy models - no boilerplate required."
 repo_url = "https://github.com/LaurenceRawlings/rowsmyth"

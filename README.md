@@ -1,8 +1,8 @@
 # rowsmyth
 
-**Mythical test data for SQLAlchemy models - no boilerplate required.**
+**Forged test data for SQLAlchemy models - no boilerplate required.**
 
-A blacksmith forges metal. A rowsmyth forges rows - the mythical kind, purpose-built for tests. Pronounced *row smith*, `rowsmyth` is a thin orchestration layer on top of [SQLAlchemy](https://www.sqlalchemy.org/) and [factory-boy](https://factoryboy.readthedocs.io/) that eliminates the ceremony of wiring up test factories. Define generators once, co-located with your models. Generate hierarchical or flat datasets with a single call.
+A blacksmith forges metal. A rowsmyth forges rows - mythical ones that exist only in your tests. Pronounced *row smith*, `rowsmyth` is a thin orchestration layer on top of [SQLAlchemy](https://www.sqlalchemy.org/) and [factory-boy](https://factoryboy.readthedocs.io/) that eliminates the ceremony of wiring up test factories. Define generators once, co-located with your models. Generate hierarchical or flat datasets with a single call.
 
 ```python
 from rowsmyth import declarative_base, variant
