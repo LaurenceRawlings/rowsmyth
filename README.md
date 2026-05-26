@@ -32,7 +32,7 @@ class User(Base):
 
 # Order and OrderItem are defined in the Complete Example section below
 
-# 20 users, each with 1–5 orders, each order with 1–4 items
+# 20 users, each with 1-5 orders, each order with 1-4 items
 users = (
     User
     .factory(20)
@@ -204,7 +204,7 @@ Chain `.has()` to attach child builders. Foreign keys are resolved automatically
 
 ```python
 users = User.factory(20).has(Order.factory(1, 5)).create()
-# 20 users, each with 1–5 orders. Each order's user_id is set automatically.
+# 20 users, each with 1-5 orders. Each order's user_id is set automatically.
 ```
 
 Chains can be arbitrarily deep:
@@ -288,6 +288,33 @@ data = (
 ```
 
 `Dataset` creates rows in dependency order, then randomly samples from the created pool when injecting foreign keys. All rows share one in-memory SQLite session.
+
+#### Seeding reference data
+
+Pass raw model instances directly to `Base.dataset()` to seed reference/lookup tables with predetermined rows. Seeded instances are committed to the session first and added to the FK pool so all factories can wire to them:
+
+```python
+statuses = [
+    Status(code="draft"),
+    Status(code="active"),
+    Status(code="archived"),
+]
+
+data = (
+    Base
+    .dataset(
+        *statuses,
+        Article.factory(100),
+    )
+    .random_seed(42)
+    .create()
+)
+
+# data["statuses"]  -> the 3 seeded Status rows
+# data["articles"]  -> 100 Article rows, each article.status_code points to one of the 3
+```
+
+Any mix of raw instances and `FactoryBuilder`s is accepted. Seeded rows always appear before factory-generated rows for the same table in the result dict.
 
 ---
 
@@ -428,7 +455,7 @@ class OrderItem(Base):
         return {cls.sku: factory.Faker("ean13")}
 
 
-# Hierarchical: 20 users → 1–5 orders each → 1–4 items each
+# Hierarchical: 20 users → 1-5 orders each → 1-4 items each
 users = (
     User
     .factory(20)
@@ -478,14 +505,14 @@ Returns a `FactoryBuilder` for the model. `n` generates exactly n rows; `(min, m
 | Method | Description |
 |--------|-------------|
 | `.has(*builders, via=None)` | Attach child builders. Use `via="rel_name"` to disambiguate multiple relationships to the same parent. |
-| `.mix(**proportions)` | Variant distribution. Values are proportions (0.0–1.0), must sum to ≤ 1.0. |
+| `.mix(**proportions)` | Variant distribution. Values are proportions (0.0-1.0), must sum to ≤ 1.0. |
 | `.where(overrides)` | Force field values. `{Model.column: value}`. |
 | `.random_seed(value)` | Seed `random` and `Faker` for reproducibility. |
 | `.create()` | Execute. Returns `list[RootModel]`. Creates an in-memory SQLite DB automatically. |
 
-### `Base.dataset(*builders)`
+### `Base.dataset(*args)`
 
-Returns a `Dataset` for flat multi-table generation.
+Returns a `Dataset` for flat multi-table generation. `args` may be any mix of `FactoryBuilder` instances and raw model instances (for seeding reference data).
 
 | Method | Description |
 |--------|-------------|

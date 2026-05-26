@@ -105,6 +105,33 @@ users = result["users"]    # 50 User instances
 orders = result["orders"]  # 200 Order instances, FKs wired to users
 ```
 
+### Seeding reference data
+
+Pass raw model instances directly to `Base.dataset()` to seed reference/lookup
+tables with predetermined rows. Seeded instances are persisted first and made
+available as FK targets for all factories. They appear in the result dict like
+any other rows.
+
+```python
+# Seed a lookup table with fixed rows
+statuses = [
+    Status(code="draft"),
+    Status(code="active"),
+    Status(code="archived"),
+]
+
+result = Base.dataset(
+    *statuses,
+    Article.factory(100),
+).random_seed(42).create()
+
+result["statuses"]  # the 3 seeded Status rows
+result["articles"]  # 100 Article rows, each article.status_id points to one of the 3
+```
+
+Any mix of raw instances and `FactoryBuilder`s is accepted. Seeded rows always
+appear before factory-generated rows for the same table.
+
 ## Spark Schema
 
 ```python
