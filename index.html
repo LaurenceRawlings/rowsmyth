@@ -346,6 +346,19 @@
     Dataset - flat multi-table datasets
   </a>
   
+    <nav class="md-nav" aria-label="Dataset - flat multi-table datasets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#seeding-reference-data" class="md-nav__link">
+    Seeding reference data
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -411,8 +424,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#basedatasetbuilders" class="md-nav__link">
-    Base.dataset(*builders)
+  <a href="#basedatasetargs" class="md-nav__link">
+    Base.dataset(*args)
   </a>
   
 </li>
@@ -736,6 +749,19 @@
     Dataset - flat multi-table datasets
   </a>
   
+    <nav class="md-nav" aria-label="Dataset - flat multi-table datasets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#seeding-reference-data" class="md-nav__link">
+    Seeding reference data
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -801,8 +827,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#basedatasetbuilders" class="md-nav__link">
-    Base.dataset(*builders)
+  <a href="#basedatasetargs" class="md-nav__link">
+    Base.dataset(*args)
   </a>
   
 </li>
@@ -917,7 +943,7 @@
 
 <span class="c1"># Order and OrderItem are defined in the Complete Example section below</span>
 
-<span class="c1"># 20 users, each with 1–5 orders, each order with 1–4 items</span>
+<span class="c1"># 20 users, each with 1-5 orders, each order with 1-4 items</span>
 <span class="n">users</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">User</span>
     <span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
@@ -1056,7 +1082,7 @@
 <h4 id="has-parent-child-relationships"><code>.has()</code> - parent → child relationships</h4>
 <p>Chain <code>.has()</code> to attach child builders. Foreign keys are resolved automatically from SQLAlchemy's relationship metadata:</p>
 <div class="codehilite"><pre><span></span><code><span class="n">users</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">Order</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
-<span class="c1"># 20 users, each with 1–5 orders. Each order&#39;s user_id is set automatically.</span>
+<span class="c1"># 20 users, each with 1-5 orders. Each order&#39;s user_id is set automatically.</span>
 </code></pre></div>
 
 <p>Chains can be arbitrarily deep:</p>
@@ -1120,6 +1146,29 @@
 </code></pre></div>
 
 <p><code>Dataset</code> creates rows in dependency order, then randomly samples from the created pool when injecting foreign keys. All rows share one in-memory SQLite session.</p>
+<h4 id="seeding-reference-data">Seeding reference data</h4>
+<p>Pass raw model instances directly to <code>Base.dataset()</code> to seed reference/lookup tables with predetermined rows. Seeded instances are committed to the session first and added to the FK pool so all factories can wire to them:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">statuses</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Status</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s2">&quot;draft&quot;</span><span class="p">),</span>
+    <span class="n">Status</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s2">&quot;active&quot;</span><span class="p">),</span>
+    <span class="n">Status</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s2">&quot;archived&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Base</span>
+    <span class="o">.</span><span class="n">dataset</span><span class="p">(</span>
+        <span class="o">*</span><span class="n">statuses</span><span class="p">,</span>
+        <span class="n">Article</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="o">.</span><span class="n">random_seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">create</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="c1"># data[&quot;statuses&quot;]  -&gt; the 3 seeded Status rows</span>
+<span class="c1"># data[&quot;articles&quot;]  -&gt; 100 Article rows, each article.status_code points to one of the 3</span>
+</code></pre></div>
+
+<p>Any mix of raw instances and <code>FactoryBuilder</code>s is accepted. Seeded rows always appear before factory-generated rows for the same table in the result dict.</p>
 <hr />
 <h2 id="model-metadata">Model Metadata</h2>
 <p><code>rowsmyth</code> exposes standard SQLAlchemy <code>comment</code> and <code>info</code> fields as convenient classproperties. This is useful for data catalogues, data quality tooling and documentation generation.</p>
@@ -1244,7 +1293,7 @@
         <span class="k">return</span> <span class="p">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">sku</span><span class="p">:</span> <span class="n">factory</span><span class="o">.</span><span class="n">Faker</span><span class="p">(</span><span class="s2">&quot;ean13&quot;</span><span class="p">)}</span>
 
 
-<span class="c1"># Hierarchical: 20 users → 1–5 orders each → 1–4 items each</span>
+<span class="c1"># Hierarchical: 20 users → 1-5 orders each → 1-4 items each</span>
 <span class="n">users</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">User</span>
     <span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
@@ -1316,7 +1365,7 @@
 </tr>
 <tr>
 <td><code>.mix(**proportions)</code></td>
-<td>Variant distribution. Values are proportions (0.0–1.0), must sum to ≤ 1.0.</td>
+<td>Variant distribution. Values are proportions (0.0-1.0), must sum to ≤ 1.0.</td>
 </tr>
 <tr>
 <td><code>.where(overrides)</code></td>
@@ -1332,8 +1381,8 @@
 </tr>
 </tbody>
 </table>
-<h3 id="basedatasetbuilders"><code>Base.dataset(*builders)</code></h3>
-<p>Returns a <code>Dataset</code> for flat multi-table generation.</p>
+<h3 id="basedatasetargs"><code>Base.dataset(*args)</code></h3>
+<p>Returns a <code>Dataset</code> for flat multi-table generation. <code>args</code> may be any mix of <code>FactoryBuilder</code> instances and raw model instances (for seeding reference data).</p>
 <table>
 <thead>
 <tr>

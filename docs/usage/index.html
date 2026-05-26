@@ -383,6 +383,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#seeding-reference-data" class="md-nav__link">
+    Seeding reference data
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -541,6 +548,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#seeding-reference-data" class="md-nav__link">
+    Seeding reference data
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -659,6 +673,29 @@ variants with <code>@variant</code>.</p>
 <span class="n">orders</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;orders&quot;</span><span class="p">]</span>  <span class="c1"># 200 Order instances, FKs wired to users</span>
 </code></pre></div>
 
+<h3 id="seeding-reference-data">Seeding reference data</h3>
+<p>Pass raw model instances directly to <code>Base.dataset()</code> to seed reference/lookup
+tables with predetermined rows. Seeded instances are persisted first and made
+available as FK targets for all factories. They appear in the result dict like
+any other rows.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Seed a lookup table with fixed rows</span>
+<span class="n">statuses</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Status</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s2">&quot;draft&quot;</span><span class="p">),</span>
+    <span class="n">Status</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s2">&quot;active&quot;</span><span class="p">),</span>
+    <span class="n">Status</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s2">&quot;archived&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">Base</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">statuses</span><span class="p">,</span>
+    <span class="n">Article</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+<span class="p">)</span><span class="o">.</span><span class="n">random_seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+
+<span class="n">result</span><span class="p">[</span><span class="s2">&quot;statuses&quot;</span><span class="p">]</span>  <span class="c1"># the 3 seeded Status rows</span>
+<span class="n">result</span><span class="p">[</span><span class="s2">&quot;articles&quot;</span><span class="p">]</span>  <span class="c1"># 100 Article rows, each article.status_id points to one of the 3</span>
+</code></pre></div>
+
+<p>Any mix of raw instances and <code>FactoryBuilder</code>s is accepted. Seeded rows always
+appear before factory-generated rows for the same table.</p>
 <h2 id="spark-schema">Spark Schema</h2>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pyspark.sql</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparkSession</span>
 

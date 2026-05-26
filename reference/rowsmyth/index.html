@@ -1025,7 +1025,8 @@ applied to a weighted subset of generated instances.</p>
 <h3 id="dataset">Dataset</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Dataset</span><span class="p">(</span>
     <span class="n">base</span><span class="p">:</span> <span class="s1">&#39;type&#39;</span><span class="p">,</span>
-    <span class="n">overrides</span><span class="p">:</span> <span class="s1">&#39;dict[type, Any] | None&#39;</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">overrides</span><span class="p">:</span> <span class="s1">&#39;dict[type, Any] | None&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">instances</span><span class="p">:</span> <span class="s1">&#39;list[Any] | None&#39;</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span>
 </code></pre></div>
 
@@ -1055,11 +1056,23 @@ at one model.</p>
 
 <span class="ss">    &quot;&quot;&quot;</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">doctest</span><span class="p">:</span><span class="w"> </span><span class="o">+</span><span class="n">SKIP</span>
 
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">base</span><span class="p">:</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="nl">overrides</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">type, Any</span><span class="o">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">,</span>
+
+<span class="w">        </span><span class="nl">base</span><span class="p">:</span><span class="w"> </span><span class="n">type</span><span class="p">,</span>
+
+<span class="w">        </span><span class="nl">overrides</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">type, Any</span><span class="o">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span>
+
+<span class="w">        </span><span class="nl">instances</span><span class="p">:</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">Any</span><span class="o">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span>
+
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
 
 <span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">base</span>
 
 <span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="nl">_overrides</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">type, Any</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">overrides</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="err">{}</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="nl">_instances</span><span class="p">:</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">Any</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">instances</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="err">[]</span>
 
 <span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="nl">_seed</span><span class="p">:</span><span class="w"> </span><span class="nc">int</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span>
 
@@ -1083,15 +1096,19 @@ at one model.</p>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="k">create</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, list[Any</span><span class="o">]</span><span class="err">]:</span>
 
-<span class="w">        </span><span class="ss">&quot;&quot;&quot;Generate and persist one instance per registered model.</span>
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Generate and persist all instances to an in-memory SQLite database.</span>
 
-<span class="ss">        Instances are created in FK dependency order (parents before children).</span>
+<span class="ss">        Raw instances passed to ``dataset()`` are persisted first (Phase 1)</span>
 
-<span class="ss">        FK columns are wired automatically by sampling randomly from the parent pool.</span>
+<span class="ss">        and added to the FK pool. Factories run second (Phase 2) and may</span>
+
+<span class="ss">        wire FKs to any pooled row, including seeded ones.</span>
 
 <span class="ss">        Returns:</span>
 
 <span class="ss">            Dict keyed by table name mapping to lists of persisted instances.</span>
+
+<span class="ss">            Seeded rows appear first within each table&#39;s list.</span>
 
 <span class="ss">        Raises:</span>
 
@@ -1101,31 +1118,25 @@ at one model.</p>
 
 <span class="ss">        &quot;&quot;&quot;</span>
 
-<span class="w">        </span><span class="k">from</span><span class="w"> </span><span class="p">.</span><span class="n">_builder</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="n">FactoryBuilder</span>
-
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_seed</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
 
 <span class="w">            </span><span class="n">_seed_random</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">_seed</span><span class="p">)</span>
 
-<span class="w">        </span><span class="n">builders</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span>
+<span class="w">        </span><span class="n">seeded_models</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="n">type</span><span class="p">(</span><span class="n">inst</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">inst</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_instances</span><span class="err">}</span>
 
-<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">mapper</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_base</span><span class="p">.</span><span class="n">registry</span><span class="p">.</span><span class="nl">mappers</span><span class="p">:</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">ty</span><span class="p">:</span><span class="w"> </span><span class="k">ignore</span><span class="o">[</span><span class="n">unresolved-attribute</span><span class="o">]</span>
+<span class="w">        </span><span class="n">ordered</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_topo_sort</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">_collect_builders</span><span class="p">(</span><span class="n">seeded_models</span><span class="p">))</span>
 
-<span class="w">            </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mapper</span><span class="p">.</span><span class="n">class_</span>
+<span class="w">        </span><span class="n">all_models</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="n">b</span><span class="p">.</span><span class="n">model</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">ordered</span><span class="err">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">seeded_models</span>
 
-<span class="w">            </span><span class="n">builders</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">_overrides</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)))</span>
+<span class="w">        </span><span class="k">session</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">build_session</span><span class="p">(</span><span class="n">all_models</span><span class="p">)</span>
 
-<span class="w">        </span><span class="n">ordered</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_topo_sort</span><span class="p">(</span><span class="n">builders</span><span class="p">)</span>
-
-<span class="w">        </span><span class="n">models</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="n">b</span><span class="p">.</span><span class="n">model</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">ordered</span><span class="err">}</span>
-
-<span class="w">        </span><span class="k">session</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">build_session</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
-
-<span class="w">        </span><span class="n">factories</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="nl">m</span><span class="p">:</span><span class="w"> </span><span class="n">make_factory</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="k">session</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">models</span><span class="err">}</span>
+<span class="w">        </span><span class="n">factories</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="nl">m</span><span class="p">:</span><span class="w"> </span><span class="n">make_factory</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="k">session</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="err">{</span><span class="n">b</span><span class="p">.</span><span class="n">model</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">ordered</span><span class="err">}}</span>
 
 <span class="w">        </span><span class="nl">pool</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">type, list[Any</span><span class="o">]</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
 
 <span class="w">        </span><span class="k">result</span><span class="err">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, list[Any</span><span class="o">]</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_seed_phase</span><span class="p">(</span><span class="k">session</span><span class="p">,</span><span class="w"> </span><span class="n">pool</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">)</span>
 
 <span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">ordered</span><span class="p">:</span>
 
@@ -1133,55 +1144,113 @@ at one model.</p>
 
 <span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">range</span><span class="p">(</span><span class="n">builder</span><span class="p">.</span><span class="n">_resolve_count</span><span class="p">())</span><span class="err">:</span>
 
-<span class="w">                </span><span class="nl">fk_overrides</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, Any</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
-
-<span class="w">                </span><span class="k">for</span><span class="w"> </span><span class="n">rel</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">__mapper__</span><span class="p">.</span><span class="nl">relationships</span><span class="p">:</span>
-
-<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="n">rel</span><span class="p">.</span><span class="n">direction</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nl">MANYTOONE</span><span class="p">:</span>
-
-<span class="w">                        </span><span class="k">continue</span>
-
-<span class="w">                    </span><span class="n">related</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rel</span><span class="p">.</span><span class="n">mapper</span><span class="p">.</span><span class="n">class_</span>
-
-<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="n">related</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">pool</span><span class="p">:</span>
-
-<span class="w">                        </span><span class="k">continue</span>
-
-<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">pool</span><span class="o">[</span><span class="n">related</span><span class="o">]</span><span class="err">:</span>
-
-<span class="w">                        </span><span class="n">model_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">__name__</span>
-
-<span class="w">                        </span><span class="n">related_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">related</span><span class="p">.</span><span class="n">__name__</span>
-
-<span class="w">                        </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span>
-
-<span class="w">                            </span><span class="n">f</span><span class="ss">&quot;Cannot wire {model_name}.{rel.key}: &quot;</span>
-
-<span class="w">                            </span><span class="n">f</span><span class="ss">&quot;{related_name} has 0 instances in the dataset. &quot;</span>
-
-<span class="w">                            </span><span class="n">f</span><span class="ss">&quot;Use {related_name}.factory(0) only for models &quot;</span>
-
-<span class="w">                            </span><span class="n">f</span><span class="ss">&quot;with no FK dependents.&quot;</span>
-
-<span class="w">                        </span><span class="p">)</span>
-
-<span class="w">                        </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-<span class="w">                    </span><span class="n">fk_overrides</span><span class="o">[</span><span class="n">rel.key</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">random</span><span class="p">.</span><span class="n">choice</span><span class="p">(</span><span class="n">pool</span><span class="o">[</span><span class="n">related</span><span class="o">]</span><span class="p">)</span>
-
 <span class="w">                </span><span class="n">inst_overrides</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_resolve_variant</span><span class="p">(</span><span class="n">builder</span><span class="p">)</span>
 
-<span class="w">                </span><span class="n">inst_overrides</span><span class="p">.</span><span class="k">update</span><span class="p">(</span><span class="n">fk_overrides</span><span class="p">)</span>
+<span class="w">                </span><span class="n">inst_overrides</span><span class="p">.</span><span class="k">update</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">_build_fk_overrides</span><span class="p">(</span><span class="n">builder</span><span class="p">,</span><span class="w"> </span><span class="n">pool</span><span class="p">))</span>
 
-<span class="w">                </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">factories</span><span class="o">[</span><span class="n">builder.model</span><span class="o">]</span><span class="p">(</span><span class="o">**</span><span class="n">inst_overrides</span><span class="p">)</span>
-
-<span class="w">                </span><span class="n">instances</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+<span class="w">                </span><span class="n">instances</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">factories</span><span class="o">[</span><span class="n">builder.model</span><span class="o">]</span><span class="p">(</span><span class="o">**</span><span class="n">inst_overrides</span><span class="p">))</span>
 
 <span class="w">            </span><span class="n">pool</span><span class="o">[</span><span class="n">builder.model</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">instances</span>
 
-<span class="w">            </span><span class="k">result</span><span class="o">[</span><span class="n">builder.model.__tablename__</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">instances</span>
+<span class="w">            </span><span class="n">tablename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">__tablename__</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">tablename</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">result</span><span class="err">:</span>
+
+<span class="w">                </span><span class="k">result</span><span class="o">[</span><span class="n">tablename</span><span class="o">]</span><span class="p">.</span><span class="n">extend</span><span class="p">(</span><span class="n">instances</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">else</span><span class="err">:</span>
+
+<span class="w">                </span><span class="k">result</span><span class="o">[</span><span class="n">tablename</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">instances</span>
 
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">result</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_collect_builders</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">seeded_models</span><span class="p">:</span><span class="w"> </span><span class="k">set</span><span class="o">[</span><span class="n">type</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">Any</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">        </span><span class="k">from</span><span class="w"> </span><span class="p">.</span><span class="n">_builder</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="n">FactoryBuilder</span>
+
+<span class="w">        </span><span class="n">builders</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">mapper</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_base</span><span class="p">.</span><span class="n">registry</span><span class="p">.</span><span class="nl">mappers</span><span class="p">:</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">ty</span><span class="p">:</span><span class="w"> </span><span class="k">ignore</span><span class="o">[</span><span class="n">unresolved-attribute</span><span class="o">]</span>
+
+<span class="w">            </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mapper</span><span class="p">.</span><span class="n">class_</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">_overrides</span><span class="p">:</span>
+
+<span class="w">                </span><span class="n">builders</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">_overrides</span><span class="o">[</span><span class="n">model</span><span class="o">]</span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">elif</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">seeded_models</span><span class="p">:</span>
+
+<span class="w">                </span><span class="n">builders</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">FactoryBuilder</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">builders</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_seed_phase</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">,</span>
+
+<span class="w">        </span><span class="k">session</span><span class="err">:</span><span class="w"> </span><span class="ow">Any</span><span class="p">,</span>
+
+<span class="w">        </span><span class="nl">pool</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">type, list[Any</span><span class="o">]</span><span class="err">]</span><span class="p">,</span>
+
+<span class="w">        </span><span class="k">result</span><span class="err">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, list[Any</span><span class="o">]</span><span class="err">]</span><span class="p">,</span>
+
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">inst</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">_instances</span><span class="p">:</span>
+
+<span class="w">            </span><span class="k">session</span><span class="p">.</span><span class="k">add</span><span class="p">(</span><span class="n">inst</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">_instances</span><span class="p">:</span>
+
+<span class="w">            </span><span class="k">session</span><span class="p">.</span><span class="k">commit</span><span class="p">()</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">inst</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">_instances</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">model_cls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">type</span><span class="p">(</span><span class="n">inst</span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">pool</span><span class="p">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">model_cls</span><span class="p">,</span><span class="w"> </span><span class="err">[]</span><span class="p">).</span><span class="n">append</span><span class="p">(</span><span class="n">inst</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">result</span><span class="p">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">model_cls</span><span class="p">.</span><span class="n">__tablename__</span><span class="p">,</span><span class="w"> </span><span class="err">[]</span><span class="p">).</span><span class="n">append</span><span class="p">(</span><span class="n">inst</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_build_fk_overrides</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">builder</span><span class="p">:</span><span class="w"> </span><span class="ow">Any</span><span class="p">,</span><span class="w"> </span><span class="nl">pool</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">type, list[Any</span><span class="o">]</span><span class="err">]</span>
+
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, Any</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">        </span><span class="nl">fk_overrides</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, Any</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">rel</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">__mapper__</span><span class="p">.</span><span class="nl">relationships</span><span class="p">:</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">ty</span><span class="p">:</span><span class="w"> </span><span class="k">ignore</span><span class="o">[</span><span class="n">unresolved-attribute</span><span class="o">]</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">rel</span><span class="p">.</span><span class="n">direction</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nl">MANYTOONE</span><span class="p">:</span>
+
+<span class="w">                </span><span class="k">continue</span>
+
+<span class="w">            </span><span class="n">related</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rel</span><span class="p">.</span><span class="n">mapper</span><span class="p">.</span><span class="n">class_</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">related</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">pool</span><span class="p">:</span>
+
+<span class="w">                </span><span class="k">continue</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">pool</span><span class="o">[</span><span class="n">related</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">                </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span>
+
+<span class="w">                    </span><span class="n">f</span><span class="ss">&quot;Cannot wire {builder.model.__name__}.{rel.key}: &quot;</span>
+
+<span class="w">                    </span><span class="n">f</span><span class="ss">&quot;{related.__name__} has 0 instances in the dataset. &quot;</span>
+
+<span class="w">                    </span><span class="n">f</span><span class="ss">&quot;Use {related.__name__}.factory(0) only for models &quot;</span>
+
+<span class="w">                    </span><span class="n">f</span><span class="ss">&quot;with no FK dependents.&quot;</span>
+
+<span class="w">                </span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">fk_overrides</span><span class="o">[</span><span class="n">rel.key</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">random</span><span class="p">.</span><span class="n">choice</span><span class="p">(</span><span class="n">pool</span><span class="o">[</span><span class="n">related</span><span class="o">]</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">fk_overrides</span>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_topo_sort</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">builders</span><span class="p">:</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">Any</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">Any</span><span class="o">]</span><span class="err">:</span>
 
@@ -1205,9 +1274,10 @@ at one model.</p>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;dict[str, list[Any]]&#39;</span>
 </code></pre></div>
 
-<p>Generate and persist one instance per registered model.</p>
-<p>Instances are created in FK dependency order (parents before children).
-FK columns are wired automatically by sampling randomly from the parent pool.</p>
+<p>Generate and persist all instances to an in-memory SQLite database.</p>
+<p>Raw instances passed to <code>dataset()</code> are persisted first (Phase 1)
+and added to the FK pool. Factories run second (Phase 2) and may
+wire FKs to any pooled row, including seeded ones.</p>
 <p><strong>Returns:</strong></p>
 <table>
 <thead>
@@ -1219,7 +1289,7 @@ FK columns are wired automatically by sampling randomly from the parent pool.</p
 <tbody>
 <tr>
 <td>None</td>
-<td>Dict keyed by table name mapping to lists of persisted instances.</td>
+<td>Dict keyed by table name mapping to lists of persisted instances.<br>Seeded rows appear first within each table's list.</td>
 </tr>
 </tbody>
 </table>
@@ -1240,107 +1310,75 @@ FK columns are wired automatically by sampling randomly from the parent pool.</p
 </table>
 <details class="example">
 <summary>View Source</summary>
-<div class="codehilite"><pre><span></span><code>    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="k">create</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, list[Any</span><span class="o">]</span><span class="err">]:</span>
 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate and persist one instance per registered model.</span>
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Generate and persist all instances to an in-memory SQLite database.</span>
 
-<span class="sd">        Instances are created in FK dependency order (parents before children).</span>
+<span class="ss">        Raw instances passed to ``dataset()`` are persisted first (Phase 1)</span>
 
-<span class="sd">        FK columns are wired automatically by sampling randomly from the parent pool.</span>
+<span class="ss">        and added to the FK pool. Factories run second (Phase 2) and may</span>
 
-<span class="sd">        Returns:</span>
+<span class="ss">        wire FKs to any pooled row, including seeded ones.</span>
 
-<span class="sd">            Dict keyed by table name mapping to lists of persisted instances.</span>
+<span class="ss">        Returns:</span>
 
-<span class="sd">        Raises:</span>
+<span class="ss">            Dict keyed by table name mapping to lists of persisted instances.</span>
 
-<span class="sd">            ValueError: If a parent model has 0 instances but a child model</span>
+<span class="ss">            Seeded rows appear first within each table&#39;s list.</span>
 
-<span class="sd">                has an FK pointing to it.</span>
+<span class="ss">        Raises:</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="ss">            ValueError: If a parent model has 0 instances but a child model</span>
 
-        <span class="kn">from</span><span class="w"> </span><span class="nn">._builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">FactoryBuilder</span>
+<span class="ss">                has an FK pointing to it.</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="ss">        &quot;&quot;&quot;</span>
 
-            <span class="n">_seed_random</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_seed</span><span class="p">)</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_seed</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
 
-        <span class="n">builders</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="w">            </span><span class="n">_seed_random</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">_seed</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">mapper</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">mappers</span><span class="p">:</span>  <span class="c1"># ty: ignore[unresolved-attribute]</span>
+<span class="w">        </span><span class="n">seeded_models</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="n">type</span><span class="p">(</span><span class="n">inst</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">inst</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_instances</span><span class="err">}</span>
 
-            <span class="n">model</span> <span class="o">=</span> <span class="n">mapper</span><span class="o">.</span><span class="n">class_</span>
+<span class="w">        </span><span class="n">ordered</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_topo_sort</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">_collect_builders</span><span class="p">(</span><span class="n">seeded_models</span><span class="p">))</span>
 
-            <span class="n">builders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">FactoryBuilder</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+<span class="w">        </span><span class="n">all_models</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="n">b</span><span class="p">.</span><span class="n">model</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">ordered</span><span class="err">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">seeded_models</span>
 
-        <span class="n">ordered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_topo_sort</span><span class="p">(</span><span class="n">builders</span><span class="p">)</span>
+<span class="w">        </span><span class="k">session</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">build_session</span><span class="p">(</span><span class="n">all_models</span><span class="p">)</span>
 
-        <span class="n">models</span> <span class="o">=</span> <span class="p">{</span><span class="n">b</span><span class="o">.</span><span class="n">model</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">ordered</span><span class="p">}</span>
+<span class="w">        </span><span class="n">factories</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="nl">m</span><span class="p">:</span><span class="w"> </span><span class="n">make_factory</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="k">session</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="err">{</span><span class="n">b</span><span class="p">.</span><span class="n">model</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">ordered</span><span class="err">}}</span>
 
-        <span class="n">session</span> <span class="o">=</span> <span class="n">build_session</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
+<span class="w">        </span><span class="nl">pool</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">type, list[Any</span><span class="o">]</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
 
-        <span class="n">factories</span> <span class="o">=</span> <span class="p">{</span><span class="n">m</span><span class="p">:</span> <span class="n">make_factory</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">session</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">models</span><span class="p">}</span>
+<span class="w">        </span><span class="k">result</span><span class="err">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, list[Any</span><span class="o">]</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
 
-        <span class="n">pool</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_seed_phase</span><span class="p">(</span><span class="k">session</span><span class="p">,</span><span class="w"> </span><span class="n">pool</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">)</span>
 
-        <span class="n">result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">ordered</span><span class="p">:</span>
 
-        <span class="k">for</span> <span class="n">builder</span> <span class="ow">in</span> <span class="n">ordered</span><span class="p">:</span>
+<span class="w">            </span><span class="nl">instances</span><span class="p">:</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">Any</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span>
 
-            <span class="n">instances</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">range</span><span class="p">(</span><span class="n">builder</span><span class="p">.</span><span class="n">_resolve_count</span><span class="p">())</span><span class="err">:</span>
 
-            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">builder</span><span class="o">.</span><span class="n">_resolve_count</span><span class="p">()):</span>
+<span class="w">                </span><span class="n">inst_overrides</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_resolve_variant</span><span class="p">(</span><span class="n">builder</span><span class="p">)</span>
 
-                <span class="n">fk_overrides</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="w">                </span><span class="n">inst_overrides</span><span class="p">.</span><span class="k">update</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">_build_fk_overrides</span><span class="p">(</span><span class="n">builder</span><span class="p">,</span><span class="w"> </span><span class="n">pool</span><span class="p">))</span>
 
-                <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">builder</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">__mapper__</span><span class="o">.</span><span class="n">relationships</span><span class="p">:</span>
+<span class="w">                </span><span class="n">instances</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">factories</span><span class="o">[</span><span class="n">builder.model</span><span class="o">]</span><span class="p">(</span><span class="o">**</span><span class="n">inst_overrides</span><span class="p">))</span>
 
-                    <span class="k">if</span> <span class="n">rel</span><span class="o">.</span><span class="n">direction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">MANYTOONE</span><span class="p">:</span>
+<span class="w">            </span><span class="n">pool</span><span class="o">[</span><span class="n">builder.model</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">instances</span>
 
-                        <span class="k">continue</span>
+<span class="w">            </span><span class="n">tablename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">__tablename__</span>
 
-                    <span class="n">related</span> <span class="o">=</span> <span class="n">rel</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">class_</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">tablename</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">result</span><span class="err">:</span>
 
-                    <span class="k">if</span> <span class="n">related</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pool</span><span class="p">:</span>
+<span class="w">                </span><span class="k">result</span><span class="o">[</span><span class="n">tablename</span><span class="o">]</span><span class="p">.</span><span class="n">extend</span><span class="p">(</span><span class="n">instances</span><span class="p">)</span>
 
-                        <span class="k">continue</span>
+<span class="w">            </span><span class="k">else</span><span class="err">:</span>
 
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">pool</span><span class="p">[</span><span class="n">related</span><span class="p">]:</span>
+<span class="w">                </span><span class="k">result</span><span class="o">[</span><span class="n">tablename</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">instances</span>
 
-                        <span class="n">model_name</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="vm">__name__</span>
-
-                        <span class="n">related_name</span> <span class="o">=</span> <span class="n">related</span><span class="o">.</span><span class="vm">__name__</span>
-
-                        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-
-                            <span class="sa">f</span><span class="s2">&quot;Cannot wire </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">rel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: &quot;</span>
-
-                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">related_name</span><span class="si">}</span><span class="s2"> has 0 instances in the dataset. &quot;</span>
-
-                            <span class="sa">f</span><span class="s2">&quot;Use </span><span class="si">{</span><span class="n">related_name</span><span class="si">}</span><span class="s2">.factory(0) only for models &quot;</span>
-
-                            <span class="sa">f</span><span class="s2">&quot;with no FK dependents.&quot;</span>
-
-                        <span class="p">)</span>
-
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-                    <span class="n">fk_overrides</span><span class="p">[</span><span class="n">rel</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">pool</span><span class="p">[</span><span class="n">related</span><span class="p">])</span>
-
-                <span class="n">inst_overrides</span> <span class="o">=</span> <span class="n">_resolve_variant</span><span class="p">(</span><span class="n">builder</span><span class="p">)</span>
-
-                <span class="n">inst_overrides</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">fk_overrides</span><span class="p">)</span>
-
-                <span class="n">instance</span> <span class="o">=</span> <span class="n">factories</span><span class="p">[</span><span class="n">builder</span><span class="o">.</span><span class="n">model</span><span class="p">](</span><span class="o">**</span><span class="n">inst_overrides</span><span class="p">)</span>
-
-                <span class="n">instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
-
-            <span class="n">pool</span><span class="p">[</span><span class="n">builder</span><span class="o">.</span><span class="n">model</span><span class="p">]</span> <span class="o">=</span> <span class="n">instances</span>
-
-            <span class="n">result</span><span class="p">[</span><span class="n">builder</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">]</span> <span class="o">=</span> <span class="n">instances</span>
-
-        <span class="k">return</span> <span class="n">result</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">result</span>
 </code></pre></div>
 
 </details>
@@ -2201,17 +2239,17 @@ then call <code>.create()</code> to generate and persist to an in-memory databas
 
 <span class="w">    </span><span class="nv">@classmethod</span>
 
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">dataset</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">builders</span><span class="o">:</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Dataset</span><span class="o">:</span>
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">dataset</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">args</span><span class="o">:</span><span class="w"> </span><span class="k">Any</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Dataset</span><span class="o">:</span>
 
-<span class="w">        </span><span class="s2">&quot;</span><span class="se">&quot;&quot;</span><span class="s2">Return a Dataset generating one row per registered model.</span>
+<span class="w">        </span><span class="s2">&quot;</span><span class="se">&quot;&quot;</span><span class="s2">Return a Dataset generating rows for all registered models.</span>
 
 <span class="s2">        Args:</span>
 
-<span class="s2">            *builders: Optional ``FactoryBuilder`` overrides for specific</span>
+<span class="s2">            *args: Any mix of ``FactoryBuilder`` overrides and raw model</span>
 
-<span class="s2">                models. Models without an override get one instance using</span>
+<span class="s2">                instances. Instances are persisted first as reference data</span>
 
-<span class="s2">                their default generators.</span>
+<span class="s2">                and made available as FK targets for all factories.</span>
 
 <span class="s2">        Returns:</span>
 
@@ -2221,15 +2259,17 @@ then call <code>.create()</code> to generate and persist to an in-memory databas
 
 <span class="s2">        Raises:</span>
 
-<span class="s2">            TypeError: If any argument is not a ``FactoryBuilder``.</span>
+<span class="s2">            TypeError: If any argument is not a ``FactoryBuilder`` or an</span>
+
+<span class="s2">                instance of a model registered to this Base.</span>
 
 <span class="s2">            ValueError: If a builder&#39;s model is not registered to this Base.</span>
 
 <span class="s2">        Example:</span>
 
-<span class="s2">            &gt;&gt;&gt; # result = Base.dataset(User.factory(10)).create()</span>
+<span class="s2">            &gt;&gt;&gt; # roles = [Role(name=&quot;</span><span class="k">user</span><span class="s2">&quot;), Role(name=&quot;</span><span class="k">admin</span><span class="s2">&quot;)]</span>
 
-<span class="s2">            &gt;&gt;&gt; # result[&quot;</span><span class="n">users</span><span class="s2">&quot;]  # -&gt; list of 10 User instances</span>
+<span class="s2">            &gt;&gt;&gt; # result = Base.dataset(*roles, User.factory(10)).create()</span>
 
 <span class="s2">        </span><span class="se">&quot;&quot;</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># doctest: +SKIP</span>
 
@@ -2239,23 +2279,41 @@ then call <code>.create()</code> to generate and persist to an in-memory databas
 
 <span class="w">        </span><span class="n">base_models</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="n">mapper</span><span class="p">.</span><span class="n">class_</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">mapper</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">registry</span><span class="p">.</span><span class="n">mappers</span><span class="err">}</span><span class="w">  </span><span class="c1"># ty: ignore[unresolved-attribute]</span>
 
-<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">builders</span><span class="o">:</span>
+<span class="w">        </span><span class="n">builders</span><span class="o">:</span><span class="w"> </span><span class="k">list</span><span class="err">[</span><span class="n">FactoryBuilder</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span>
 
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">isinstance</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="p">)</span><span class="o">:</span>
+<span class="w">        </span><span class="n">instances</span><span class="o">:</span><span class="w"> </span><span class="k">list</span><span class="err">[</span><span class="k">Any</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span>
 
-<span class="w">                </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="s2">&quot;Expected a FactoryBuilder, got {type(b).__name__}&quot;</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">arg</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">args</span><span class="o">:</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span><span class="w"> </span><span class="n">FactoryBuilder</span><span class="p">)</span><span class="o">:</span>
+
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">arg</span><span class="p">.</span><span class="n">model</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">base_models</span><span class="o">:</span>
+
+<span class="w">                    </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="s2">&quot;{arg.model.__name__} is not registered to this Base.&quot;</span>
+
+<span class="w">                    </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">builders</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">elif</span><span class="w"> </span><span class="k">type</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">base_models</span><span class="o">:</span>
+
+<span class="w">                </span><span class="n">instances</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">else</span><span class="o">:</span>
+
+<span class="w">                </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span>
+
+<span class="w">                    </span><span class="n">f</span><span class="s2">&quot;Expected a FactoryBuilder or registered model instance, &quot;</span>
+
+<span class="w">                    </span><span class="n">f</span><span class="s2">&quot;got {type(arg).__name__}&quot;</span>
+
+<span class="w">                </span><span class="p">)</span>
 
 <span class="w">                </span><span class="n">raise</span><span class="w"> </span><span class="n">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">model</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">base_models</span><span class="o">:</span>
-
-<span class="w">                </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="s2">&quot;{b.model.__name__} is not registered to this Base.&quot;</span>
-
-<span class="w">                </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
 <span class="w">        </span><span class="n">overrides</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="n">b</span><span class="p">.</span><span class="n">model</span><span class="o">:</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">builders</span><span class="err">}</span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Dataset</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="w"> </span><span class="n">overrides</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Dataset</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="w"> </span><span class="n">overrides</span><span class="p">,</span><span class="w"> </span><span class="n">instances</span><span class="p">)</span>
 </code></pre></div>
 
 </details>
@@ -2263,11 +2321,11 @@ then call <code>.create()</code> to generate and persist to an in-memory databas
 <h4 id="static-methods">Static methods</h4>
 <h4 id="dataset_1">dataset</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">dataset</span><span class="p">(</span>
-    <span class="o">*</span><span class="n">builders</span><span class="p">:</span> <span class="s1">&#39;FactoryBuilder&#39;</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Dataset&#39;</span>
 </code></pre></div>
 
-<p>Return a Dataset generating one row per registered model.</p>
+<p>Return a Dataset generating rows for all registered models.</p>
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
@@ -2280,9 +2338,9 @@ then call <code>.create()</code> to generate and persist to an in-memory databas
 </thead>
 <tbody>
 <tr>
-<td>*builders</td>
+<td>*args</td>
 <td>None</td>
-<td>Optional <code>FactoryBuilder</code> overrides for specific<br>models. Models without an override get one instance using<br>their default generators.</td>
+<td>Any mix of <code>FactoryBuilder</code> overrides and raw model<br>instances. Instances are persisted first as reference data<br>and made available as FK targets for all factories.</td>
 <td>None</td>
 </tr>
 </tbody>
@@ -2313,7 +2371,7 @@ then call <code>.create()</code> to generate and persist to an in-memory databas
 <tbody>
 <tr>
 <td>TypeError</td>
-<td>If any argument is not a <code>FactoryBuilder</code>.</td>
+<td>If any argument is not a <code>FactoryBuilder</code> or an<br>instance of a model registered to this Base.</td>
 </tr>
 <tr>
 <td>ValueError</td>
@@ -2325,17 +2383,17 @@ then call <code>.create()</code> to generate and persist to an in-memory databas
 <summary>View Source</summary>
 <div class="codehilite"><pre><span></span><code>    <span class="nd">@classmethod</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">dataset</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">builders</span><span class="p">:</span> <span class="n">FactoryBuilder</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dataset</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dataset</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dataset</span><span class="p">:</span>
 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a Dataset generating one row per registered model.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a Dataset generating rows for all registered models.</span>
 
 <span class="sd">        Args:</span>
 
-<span class="sd">            *builders: Optional ``FactoryBuilder`` overrides for specific</span>
+<span class="sd">            *args: Any mix of ``FactoryBuilder`` overrides and raw model</span>
 
-<span class="sd">                models. Models without an override get one instance using</span>
+<span class="sd">                instances. Instances are persisted first as reference data</span>
 
-<span class="sd">                their default generators.</span>
+<span class="sd">                and made available as FK targets for all factories.</span>
 
 <span class="sd">        Returns:</span>
 
@@ -2345,15 +2403,17 @@ then call <code>.create()</code> to generate and persist to an in-memory databas
 
 <span class="sd">        Raises:</span>
 
-<span class="sd">            TypeError: If any argument is not a ``FactoryBuilder``.</span>
+<span class="sd">            TypeError: If any argument is not a ``FactoryBuilder`` or an</span>
+
+<span class="sd">                instance of a model registered to this Base.</span>
 
 <span class="sd">            ValueError: If a builder&#39;s model is not registered to this Base.</span>
 
 <span class="sd">        Example:</span>
 
-<span class="sd">            &gt;&gt;&gt; # result = Base.dataset(User.factory(10)).create()</span>
+<span class="sd">            &gt;&gt;&gt; # roles = [Role(name=&quot;user&quot;), Role(name=&quot;admin&quot;)]</span>
 
-<span class="sd">            &gt;&gt;&gt; # result[&quot;users&quot;]  # -&gt; list of 10 User instances</span>
+<span class="sd">            &gt;&gt;&gt; # result = Base.dataset(*roles, User.factory(10)).create()</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># doctest: +SKIP</span>
 
@@ -2363,23 +2423,41 @@ then call <code>.create()</code> to generate and persist to an in-memory databas
 
         <span class="n">base_models</span> <span class="o">=</span> <span class="p">{</span><span class="n">mapper</span><span class="o">.</span><span class="n">class_</span> <span class="k">for</span> <span class="n">mapper</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">mappers</span><span class="p">}</span>  <span class="c1"># ty: ignore[unresolved-attribute]</span>
 
-        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">builders</span><span class="p">:</span>
+        <span class="n">builders</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">FactoryBuilder</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">FactoryBuilder</span><span class="p">):</span>
+        <span class="n">instances</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Expected a FactoryBuilder, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">FactoryBuilder</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">model</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">base_models</span><span class="p">:</span>
+
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">arg</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is not registered to this Base.&quot;</span>
+
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+                <span class="n">builders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="ow">in</span> <span class="n">base_models</span><span class="p">:</span>
+
+                <span class="n">instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+
+                    <span class="sa">f</span><span class="s2">&quot;Expected a FactoryBuilder or registered model instance, &quot;</span>
+
+                    <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+
+                <span class="p">)</span>
 
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">model</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">base_models</span><span class="p">:</span>
-
-                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is not registered to this Base.&quot;</span>
-
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
         <span class="n">overrides</span> <span class="o">=</span> <span class="p">{</span><span class="n">b</span><span class="o">.</span><span class="n">model</span><span class="p">:</span> <span class="n">b</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">builders</span><span class="p">}</span>
 
-        <span class="k">return</span> <span class="n">Dataset</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">overrides</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Dataset</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">overrides</span><span class="p">,</span> <span class="n">instances</span><span class="p">)</span>
 </code></pre></div>
 
 </details>
