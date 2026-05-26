@@ -113,39 +113,51 @@ class TableSpecMixin:
         return FactoryBuilder(cls, count, max_count)
 
     @classmethod
-    def dataset(cls, *builders: FactoryBuilder) -> Dataset:
-        """Return a Dataset generating one row per registered model.
+    def dataset(cls, *args: Any) -> Dataset:
+        """Return a Dataset generating rows for all registered models.
 
         Args:
-            *builders: Optional ``FactoryBuilder`` overrides for specific
-                models. Models without an override get one instance using
-                their default generators.
+            *args: Any mix of ``FactoryBuilder`` overrides and raw model
+                instances. Instances are persisted first as reference data
+                and made available as FK targets for all factories.
 
         Returns:
             A ``Dataset`` whose ``.create()`` returns a dict keyed by table
             name, values are lists of persisted model instances.
 
         Raises:
-            TypeError: If any argument is not a ``FactoryBuilder``.
+            TypeError: If any argument is not a ``FactoryBuilder`` or an
+                instance of a model registered to this Base.
             ValueError: If a builder's model is not registered to this Base.
 
         Example:
-            >>> # result = Base.dataset(User.factory(10)).create()
-            >>> # result["users"]  # -> list of 10 User instances
+            >>> # roles = [Role(name="user"), Role(name="admin")]
+            >>> # result = Base.dataset(*roles, User.factory(10)).create()
         """  # doctest: +SKIP
         from ._builder import FactoryBuilder
         from ._dataset import Dataset
 
         base_models = {mapper.class_ for mapper in cls.registry.mappers}  # ty: ignore[unresolved-attribute]
-        for b in builders:
-            if not isinstance(b, FactoryBuilder):
-                msg = f"Expected a FactoryBuilder, got {type(b).__name__}"
+        builders: list[FactoryBuilder] = []
+        instances: list[Any] = []
+
+        for arg in args:
+            if isinstance(arg, FactoryBuilder):
+                if arg.model not in base_models:
+                    msg = f"{arg.model.__name__} is not registered to this Base."
+                    raise ValueError(msg)
+                builders.append(arg)
+            elif type(arg) in base_models:
+                instances.append(arg)
+            else:
+                msg = (
+                    f"Expected a FactoryBuilder or registered model instance, "
+                    f"got {type(arg).__name__}"
+                )
                 raise TypeError(msg)
-            if b.model not in base_models:
-                msg = f"{b.model.__name__} is not registered to this Base."
-                raise ValueError(msg)
+
         overrides = {b.model: b for b in builders}
-        return Dataset(cls, overrides)
+        return Dataset(cls, overrides, instances)
 
 
 def declarative_base(
