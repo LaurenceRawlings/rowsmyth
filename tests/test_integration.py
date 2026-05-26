@@ -78,7 +78,7 @@ def test_factory_deep_nesting_fk_wired(User, Order, OrderItem):
 
 def test_minimal_dataset_one_of_each(Base):
     data = Base.dataset().random_seed(1).create()
-    assert set(data.keys()) == {"users", "orders", "order_items"}
+    assert set(data.keys()) == {"roles", "users", "orders", "order_items"}
     assert all(len(rows) == 1 for rows in data.values())
     assert data["orders"][0].user_id == data["users"][0].id
 

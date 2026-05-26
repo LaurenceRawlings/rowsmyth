@@ -28,9 +28,15 @@ class Dataset:
         >>> # result["orders"]  # -> 10 Order instances
     """  # doctest: +SKIP
 
-    def __init__(self, base: type, overrides: dict[type, Any] | None = None) -> None:
+    def __init__(
+        self,
+        base: type,
+        overrides: dict[type, Any] | None = None,
+        instances: list[Any] | None = None,
+    ) -> None:
         self._base = base
         self._overrides: dict[type, Any] = overrides or {}
+        self._instances: list[Any] = instances or []
         self._seed: int | None = None
 
     def random_seed(self, value: int) -> Dataset:
@@ -46,68 +52,97 @@ class Dataset:
         return self
 
     def create(self) -> dict[str, list[Any]]:
-        """Generate and persist one instance per registered model.
+        """Generate and persist all instances to an in-memory SQLite database.
 
-        Instances are created in FK dependency order (parents before children).
-        FK columns are wired automatically by sampling randomly from the parent pool.
+        Raw instances passed to ``dataset()`` are persisted first (Phase 1)
+        and added to the FK pool. Factories run second (Phase 2) and may
+        wire FKs to any pooled row, including seeded ones.
 
         Returns:
             Dict keyed by table name mapping to lists of persisted instances.
+            Seeded rows appear first within each table's list.
 
         Raises:
             ValueError: If a parent model has 0 instances but a child model
                 has an FK pointing to it.
         """
-        from ._builder import FactoryBuilder
-
         if self._seed is not None:
             _seed_random(self._seed)
 
-        builders = []
-        for mapper in self._base.registry.mappers:  # ty: ignore[unresolved-attribute]
-            model = mapper.class_
-            builders.append(self._overrides.get(model, FactoryBuilder(model, 1)))
-
-        ordered = self._topo_sort(builders)
-        models = {b.model for b in ordered}
-        session = build_session(models)
-        factories = {m: make_factory(m, session) for m in models}
+        seeded_models = {type(inst) for inst in self._instances}
+        ordered = self._topo_sort(self._collect_builders(seeded_models))
+        all_models = {b.model for b in ordered} | seeded_models
+        session = build_session(all_models)
+        factories = {m: make_factory(m, session) for m in {b.model for b in ordered}}
 
         pool: dict[type, list[Any]] = {}
         result: dict[str, list[Any]] = {}
 
+        self._seed_phase(session, pool, result)
+
         for builder in ordered:
             instances: list[Any] = []
             for _ in range(builder._resolve_count()):
-                fk_overrides: dict[str, Any] = {}
-                for rel in builder.model.__mapper__.relationships:
-                    if rel.direction is not MANYTOONE:
-                        continue
-                    related = rel.mapper.class_
-                    if related not in pool:
-                        continue
-                    if not pool[related]:
-                        model_name = builder.model.__name__
-                        related_name = related.__name__
-                        msg = (
-                            f"Cannot wire {model_name}.{rel.key}: "
-                            f"{related_name} has 0 instances in the dataset. "
-                            f"Use {related_name}.factory(0) only for models "
-                            f"with no FK dependents."
-                        )
-                        raise ValueError(msg)
-                    fk_overrides[rel.key] = random.choice(pool[related])
-
                 inst_overrides = _resolve_variant(builder)
-                inst_overrides.update(fk_overrides)
-
-                instance = factories[builder.model](**inst_overrides)
-                instances.append(instance)
+                inst_overrides.update(self._build_fk_overrides(builder, pool))
+                instances.append(factories[builder.model](**inst_overrides))
 
             pool[builder.model] = instances
-            result[builder.model.__tablename__] = instances
+            tablename = builder.model.__tablename__
+            if tablename in result:
+                result[tablename].extend(instances)
+            else:
+                result[tablename] = instances
 
         return result
+
+    def _collect_builders(self, seeded_models: set[type]) -> list[Any]:
+        from ._builder import FactoryBuilder
+
+        builders = []
+        for mapper in self._base.registry.mappers:  # ty: ignore[unresolved-attribute]
+            model = mapper.class_
+            if model in self._overrides:
+                builders.append(self._overrides[model])
+            elif model not in seeded_models:
+                builders.append(FactoryBuilder(model, 1))
+        return builders
+
+    def _seed_phase(
+        self,
+        session: Any,
+        pool: dict[type, list[Any]],
+        result: dict[str, list[Any]],
+    ) -> None:
+        for inst in self._instances:
+            session.add(inst)
+        if self._instances:
+            session.commit()
+        for inst in self._instances:
+            model_cls = type(inst)
+            pool.setdefault(model_cls, []).append(inst)
+            result.setdefault(model_cls.__tablename__, []).append(inst)
+
+    def _build_fk_overrides(
+        self, builder: Any, pool: dict[type, list[Any]]
+    ) -> dict[str, Any]:
+        fk_overrides: dict[str, Any] = {}
+        for rel in builder.model.__mapper__.relationships:  # ty: ignore[unresolved-attribute]
+            if rel.direction is not MANYTOONE:
+                continue
+            related = rel.mapper.class_
+            if related not in pool:
+                continue
+            if not pool[related]:
+                msg = (
+                    f"Cannot wire {builder.model.__name__}.{rel.key}: "
+                    f"{related.__name__} has 0 instances in the dataset. "
+                    f"Use {related.__name__}.factory(0) only for models "
+                    f"with no FK dependents."
+                )
+                raise ValueError(msg)
+            fk_overrides[rel.key] = random.choice(pool[related])
+        return fk_overrides
 
     def _topo_sort(self, builders: list[Any]) -> list[Any]:
         model_to_builder = {b.model: b for b in builders}

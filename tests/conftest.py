@@ -1,3 +1,5 @@
+from typing import Optional
+
 import factory
 import factory.fuzzy
 import pytest
@@ -22,6 +24,16 @@ class _Minimal(_MinimalBase):
 FullBase = declarative_base()
 
 
+class Role(FullBase):
+    __tablename__ = "roles"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String)
+
+    @classmethod
+    def generators(cls):
+        return {cls.name: factory.Faker("word")}
+
+
 class User(FullBase):
     __tablename__ = "users"
     __table_args__ = (
@@ -32,6 +44,8 @@ class User(FullBase):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String, comment="Full name", info={"pii": True})
     tier: Mapped[str] = mapped_column(String)
+    role_id: Mapped[int | None] = mapped_column(ForeignKey("roles.id"), nullable=True)
+    role: Mapped[Optional["Role"]] = relationship()
     orders: Mapped[list["Order"]] = relationship(back_populates="user")
 
     @classmethod
@@ -78,7 +92,7 @@ class OrderItem(FullBase):
 
 # Save references before fixture functions shadow the module-level names.
 _FullBase = FullBase
-_User, _Order, _OrderItem = User, Order, OrderItem
+_Role, _User, _Order, _OrderItem = Role, User, Order, OrderItem
 
 
 @pytest.fixture(scope="session")
@@ -109,3 +123,8 @@ def Order():
 @pytest.fixture(scope="session")
 def OrderItem():
     return _OrderItem
+
+
+@pytest.fixture(scope="session")
+def Role():
+    return _Role

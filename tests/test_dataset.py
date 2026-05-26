@@ -1,4 +1,5 @@
 import pytest
+from sqlalchemy.orm import Mapped, mapped_column
 
 
 def test_dataset_returns_dict_keyed_by_tablename(Base, User):
@@ -90,3 +91,76 @@ def test_dataset_skips_self_referential_relationship():
     assert "categories_selfref" in data
     assert len(data["categories_selfref"]) == 1
     assert data["categories_selfref"][0].parent_id is None
+
+
+def test_dataset_accepts_raw_instances(Base, Role):
+    roles = [Role(name="user"), Role(name="admin")]
+    data = Base.dataset(*roles).random_seed(1).create()
+    assert len(data["roles"]) == 2
+    assert {r.name for r in data["roles"]} == {"user", "admin"}
+
+
+def test_dataset_rejects_unregistered_instance(Base):
+    class Stranger:
+        pass
+
+    with pytest.raises(TypeError, match="registered model instance"):
+        Base.dataset(Stranger())
+
+
+def test_dataset_rejects_unregistered_instance_from_other_base():
+    from rowsmyth import declarative_base
+
+    OtherBase = declarative_base()
+
+    class Thing(OtherBase):
+        __tablename__ = "things_other"
+        id: Mapped[int] = mapped_column(primary_key=True)
+
+    MainBase = declarative_base()
+
+    class Widget(MainBase):
+        __tablename__ = "widgets_other"
+        id: Mapped[int] = mapped_column(primary_key=True)
+
+    with pytest.raises(TypeError, match="registered model instance"):
+        MainBase.dataset(Thing())
+
+
+def test_dataset_seeded_instances_wired_as_fk_targets(Base, Role, User):
+    roles = [Role(id=1, name="user"), Role(id=2, name="admin")]
+    data = (
+        Base
+        .dataset(
+            *roles,
+            User.factory(10),
+        )
+        .random_seed(42)
+        .create()
+    )
+    role_ids = {r.id for r in data["roles"]}
+    assert role_ids == {1, 2}
+    assert len(data["users"]) == 10
+    for user in data["users"]:
+        if user.role_id is not None:
+            assert user.role_id in role_ids
+
+
+def test_dataset_seeded_rows_appear_first_in_result(Base, Role, User):
+    roles = [Role(id=10, name="viewer")]
+    data = Base.dataset(*roles, User.factory(3)).random_seed(1).create()
+    assert data["roles"][0].name == "viewer"
+
+
+def test_dataset_seeded_model_gets_no_default_factory_row(Base, Role):
+    roles = [Role(id=20, name="only")]
+    data = Base.dataset(*roles).random_seed(1).create()
+    assert len(data["roles"]) == 1
+    assert data["roles"][0].name == "only"
+
+
+def test_dataset_seeded_and_factory_rows_merged(Base, Role):
+    roles = [Role(id=30, name="seeded")]
+    data = Base.dataset(*roles, Role.factory(2)).random_seed(1).create()
+    assert len(data["roles"]) == 3
+    assert data["roles"][0].name == "seeded"
