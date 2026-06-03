@@ -7,17 +7,32 @@ from chispa import assert_column_equality
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
-from rowsmyth import WrongDeclarativeBaseError, declarative_base
+from rowsmyth import (
+    CompoundPrimaryKeyError,
+    WrongDeclarativeBaseError,
+    declarative_base,
+)
 
 
 def test_fk_auto_creates_parent(spark: SparkSession, app_base, user_model) -> None:
     with app_base.dataset(spark, seed=10) as dataset:
         created = user_model.factory().count(2).create()
-        roles = dataset.dataframe("roles").count()
-        users = dataset.dataframe("users").count()
-    assert roles >= 1
-    assert users == 2
+        roles = dataset.dataframe("roles")
+        users = dataset.dataframe("users")
+    assert roles.count() == 2
+    assert users.count() == 2
     assert len(created) == 2
+    joined = (
+        users
+        .alias("u")
+        .join(
+            roles.alias("r"),
+            F.col("u.role_id") == F.col("r.id"),
+        )
+        .select(F.col("u.role_id"), F.col("r.id").alias("role_id_from_parent"))
+    )
+    assert joined.count() == users.count()
+    assert_column_equality(joined, "role_id", "role_id_from_parent")
 
 
 def test_has_injects_parent(
@@ -55,7 +70,7 @@ def test_compound_fk_factory_raises(
 ) -> None:
     with (
         app_base.dataset(spark, seed=12),
-        pytest.raises(TypeError, match="compound keys"),
+        pytest.raises(CompoundPrimaryKeyError, match="compound keys"),
     ):
         bad_compound_fk_model.factory().count(1).create()
 

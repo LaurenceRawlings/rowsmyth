@@ -131,7 +131,7 @@ class User(Base):
         return {"status": "suspended"}
 ```
 
-Activate with `.variant("churned")` in the factory chain. Passing an unknown name raises `KeyError`.
+Activate with `.variant("churned")` in the factory chain. Passing an unknown name raises `UnknownVariantError`.
 
 Merge order (later wins):
 1. `generator()`
@@ -158,12 +158,12 @@ User.factory()
 | Method | Description |
 |--------|-------------|
 | `count(n)` | Number of rows to generate (default: 1) |
-| `variant(name)` | Apply a named `@variant`; raises `KeyError` if unknown |
+| `variant(name)` | Apply a named `@variant`; raises `UnknownVariantError` if unknown |
 | `where(**kwargs)` | Column overrides; merged last, wins over `generator()` and `@variant`. Values may be scalars, `Factory` instances, deferred pool choices, or `callable(ctx) -> value` |
 | `has(child_factory, via=None)` | For each parent row, generate child rows and inject this parent. `via` names the injection slot (usually the FK column name) |
 | `create()` | Materialise all touched tables; register temp views; return a list of concrete root model objects |
 
-`.create()` must run inside a `Base.dataset(...)` block for the same declarative base, or it raises `RuntimeError`.
+`.create()` must run inside a `Base.dataset(...)` block for the same declarative base, or it raises `DatasetContextError`. Using a model from another base raises `WrongDeclarativeBaseError`.
 
 ### `Model.create()` for static rows
 
@@ -259,6 +259,8 @@ The object yielded by `with Base.dataset(...) as dataset`:
 | `dataset.registry` | `dict[str, type[Model]]` | Registry for the bound declarative base |
 | `dataset.dataframes` | `dict[str, DataFrame]` | DataFrames created in this dataset |
 | `dataset.dataframe(name)` | `DataFrame` | Checked lookup by table name |
+| `dataset.next_seq(name)` | `int` | Next value for a named sequence counter |
+| `dataset.pool(view, col)` | `Pool` | Distinct values from a Spark temp view column |
 | `dataset.faker` | `Faker` | Shared Faker instance |
 | `dataset.random` | `random.Random` | Seeded RNG |
 | `dataset.seed` | `int \| None` | Seed passed to `Base.dataset()` |
@@ -334,7 +336,7 @@ with Base.dataset(spark):
     orders = Order.factory().count(10).has(OrderItem.factory().count(3)).create()
 ```
 
-The column name is the injection slot. Requires a **single-column** primary key on the parent; raises `TypeError` for compound PKs (use `ctx.parent()` instead).
+The column name is the injection slot. Requires a **single-column** primary key on the parent; raises `CompoundPrimaryKeyError` for compound PKs (use `ctx.parent()` instead).
 
 ### Pattern 2 - `ctx.parent()` (compound or named FKs)
 
@@ -351,7 +353,7 @@ def generator(self, ctx):
 ```
 
 `order.key` - `dict` of PK columns
-`order.pk` - scalar value (single-column PK only; raises `ValueError` otherwise)
+`order.pk` - scalar value (single-column PK only; raises `CompoundPrimaryKeyError` otherwise)
 `order.attrs` - full row dict
 
 Slot defaults to `table.__table_name__`; pass `role="slot_name"` to disambiguate multiple parents of the same type.
@@ -372,7 +374,9 @@ with Base.dataset(spark):
 
 `pool.choice()` - a deferred value resolved against Spark during commit
 `pool.sample(k)` - immediate `k` distinct values without replacement
-Raises `ValueError` if the view is empty.
+Raises `EmptyPoolError` if the view is empty, `PoolSampleError` if `k` cannot
+be sampled without replacement, and `UnresolvedPoolError` if a deferred choice
+cannot resolve to a concrete value during commit.
 
 ### Disambiguation with `via`
 
@@ -595,16 +599,24 @@ all_customers.write.mode("overwrite").saveAsTable("main.bronze.raw_customers")
 
 | Situation | Exception | Message |
 |-----------|-----------|---------|
-| `.create()` called outside `Base.dataset()` | `RuntimeError` | `rowsmyth factories must be used inside Base.dataset(spark, ...)` |
+| `.create()` called outside `Base.dataset()` | `DatasetContextError` | `rowsmyth factories must be used inside Base.dataset(spark, ...)` |
 | Model from another declarative base used in active dataset | `WrongDeclarativeBaseError` | `{model} belongs to a different declarative base than the active dataset` |
-| `Model.create()` with unknown columns | `ValueError` | `{table}: unknown columns: {cols}` |
-| Unknown `.variant(name)` | `KeyError` | `{table} has no variant {name!r}` |
-| NOT NULL column missing on first row | `ValueError` | `{table}: NOT NULL columns without a value: {cols}` |
-| `ctx.pool()` on empty temp view | `ValueError` | `pool({view!r}, {col!r}): no values in temp view` |
-| `Factory()` as value for compound-PK parent | `TypeError` | `{table}: Factory() as column value requires single-column PK; use ctx.parent()` |
+| Model does not extend `declarative_base()` | `InvalidDeclarativeBaseError` | `{model} must extend a rowsmyth declarative base created by declarative_base()` |
+| Model declares reserved `__rowsmyth_*` columns | `ReservedColumnError` | `{table}: reserved rowsmyth columns: {cols}` |
+| `Model.create()` or model constructor with unknown columns | `UnknownColumnError` | `{table}: unknown columns: {cols}` |
+| `Dataset.dataframe(name)` before that table is created | `DataframeNotFoundError` | `{name!r} has not been created in this dataset` |
+| Unknown `.variant(name)` | `UnknownVariantError` | `{table} has no variant {name!r}` |
+| Model primary key references columns absent from `__definition__` | `InvalidModelDefinitionError` | `{table}: missing primary key columns: {cols}` |
+| NOT NULL column missing or `None` in any generated row | `MissingRequiredColumnError` | `{table}: NOT NULL columns without a value: {cols}` |
+| `ctx.pool()` on empty temp view | `EmptyPoolError` | `pool({view!r}, {col!r}): no values in temp view` |
+| `pool.sample(k)` cannot sample without replacement | `PoolSampleError` | `pool({view!r}, {col!r}): cannot sample {k} values from {n} available values` |
+| `pool.choice()` cannot resolve a concrete value | `UnresolvedPoolError` | `pool choice for {table}.{column} could not be resolved` |
+| `Factory()` as value for compound-PK parent | `CompoundPrimaryKeyError` | `{table}: Factory() as column value requires single-column PK; use ctx.parent()` |
+| `.pk` used on a compound-PK model | `CompoundPrimaryKeyError` | `{table}: pk requires a single-column primary key` |
 | `generator()` not implemented | `NotImplementedError` | `{table} must implement generator()` |
 
-NOT NULL validation runs on the **first** row produced for each table in a `Base.dataset()` block, then is skipped for subsequent rows.
+Rowsmyth validates every generated row before commit: unknown columns fail,
+non-nullable columns must be present, and non-nullable values cannot be `None`.
 
 ---
 

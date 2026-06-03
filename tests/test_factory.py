@@ -7,7 +7,12 @@ from chispa import assert_column_equality
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
-from rowsmyth import Factory, WrongDeclarativeBaseError, declarative_base
+from rowsmyth import (
+    DatasetContextError,
+    Factory,
+    WrongDeclarativeBaseError,
+    declarative_base,
+)
 
 
 def test_count_and_where_scalar(spark: SparkSession, app_base, user_model) -> None:
@@ -38,7 +43,7 @@ def test_where_callable(spark: SparkSession, app_base, user_model) -> None:
 
 
 def test_create_outside_dataset_raises(user_model) -> None:
-    with pytest.raises(RuntimeError, match="inside dataset"):
+    with pytest.raises(DatasetContextError, match="inside dataset"):
         user_model.factory().create()
 
 

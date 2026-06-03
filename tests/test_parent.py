@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pytest
 from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
 
 from rowsmyth import WrongDeclarativeBaseError, declarative_base
 
@@ -24,9 +25,12 @@ def test_parent_compound_key(
     assert len(created) == 2
     assert orders.count() == 2
     assert order_lines.count() == 4
-    for line in order_lines.collect():
-        assert line.order_id is not None
-        assert line.order_region in ("eu", "us")
+    joined = order_lines.alias("line").join(
+        orders.alias("order"),
+        (F.col("line.order_id") == F.col("order.order_id"))
+        & (F.col("line.order_region") == F.col("order.region")),
+    )
+    assert joined.count() == order_lines.count()
 
 
 def test_parent_wrong_base_raises(spark: SparkSession, app_base, order_model) -> None:

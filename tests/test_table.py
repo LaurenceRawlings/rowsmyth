@@ -7,7 +7,15 @@ from typing import ClassVar
 import pytest
 from pyspark.sql.types import LongType, StructField, StructType
 
-from rowsmyth import Model, declarative_base
+from rowsmyth import (
+    CompoundPrimaryKeyError,
+    InvalidDeclarativeBaseError,
+    InvalidModelDefinitionError,
+    Model,
+    ReservedColumnError,
+    UnknownColumnError,
+    declarative_base,
+)
 
 
 def test_registry_contains_tables(app_base) -> None:
@@ -40,7 +48,7 @@ def test_declarative_base_returns_scoped_registry(user_model) -> None:
 
 
 def test_direct_model_subclass_with_table_name_raises(user_model) -> None:
-    with pytest.raises(TypeError, match="declarative_base"):
+    with pytest.raises(InvalidDeclarativeBaseError, match="declarative_base"):
 
         class Direct(Model):
             __table_name__ = "direct_test_only"
@@ -70,6 +78,31 @@ def test_concrete_child_registers_to_abstract_parent_base(user_model) -> None:
 def test_fqn(user_model, role_model) -> None:
     assert user_model.fqn() == "main.app.users"
     assert role_model.fqn() == "roles"
+
+
+def test_fqn_uses_table_name_when_catalog_or_schema_is_partial(user_model) -> None:
+    Base = declarative_base()
+
+    class SchemaOnly(Base):
+        __table_name__ = "schema_only"
+        __schema__ = "app"
+        __primary_key__ = ("id",)
+        __definition__ = user_model.__definition__
+
+        def generator(self, ctx) -> dict:
+            return {}
+
+    class CatalogOnly(Base):
+        __table_name__ = "catalog_only"
+        __catalog__ = "main"
+        __primary_key__ = ("id",)
+        __definition__ = user_model.__definition__
+
+        def generator(self, ctx) -> dict:
+            return {}
+
+    assert SchemaOnly.fqn() == "schema_only"
+    assert CatalogOnly.fqn() == "catalog_only"
 
 
 def test_column_metadata_helpers(user_model) -> None:
@@ -121,7 +154,7 @@ def test_factory_returns_builder(user_model) -> None:
 
 def test_reserved_internal_columns_raise() -> None:
     Base = declarative_base()
-    with pytest.raises(ValueError, match="reserved rowsmyth columns"):
+    with pytest.raises(ReservedColumnError, match="reserved rowsmyth columns"):
 
         class Reserved(Base):
             __table_name__ = "reserved_test_only"
@@ -132,9 +165,41 @@ def test_reserved_internal_columns_raise() -> None:
             ])
 
 
+def test_primary_key_columns_must_exist_in_schema(user_model) -> None:
+    Base = declarative_base()
+    with pytest.raises(InvalidModelDefinitionError, match="missing primary key"):
+
+        class BadPrimaryKey(Base):
+            __table_name__ = "bad_primary_key_test_only"
+            __primary_key__ = ("missing_id",)
+            __definition__ = user_model.__definition__
+
+
+def test_variant_methods_are_inherited(user_model) -> None:
+    class InheritedVariantUser(user_model):
+        __table_name__ = "inherited_variant_user_test_only"
+        __primary_key__ = user_model.__primary_key__
+        __definition__ = user_model.__definition__
+
+    try:
+        factory = InheritedVariantUser.factory()
+        assert factory.variant("churned") is factory
+    finally:
+        user_model.__rowsmyth_base__.registry.pop(
+            "inherited_variant_user_test_only",
+            None,
+        )
+
+
 def test_model_constructor_unknown_column_raises(role_model) -> None:
-    with pytest.raises(ValueError, match="unknown columns"):
+    with pytest.raises(UnknownColumnError, match="unknown columns"):
         role_model(id=1, name="admin", unknown=True)
+
+
+def test_compound_primary_key_pk_raises_domain_error(order_model) -> None:
+    order = order_model(order_id=1, region="eu")
+    with pytest.raises(CompoundPrimaryKeyError, match="single-column primary key"):
+        _ = order.pk
 
 
 def test_generator_not_implemented(app_base, user_model) -> None:

@@ -5,10 +5,14 @@ A blacksmith forges metal. A rowsmyth forges rows - mythical ones that exist onl
 ## Install
 
 ```bash
-uv install rowsmyth
+uv add rowsmyth
+# or
+pip install rowsmyth
 ```
 
-Requires Python 3.12+ and Java 17+.
+Requires Python 3.12+, PySpark 4.0+ and Java 17+. `pyspark` is installed as a
+runtime dependency; Java must be available on your `PATH` or via `JAVA_HOME`
+when running Spark locally.
 
 ## Quick start
 

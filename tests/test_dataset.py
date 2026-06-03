@@ -9,7 +9,7 @@ from chispa import assert_df_equality
 from faker import Faker
 from pyspark.sql import SparkSession
 
-from rowsmyth import Dataset
+from rowsmyth import DataframeNotFoundError, Dataset
 
 
 def test_deterministic_with_seed(
@@ -47,7 +47,7 @@ def test_no_seed(spark: SparkSession, app_base, user_model) -> None:
 
 def test_dataframe_missing_raises(spark: SparkSession, app_base) -> None:
     with app_base.dataset(spark) as dataset:
-        with pytest.raises(KeyError, match="missing"):
+        with pytest.raises(DataframeNotFoundError, match="missing"):
             dataset.dataframe("missing")
 
 

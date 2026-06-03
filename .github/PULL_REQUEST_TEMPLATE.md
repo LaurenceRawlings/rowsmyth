@@ -32,4 +32,5 @@ Choose **one** type - keep each PR focused on a single kind of change so
 ## Checklist
 
 - [ ] README updated if public API changed
+- [ ] `docs/usage.md` updated if public API changed
 - [ ] Docstring examples added or updated for any new or changed public API

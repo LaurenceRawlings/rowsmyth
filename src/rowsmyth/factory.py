@@ -8,11 +8,12 @@ if TYPE_CHECKING:
     from rowsmyth.model import Model
 
 from rowsmyth.dataset import Dataset, RowCtx, require_active
+from rowsmyth.errors import UnknownVariantError
 from rowsmyth.model import validate_dataset_base
 from rowsmyth.resolution import (
     apply_variant,
     resolve_row_values,
-    validate_once,
+    validate_row,
 )
 
 
@@ -47,7 +48,7 @@ class Factory:
         """Apply a named :func:`rowsmyth.variant` partial override."""
         if name not in self.table._variants:
             msg = f"{self.table.__table_name__} has no variant {name!r}"
-            raise KeyError(msg)
+            raise UnknownVariantError(msg)
         self._variant = name
         return self
 
@@ -93,5 +94,5 @@ class Factory:
         attrs.update(self._where)
         ctx.row = attrs
         resolve_row_values(attrs, ctx)
-        validate_once(gen, self.table, attrs)
+        validate_row(self.table, attrs)
         return attrs

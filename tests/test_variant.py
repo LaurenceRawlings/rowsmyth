@@ -7,6 +7,8 @@ from chispa import assert_column_equality
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
+from rowsmyth import UnknownVariantError
+
 
 def test_variant_override(spark: SparkSession, app_base, user_model) -> None:
     with app_base.dataset(spark, seed=1) as dataset:
@@ -17,5 +19,5 @@ def test_variant_override(spark: SparkSession, app_base, user_model) -> None:
 
 
 def test_unknown_variant_raises(user_model) -> None:
-    with pytest.raises(KeyError, match="no variant 'missing'"):
+    with pytest.raises(UnknownVariantError, match="no variant 'missing'"):
         user_model.factory().variant("missing")

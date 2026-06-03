@@ -59,7 +59,8 @@ flexible - what matters is the **PR title**.
 
 ```bash
 make test        # tests only
-make lint        # ruff check + format check
+make lint        # ruff check
+make format      # ruff format
 make typecheck   # ty strict mode
 make security    # bandit scan
 make pre-commit  # run all pre-commit hooks on all files
@@ -85,6 +86,7 @@ Source layout:
 - `src/rowsmyth/dataset.py` - `Dataset`, `RowCtx`, active dataset context
 - `src/rowsmyth/resolution.py` - FK resolution and validation
 - `src/rowsmyth/pool.py` - `Pool` and deferred pool tokens
+- `src/rowsmyth/errors.py` - rowsmyth exception hierarchy
 
 ## Releasing (maintainers only)
 

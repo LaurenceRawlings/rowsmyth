@@ -8,7 +8,13 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from rowsmyth import variant
+from rowsmyth import (
+    CompoundPrimaryKeyError,
+    DatasetContextError,
+    EmptyPoolError,
+    MissingRequiredColumnError,
+    variant,
+)
 from rowsmyth.dataset import Dataset, RowCtx, require_active
 from rowsmyth.pool import PoolChoice
 from rowsmyth.resolution import (
@@ -47,7 +53,7 @@ def _mock_spark(
 
 
 def test_require_active_raises() -> None:
-    with pytest.raises(RuntimeError, match="inside dataset"):
+    with pytest.raises(DatasetContextError, match="inside dataset"):
         require_active()
 
 
@@ -61,7 +67,7 @@ def test_dataset_exposes_spark(app_base) -> None:
 def test_pool_empty_mocked(app_base) -> None:
     spark = _mock_spark(pool_values=[])
     gen = Dataset(spark, MagicMock(), random.Random(0), None, app_base)
-    with pytest.raises(ValueError, match="no values"):
+    with pytest.raises(EmptyPoolError, match="no values"):
         gen.pool("roles", "id").sample(1)
 
 
@@ -132,17 +138,18 @@ def test_new_parent(app_base, role_model, user_model) -> None:
         assert "roles" in acc
 
 
-def test_validate_once_skips_second(app_base, nullable_demo_model) -> None:
+def test_validate_once_validates_each_call(app_base, missing_required_model) -> None:
     spark = _mock_spark()
     gen = Dataset(spark, MagicMock(), random.Random(0), None, app_base)
-    validate_once(gen, nullable_demo_model, {"id": 1})
-    validate_once(gen, nullable_demo_model, {})
+    validate_once(gen, missing_required_model, {"id": 1, "required_col": "x"})
+    with pytest.raises(MissingRequiredColumnError, match="required_col"):
+        validate_once(gen, missing_required_model, {"id": 2})
 
 
 def test_validate_once_raises(app_base, missing_required_model) -> None:
     spark = _mock_spark()
     gen = Dataset(spark, MagicMock(), random.Random(0), None, app_base)
-    with pytest.raises(ValueError, match="required_col"):
+    with pytest.raises(MissingRequiredColumnError, match="required_col"):
         validate_once(gen, missing_required_model, {"id": 1})
 
 
@@ -178,8 +185,8 @@ def test_factory_fluent_methods(role_model, user_model) -> None:
     assert f.count(2) is f
     assert f.where(name="x") is f
     assert f.has(role_model.factory()) is f
-    g = user_model.factory().variant("churned")
-    assert g._variant == "churned"
+    g = user_model.factory()
+    assert g.variant("churned") is g
 
 
 def test_rowctx_properties(app_base, user_model) -> None:
@@ -218,17 +225,27 @@ def test_resolve_factory_in_attrs(app_base, role_model, user_model) -> None:
 
 def test_has_children_mocked(app_base, post_model, user_model) -> None:
     spark = _mock_spark()
-    with app_base.dataset(spark, seed=1):
-        user_model.factory().count(1).has(
-            post_model.factory().count(2),
-            via="author_id",
-        ).create()
+    with app_base.dataset(spark, seed=1) as gen:
+        created = (
+            user_model
+            .factory()
+            .count(1)
+            .has(
+                post_model.factory().count(2),
+                via="author_id",
+            )
+            .create()
+        )
+    assert len(created) == 1
+    assert {"roles", "users", "posts"}.issubset(gen.dataframes)
+    assert spark.createDataFrame.call_count == 3
 
 
 def test_variant_create_mocked(app_base, user_model) -> None:
     spark = _mock_spark()
     with app_base.dataset(spark, seed=2):
-        user_model.factory().count(1).variant("churned").create()
+        created = user_model.factory().count(1).variant("churned").create()
+    assert created[0].status == "inactive"
 
 
 def test_compound_fk_resolve_raises(
@@ -241,5 +258,5 @@ def test_compound_fk_resolve_raises(
         acc: dict[str, list[dict[str, Any]]] = {}
         gen = require_active()
         ctx = RowCtx(gen, bad_compound_fk_model, 0, {}, acc)
-        with pytest.raises(TypeError, match="compound keys"):
+        with pytest.raises(CompoundPrimaryKeyError, match="compound keys"):
             resolve_fk(order_model.factory(), ctx, slot="parent_ref")

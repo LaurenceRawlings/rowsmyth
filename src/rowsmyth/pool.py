@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
+from rowsmyth.errors import EmptyPoolError, PoolSampleError
+
 if TYPE_CHECKING:
     import random
 
@@ -52,12 +54,20 @@ class Pool:
 
     def sample(self, k: int) -> list[Any]:
         """Pick k distinct values without replacement from Spark."""
-        return self._rng.sample(self._values(), k)
+        values = self._values()
+        try:
+            return self._rng.sample(values, k)
+        except ValueError as exc:
+            msg = (
+                f"pool({self.view!r}, {self.column!r}): cannot sample "
+                f"{k} values from {len(values)} available values"
+            )
+            raise PoolSampleError(msg) from exc
 
     def _values(self) -> list[Any]:
         rows = self._spark.table(self.view).select(self.column).distinct().collect()
         values = [row[0] for row in rows]
         if not values:
             msg = f"pool({self.view!r}, {self.column!r}): no values in temp view"
-            raise ValueError(msg)
+            raise EmptyPoolError(msg)
         return values

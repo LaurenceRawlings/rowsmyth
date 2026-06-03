@@ -8,6 +8,13 @@ from typing import TYPE_CHECKING, Any
 
 from faker import Faker
 
+from rowsmyth._constants import INTERNAL_PREFIX
+from rowsmyth.errors import (
+    DataframeNotFoundError,
+    DatasetContextError,
+    EmptyPoolError,
+    UnresolvedPoolError,
+)
 from rowsmyth.pool import Pool, PoolChoice
 
 if TYPE_CHECKING:
@@ -19,7 +26,6 @@ if TYPE_CHECKING:
     from rowsmyth.model import Model
 
 _active: ContextVar[Dataset] = ContextVar("rowsmyth_active_dataset")
-_INTERNAL_PREFIX = "__rowsmyth_"
 
 
 def require_active() -> Dataset:
@@ -27,9 +33,11 @@ def require_active() -> Dataset:
     try:
         return _active.get()
     except LookupError as exc:
-        msg = "rowsmyth factories must be used inside dataset context "
-        "Base.dataset(spark, ...)"
-        raise RuntimeError(msg) from exc
+        msg = (
+            "rowsmyth factories must be used inside dataset context via "
+            "Base.dataset(spark, ...)"
+        )
+        raise DatasetContextError(msg) from exc
 
 
 class Dataset:
@@ -98,7 +106,7 @@ class Dataset:
             return self.dataframes[name]
         except KeyError as exc:
             msg = f"{name!r} has not been created in this dataset"
-            raise KeyError(msg) from exc
+            raise DataframeNotFoundError(msg) from exc
 
     def _commit(self, rows_by_table: dict[str, list[dict[str, Any]]]) -> None:
         """Append rows, refresh DataFrames and register temp views."""
@@ -125,7 +133,7 @@ class Dataset:
 
         internal_rows: list[dict[str, Any]] = []
         pool_columns: set[str] = set()
-        row_id_col = f"{_INTERNAL_PREFIX}row_id"
+        row_id_col = f"{INTERNAL_PREFIX}row_id"
 
         for row_id, attrs in enumerate(self._rows[name]):
             internal_row = dict(attrs)
@@ -134,11 +142,9 @@ class Dataset:
                 value = internal_row.get(field.name)
                 if isinstance(value, PoolChoice):
                     pool_columns.add(field.name)
-                    internal_row[f"{_INTERNAL_PREFIX}{field.name}_view"] = value.view
-                    internal_row[f"{_INTERNAL_PREFIX}{field.name}_column"] = (
-                        value.column
-                    )
-                    internal_row[f"{_INTERNAL_PREFIX}{field.name}_seed"] = value.seed
+                    internal_row[f"{INTERNAL_PREFIX}{field.name}_view"] = value.view
+                    internal_row[f"{INTERNAL_PREFIX}{field.name}_column"] = value.column
+                    internal_row[f"{INTERNAL_PREFIX}{field.name}_seed"] = value.seed
                     internal_row[field.name] = None
             internal_rows.append(internal_row)
 
@@ -147,13 +153,24 @@ class Dataset:
         for column in pool_columns:
             df = self._resolve_pool_column(df, column)
 
+        pool_view_cols = {
+            column: f"{INTERNAL_PREFIX}{column}_view" for column in pool_columns
+        }
         resolved_rows = df.select(
             row_id_col,
             *[field.name for field in public_fields],
+            *pool_view_cols.values(),
         ).collect()
         for row in resolved_rows:
             attrs = self._rows[name][row[row_id_col]]
             for field in public_fields:
+                if (
+                    field.name in pool_view_cols
+                    and row[pool_view_cols[field.name]] is not None
+                    and row[field.name] is None
+                ):
+                    msg = f"pool choice for {name}.{field.name} could not be resolved"
+                    raise UnresolvedPoolError(msg)
                 attrs[field.name] = row[field.name]
         return df.select(*[field.name for field in public_fields])
 
@@ -162,10 +179,10 @@ class Dataset:
         from pyspark.sql import Window
         from pyspark.sql import functions as F
 
-        view_col = f"{_INTERNAL_PREFIX}{target_col}_view"
-        source_col_col = f"{_INTERNAL_PREFIX}{target_col}_column"
-        seed_col = f"{_INTERNAL_PREFIX}{target_col}_seed"
-        resolved_col = f"{_INTERNAL_PREFIX}{target_col}_resolved"
+        view_col = f"{INTERNAL_PREFIX}{target_col}_view"
+        source_col_col = f"{INTERNAL_PREFIX}{target_col}_column"
+        seed_col = f"{INTERNAL_PREFIX}{target_col}_seed"
+        resolved_col = f"{INTERNAL_PREFIX}{target_col}_resolved"
         groups = [
             (row[view_col], row[source_col_col])
             for row in df
@@ -184,7 +201,7 @@ class Dataset:
             value_count = source.count()
             if value_count == 0:
                 msg = f"pool({view!r}, {source_col!r}): no values in temp view"
-                raise ValueError(msg)
+                raise EmptyPoolError(msg)
             ranked = source.withColumn(
                 f"{resolved_col}_rank",
                 F.row_number().over(Window.orderBy(F.col(resolved_col))),
@@ -253,7 +270,7 @@ class RowCtx:
         return self._gen.next_seq(name or self._table.__table_name__)
 
     def pool(self, view: str, col: str) -> Pool:
-        """Distinct values from an existing temp view (memoized)."""
+        """Distinct values from an existing temp view."""
         return self._gen.pool(view, col)
 
     def parent(self, table: type[Model], role: str | None = None) -> Model:
@@ -288,11 +305,11 @@ def _internal_schema(definition: StructType, pool_columns: set[str]) -> StructTy
         StructField(field.name, field.dataType, True, field.metadata)
         for field in definition.fields
     ]
-    fields.append(StructField(f"{_INTERNAL_PREFIX}row_id", LongType(), False))
+    fields.append(StructField(f"{INTERNAL_PREFIX}row_id", LongType(), False))
     for column in sorted(pool_columns):
         fields.extend([
-            StructField(f"{_INTERNAL_PREFIX}{column}_view", StringType(), True),
-            StructField(f"{_INTERNAL_PREFIX}{column}_column", StringType(), True),
-            StructField(f"{_INTERNAL_PREFIX}{column}_seed", LongType(), True),
+            StructField(f"{INTERNAL_PREFIX}{column}_view", StringType(), True),
+            StructField(f"{INTERNAL_PREFIX}{column}_column", StringType(), True),
+            StructField(f"{INTERNAL_PREFIX}{column}_seed", LongType(), True),
         ])
     return StructType(fields)

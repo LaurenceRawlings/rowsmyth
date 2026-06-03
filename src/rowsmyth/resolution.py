@@ -4,6 +4,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from rowsmyth.errors import (
+    CompoundPrimaryKeyError,
+    MissingRequiredColumnError,
+    UnknownColumnError,
+)
+
 if TYPE_CHECKING:
     from rowsmyth.dataset import Dataset, RowCtx
     from rowsmyth.factory import Factory
@@ -32,7 +38,7 @@ def resolve_fk(child_factory: Factory, ctx: RowCtx, slot: str) -> Any:
             f"{table.__table_name__}: Factory() as column value requires a "
             "single-column primary key; use ctx.parent() for compound keys"
         )
-        raise TypeError(msg)
+        raise CompoundPrimaryKeyError(msg)
     inst = ctx._parents.get(slot)
     if inst is None:
         inst = new_parent(child_factory, ctx)
@@ -51,20 +57,34 @@ def resolve_row_values(attrs: dict[str, Any], ctx: RowCtx) -> None:
             attrs[col] = value(ctx)
 
 
-def validate_once(gen: Dataset, table: type[Model], attrs: dict[str, Any]) -> None:
-    """Fail fast on the first row if NOT NULL columns are missing."""
+def validate_row(table: type[Model], attrs: dict[str, Any]) -> None:
+    """Validate one generated row against the model schema."""
     name = table.__table_name__
-    if name in gen._validated:
-        return
-    missing = [
-        f.name
-        for f in table.__definition__.fields
-        if not f.nullable and f.name not in attrs
-    ]
-    if missing:
-        msg = f"{name}: NOT NULL columns without a value: {missing}"
-        raise ValueError(msg)
-    gen._validated.add(name)
+    field_names = {field.name for field in table.__definition__.fields}
+    unknown = sorted(set(attrs) - field_names)
+    if unknown:
+        msg = f"{name}: unknown columns: {unknown}"
+        raise UnknownColumnError(msg)
+
+    missing = []
+    nulls = []
+    for field in table.__definition__.fields:
+        if field.nullable:
+            continue
+        if field.name not in attrs:
+            missing.append(field.name)
+        elif attrs[field.name] is None:
+            nulls.append(field.name)
+
+    invalid = missing + nulls
+    if invalid:
+        msg = f"{name}: NOT NULL columns without a value: {invalid}"
+        raise MissingRequiredColumnError(msg)
+
+
+def validate_once(gen: Dataset, table: type[Model], attrs: dict[str, Any]) -> None:
+    """Validate a row; retained for compatibility with older internal tests."""
+    validate_row(table, attrs)
 
 
 def apply_variant(

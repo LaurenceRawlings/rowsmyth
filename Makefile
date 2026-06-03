@@ -1,7 +1,5 @@
-.PHONY: install lint format format-docs typecheck security test pre-commit \
+.PHONY: install lint format typecheck security test pre-commit \
         docs docs-serve
-
-MD_FILES = README.md CONTRIBUTING.md SECURITY.md CHANGELOG.md docs/
 
 install:
 	uv sync --all-groups
@@ -10,11 +8,8 @@ install:
 lint:
 	uv run ruff check --fix .
 
-format: format-docs
+format:
 	uv run ruff format .
-
-format-docs:
-	uv run ruff format $(MD_FILES)
 
 typecheck:
 	uv run ty check src/

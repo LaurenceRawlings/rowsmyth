@@ -23,7 +23,8 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
-    "faker>=40.20.0",
+  "faker>=40.20.0",
+  "pyspark>=4.0.0",
 ]
 
 [project.urls]
@@ -40,7 +41,6 @@ dev = [
   "commitizen>=4.16.3",
   "portray>=1.8.0",
   "pre-commit>=4.6.0",
-  "pyspark>=4.1.2",
   "pytest>=9.0.3",
   "pytest-cov>=7.1.0",
   "ruff>=0.15.15",
@@ -66,7 +66,9 @@ include = [
   "README.md",
   "CHANGELOG.md",
   "CONTRIBUTING.md",
+  "SECURITY.md",
   "LICENSE",
+  "docs/",
   "tests/",
 ]
 
@@ -161,7 +163,12 @@ catalog = "catalog"
 
 [tool.portray]
 output_dir = "site"
-extra_markdown_modules = ["CHANGELOG.md", "CONTRIBUTING.md"]
+extra_markdown_modules = [
+  "CHANGELOG.md",
+  "CONTRIBUTING.md",
+  "docs/design.md",
+  "docs/usage.md",
+]
 
 [tool.portray.mkdocs]
 site_name = "rowsmyth"

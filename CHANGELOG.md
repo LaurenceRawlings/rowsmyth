@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Direct `Model` subclassing replaced by explicit scoped bases from `declarative_base()`
 - `generate()` removed in favour of `Base.dataset(spark, seed=None)`
 - `context.py` removed; dataset-session internals now live in `dataset.py`
+- Domain failures now raise rowsmyth-specific errors rooted at `RowsmythError`;
+  catch the named rowsmyth errors instead of builtin `ValueError`, `TypeError`,
+  `KeyError` or `RuntimeError`
 
 ### Feat
 
@@ -28,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Model.create(**cols)` - create a single row imperatively inside an active dataset, with optional column overrides
 - `RowCtx` per-row context passed to `generator()` - exposes `faker`, `random`, `spark`, `index`, `row`; provides `sequence(name)`, `pool(view, col)` and `parent(table, role=None)` for FK resolution
 - `WrongDeclarativeBaseError` - raised when a model from one declarative base is created inside a dataset for another base
+- Custom error hierarchy - `RowsmythError` roots named domain failures such as `DatasetContextError`, `UnknownColumnError`, `EmptyPoolError`, `CompoundPrimaryKeyError` and `UnknownVariantError`
 - `Pool` - wraps a Spark temp view column; `.choice()` returns a deferred `PoolChoice` resolved deterministically in Spark; `.sample(k)` picks distinct values without replacement
 - `@variant` decorator - marks a `Model` method as a named partial override; apply with `Factory.variant(name)`
 - Unity Catalog support - `__catalog__`, `__schema__`, `__table_tags__`, `__comment__`; `Model.fqn()`, `Model.uc_tag_sql()`, `Model.column_tags()`, `Model.column_comments()`

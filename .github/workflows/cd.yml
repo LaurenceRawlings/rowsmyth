@@ -67,6 +67,7 @@ jobs:
 
   deploy-docs:
     name: Build and deploy docs to GitHub Pages
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write

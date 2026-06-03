@@ -5,6 +5,16 @@ from __future__ import annotations
 import types
 from typing import TYPE_CHECKING, Any, ClassVar
 
+from rowsmyth._constants import INTERNAL_PREFIX
+from rowsmyth.errors import (
+    CompoundPrimaryKeyError,
+    InvalidDeclarativeBaseError,
+    InvalidModelDefinitionError,
+    ReservedColumnError,
+    UnknownColumnError,
+    WrongDeclarativeBaseError,
+)
+
 if TYPE_CHECKING:
     from collections.abc import Callable
 
@@ -13,10 +23,6 @@ if TYPE_CHECKING:
 
     from rowsmyth.dataset import Dataset, RowCtx
     from rowsmyth.factory import Factory
-
-
-class WrongDeclarativeBaseError(RuntimeError):
-    """Raised when a model is used with a dataset for another declarative base."""
 
 
 def variant(fn: Callable[..., dict[str, Any]]) -> Callable[..., dict[str, Any]]:
@@ -52,31 +58,40 @@ class Model:
     def _field_names(cls) -> set[str]:
         return {field.name for field in cls.__definition__.fields}
 
+    @classmethod
+    def _validate_unknown_columns(cls, attrs: dict[str, Any]) -> None:
+        unknown = set(attrs) - cls._field_names()
+        if unknown:
+            msg = f"{cls.__table_name__}: unknown columns: {sorted(unknown)}"
+            raise UnknownColumnError(msg)
+
     def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
         if not getattr(cls, "__table_name__", None):
             return
         base = declarative_base_for(cls)
+        _validate_model_definition(cls)
         internal = [
             field.name
             for field in cls.__definition__.fields
-            if field.name.startswith("__rowsmyth_")
+            if field.name.startswith(INTERNAL_PREFIX)
         ]
         if internal:
             msg = f"{cls.__table_name__}: reserved rowsmyth columns: {internal}"
-            raise ValueError(msg)
-        cls._variants = {
+            raise ReservedColumnError(msg)
+        variants: dict[str, Callable[..., dict[str, Any]]] = {}
+        for parent in reversed(cls.__mro__[1:]):
+            variants.update(getattr(parent, "_variants", {}))
+        variants.update({
             m.__variant__: m  # type: ignore[attr-defined]
             for m in vars(cls).values()
             if callable(m) and hasattr(m, "__variant__")
-        }
+        })
+        cls._variants = variants
         base.registry[cls.__table_name__] = cls
 
     def __init__(self, **attrs: Any) -> None:
-        unknown = set(attrs) - type(self)._field_names()
-        if unknown:
-            msg = f"{type(self).__table_name__}: unknown columns: {sorted(unknown)}"
-            raise ValueError(msg)
+        type(self)._validate_unknown_columns(attrs)
         object.__setattr__(self, "attrs", dict(attrs))
         for key, value in attrs.items():
             object.__setattr__(self, key, value)
@@ -100,6 +115,11 @@ class Model:
     @property
     def pk(self) -> Any:
         """Scalar primary key (single-column PK only)."""
+        if len(type(self).__primary_key__) != 1:
+            msg = (
+                f"{type(self).__table_name__}: pk requires a single-column primary key"
+            )
+            raise CompoundPrimaryKeyError(msg)
         (col,) = type(self).__primary_key__
         return self.attrs[col]
 
@@ -111,28 +131,7 @@ class Model:
     @classmethod
     def create(cls, **cols: Any) -> Model:
         """Create one row in the active dataset and return its model."""
-        from rowsmyth.dataset import RowCtx, require_active
-        from rowsmyth.resolution import resolve_row_values, validate_once
-
-        unknown = set(cols) - cls._field_names()
-        if unknown:
-            msg = f"{cls.__table_name__}: unknown columns: {sorted(unknown)}"
-            raise ValueError(msg)
-
-        gen = require_active()
-        validate_dataset_base(cls, gen)
-        acc: dict[str, list[dict[str, Any]]] = {}
-        index = len(gen._rows.get(cls.__table_name__, []))
-        obj = cls()
-        ctx = RowCtx(gen, cls, index, {}, acc)
-        attrs = dict(obj.generator(ctx))
-        attrs.update(cols)
-        ctx.row = attrs
-        resolve_row_values(attrs, ctx)
-        validate_once(gen, cls, attrs)
-        acc.setdefault(cls.__table_name__, []).append(attrs)
-        gen._commit(acc)
-        return cls(**attrs)
+        return cls.factory().where(**cols).create()[0]
 
     @classmethod
     def factory(cls) -> Factory:
@@ -156,6 +155,8 @@ class Model:
     @classmethod
     def fqn(cls) -> str:
         """Fully qualified table name (catalog.schema.table)."""
+        if not (cls.__catalog__ and cls.__schema__):
+            return cls.__table_name__
         parts = (cls.__catalog__, cls.__schema__, cls.__table_name__)
         return ".".join(p for p in parts if p)
 
@@ -216,6 +217,14 @@ def _tag_pairs(tags: dict[str, str]) -> str:
     )
 
 
+def _validate_model_definition(model: type[Model]) -> None:
+    field_names = model._field_names()
+    missing_pk = [col for col in model.__primary_key__ if col not in field_names]
+    if missing_pk:
+        msg = f"{model.__table_name__}: missing primary key columns: {missing_pk}"
+        raise InvalidModelDefinitionError(msg)
+
+
 def declarative_base(name: str = "Base") -> type[Model]:
     """Create a scoped declarative base for rowsmyth models."""
 
@@ -236,7 +245,7 @@ def declarative_base_for(model: type[Model]) -> type[Model]:
             f"{model.__name__} must extend a rowsmyth declarative base created by "
             "declarative_base()"
         )
-        raise TypeError(msg)
+        raise InvalidDeclarativeBaseError(msg)
     return base
 
 

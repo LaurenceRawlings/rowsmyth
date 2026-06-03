@@ -1,20 +1,22 @@
-"""Tests for pool helpers."""
+"""Unit tests for pool helpers."""
 
 from __future__ import annotations
 
 import random
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
 
+from rowsmyth import EmptyPoolError
 from rowsmyth.pool import Pool, PoolChoice
 
 
 class _Row:
-    def __init__(self, value):
+    def __init__(self, value: Any) -> None:
         self._value = value
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> Any:
         return self._value
 
 
@@ -51,5 +53,5 @@ def test_pool_values_empty_raises() -> None:
     spark.table.return_value = table_df
 
     pool = Pool(spark, "roles", "id", random.Random(0))
-    with pytest.raises(ValueError, match="no values"):
+    with pytest.raises(EmptyPoolError, match="no values"):
         _ = pool.values

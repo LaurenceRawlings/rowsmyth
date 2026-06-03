@@ -24,9 +24,9 @@ Import from `rowsmyth`:
 | `RowCtx` | Per-row context in `generator()` and variants |
 | `Dataset` | Object yielded by `Base.dataset()` (`spark`, `dataframes`, `faker`, `random`, `seed`) |
 | `Pool` | Spark-backed distinct values from a temp view (`choice`, `sample`) |
-| `WrongDeclarativeBaseError` | Error raised when a model is created in a dataset for another base |
+| `RowsmythError` and subclasses | Domain errors for invalid bases, schemas, factories, variants, pools and dataset lookups |
 
-`Model.create()` and `Factory.create()` must run inside `Base.dataset(...)` for the same declarative base. Calling either outside raises `RuntimeError`; using a model from another base raises `WrongDeclarativeBaseError`.
+`Model.create()` and `Factory.create()` must run inside `Base.dataset(...)` for the same declarative base. Calling either outside raises `DatasetContextError`; using a model from another base raises `WrongDeclarativeBaseError`.
 
 ## Package layout
 
@@ -37,6 +37,7 @@ src/rowsmyth/
   dataset.py     Dataset, RowCtx, active dataset context
   resolution.py  FK resolution, row value resolution, validation
   pool.py        Pool and deferred pool tokens
+  errors.py      Rowsmyth exception hierarchy
 ```
 
 ## Defining a table
@@ -113,7 +114,7 @@ Because each row is a single `dict`, columns that depend on each other use norma
 
 ### Registry and abstract bases
 
-On subclass, if `__table_name__` is set, the class is registered in `Base.registry[__table_name__]` and `@variant` methods are collected into `_variants`.
+On subclass, if `__table_name__` is set, rowsmyth validates that primary-key columns exist in the Spark schema, registers the class in `Base.registry[__table_name__]` and collects inherited plus locally declared `@variant` methods into `_variants`.
 
 If `__table_name__` is omitted (mixin or abstract intermediate base), the class is **not** registered. Concrete children still register normally.
 
@@ -122,7 +123,7 @@ If `__table_name__` is omitted (mixin or abstract intermediate base), the class 
 ```python
 User.factory()
     .count(10)
-    .variant("churned")       # KeyError if unknown
+    .variant("churned")       # UnknownVariantError if unknown
     .where(status="active")    # scalars, Factory FKs, or callables
     .has(Post.factory().count(3), via="author_id")
     .create()                   # list[User] + session DataFrames/temp views
@@ -166,7 +167,7 @@ For each row, `Factory.row()` runs:
 5. **Resolve** each value in `attrs`:
    - `Factory` → FK resolution (see below); slot = column name
    - `callable` → `value(ctx)`; siblings visible on `ctx.row`
-6. **Validate** NOT NULL columns once per table per `Dataset` session (first row only)
+6. **Validate** the full row against the Spark schema: no unknown columns, every NOT NULL column present, and no `None` values for NOT NULL fields
 
 Variants are bound methods: `def churned(self, ctx) -> dict`.
 
@@ -183,7 +184,7 @@ Return a parent `Factory` as the column value. Resolution uses slot = **column n
 "role_id": Role.factory()
 ```
 
-**Restriction:** the parent table must have a **single-column** primary key. For compound keys, `resolve_fk` raises `TypeError` with a message to use `ctx.parent()` instead.
+**Restriction:** the parent table must have a **single-column** primary key. For compound keys, `resolve_fk` raises `CompoundPrimaryKeyError` with a message to use `ctx.parent()` instead.
 
 ### `ctx.parent(table, role=None)`
 
@@ -199,11 +200,11 @@ def generator(self, ctx):
     }
 ```
 
-Use `order.key` (dict of PK columns), `order.pk` (scalar, single-column PK only), or `order.attrs` (full row dict).
+Use `order.key` (dict of PK columns), `order.pk` (scalar, single-column PK only; raises `CompoundPrimaryKeyError` for compound keys), or `order.attrs` (full row dict).
 
 ### `ctx.pool(view, col)`
 
-Not an FK mode: read distinct values from an existing **temp view** in the session. `choice()` returns a deferred token that is resolved in Spark during commit using hidden rowsmyth columns, which are dropped before public DataFrames and temp views are registered. Raises `ValueError` if the view has no values.
+Not an FK mode: read distinct values from an existing **temp view** in the session. `choice()` returns a deferred token that is resolved in Spark during commit using hidden rowsmyth columns, which are dropped before public DataFrames and temp views are registered. Raises `EmptyPoolError` if the view has no values, `PoolSampleError` when `sample(k)` cannot be satisfied and `UnresolvedPoolError` if a deferred choice cannot resolve to a concrete value.
 
 ```python
 "role_id": ctx.pool("roles", "id").choice()
@@ -273,7 +274,7 @@ with Base.dataset(spark, seed=42) as dataset:
 
 ### `Dataset`
 
-Yielded by `Base.dataset()`. Exposes `spark`, `base`, `registry`, `dataframes`, `dataframe(name)`, `faker`, `random` and `seed`. Internal rows, counters, deferred pool tokens and validation state are not part of the public contract.
+Yielded by `Base.dataset()`. Exposes `spark`, `base`, `registry`, `dataframes`, `dataframe(name)`, `next_seq(name)`, `pool(view, col)`, `faker`, `random` and `seed`. Internal rows, counters, deferred pool tokens and validation state are not part of the public contract.
 
 ## Create output
 
@@ -289,16 +290,23 @@ Temp views use the bare `__table_name__` (not `fqn()`). Factories return instanc
 
 | Situation | Exception |
 |-----------|-----------|
-| `create()` outside `Base.dataset()` | `RuntimeError` |
+| `create()` outside `Base.dataset()` | `DatasetContextError` |
 | Model from another declarative base used in active dataset | `WrongDeclarativeBaseError` |
-| `Model.create()` with unknown columns | `ValueError` |
-| Unknown `.variant(name)` | `KeyError` |
-| NOT NULL column missing on first row of a table | `ValueError` |
-| `ctx.pool` on empty view | `ValueError` |
-| `Factory()` as column value for compound-PK parent | `TypeError` |
+| Model does not extend `declarative_base()` | `InvalidDeclarativeBaseError` |
+| Model primary key references columns absent from `__definition__` | `InvalidModelDefinitionError` |
+| Model declares reserved `__rowsmyth_*` columns | `ReservedColumnError` |
+| Unknown columns passed to `Model.create()` or constructor | `UnknownColumnError` |
+| `Dataset.dataframe(name)` before that table is created | `DataframeNotFoundError` |
+| Unknown `.variant(name)` | `UnknownVariantError` |
+| NOT NULL column missing or `None` in any generated row | `MissingRequiredColumnError` |
+| `ctx.pool` on empty view | `EmptyPoolError` |
+| `Pool.sample(k)` cannot sample without replacement | `PoolSampleError` |
+| Deferred `Pool.choice()` cannot resolve a concrete value | `UnresolvedPoolError` |
+| `Factory()` as column value for compound-PK parent | `CompoundPrimaryKeyError` |
+| `.pk` used on a compound-PK model | `CompoundPrimaryKeyError` |
 | `generator()` not implemented | `NotImplementedError` |
 
-Validation runs on the **first row** produced for each table in a `Dataset` block, then is skipped for subsequent rows of that table.
+Validation runs on every generated row before commit.
 
 ## Unity Catalog integration
 

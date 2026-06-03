@@ -8,6 +8,8 @@ labels: bug
 
 - rowsmyth version:
 - Python version:
+- PySpark version:
+- Java version:
 - OS:
 
 ## Minimal reproducible example
