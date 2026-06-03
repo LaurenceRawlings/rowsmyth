@@ -5,8 +5,11 @@ Thank you for your interest in contributing!
 ## Prerequisites
 
 - Python 3.12+
+- Java 17+ with `java` on your `PATH` (or `JAVA_HOME` set) for PySpark integration tests
 - [uv](https://docs.astral.sh/uv/) - package manager
-- [pre-commit](https://pre-commit.com/) - git hooks
+
+PySpark 4.x requires a JDK; CI installs Temurin 17 automatically. Set `JAVA_HOME`
+or add `java` to your `PATH` before running `make test`.
 
 ## Setup
 
@@ -24,7 +27,7 @@ determine the correct version bump from the commit history.
 
 **PR title format:** `type(optional-scope): short description`
 
-Example: `feat: add .where() method to FactoryBuilder`
+Example: `feat: add ... to ...`
 
 See the PR template for the full type reference and version bump rules.
 
@@ -55,22 +58,35 @@ flexible - what matters is the **PR title**.
 
 ```bash
 make test        # tests only
-make lint        # ruff check + format check
+make lint        # ruff check --fix
+make format      # ruff format
 make typecheck   # ty strict mode
 make security    # bandit scan
 make pre-commit  # run all pre-commit hooks on all files
+make ci          # run the full local CI suite
 ```
 
 ## Adding tests
 
 All PRs must maintain **100% test coverage**. If you add or change code, add
-tests that cover it. Docstring examples in `src/` must also be valid doctests -
-run `pytest --doctest-modules src/rowsmyth/` to verify them separately.
+tests that cover it through the public API. Docstring examples in `src/` are
+collected by the default `pytest` command.
+
+Spark integration tests use [chispa](https://github.com/MrPowers/chispa) for
+DataFrame assertions (`assert_df_equality`, `assert_column_equality`, etc.).
 
 ## Understanding the codebase
 
-See [docs/design.md](docs/design.md) for an explanation of the internal
-architecture, module responsibilities and data flow.
+See [docs/design.md](docs/design.md) for the product design and API behaviour.
+
+Source layout:
+
+- `src/rowsmyth/model.py` - declarative `Model` base, `variant` decorator
+- `src/rowsmyth/factory.py` - fluent `Factory` and `create()`
+- `src/rowsmyth/dataset.py` - `Dataset`, `RowCtx`, active dataset context
+- `src/rowsmyth/resolution.py` - FK resolution and validation
+- `src/rowsmyth/pool.py` - `Pool` and deferred pool tokens
+- `src/rowsmyth/errors.py` - rowsmyth exception hierarchy
 
 ## Releasing (maintainers only)
 

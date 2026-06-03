@@ -8,7 +8,8 @@ labels: bug
 
 - rowsmyth version:
 - Python version:
-- SQLAlchemy version:
+- PySpark version:
+- Java version:
 - OS:
 
 ## Minimal reproducible example

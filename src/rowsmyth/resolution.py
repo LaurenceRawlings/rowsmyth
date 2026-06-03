@@ -1,0 +1,93 @@
+"""Foreign-key resolution and row validation."""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
+
+from rowsmyth.errors import (
+    CompoundPrimaryKeyError,
+    MissingRequiredColumnError,
+    UnknownColumnError,
+)
+
+if TYPE_CHECKING:
+    from rowsmyth.dataset import RowCtx
+    from rowsmyth.factory import Factory
+    from rowsmyth.model import Model
+
+
+def new_parent(factory: Factory, ctx: RowCtx) -> Model:
+    """Create one parent row and append it to the accumulator."""
+    from rowsmyth.model import validate_dataset_base
+
+    validate_dataset_base(factory._model, ctx._dataset)
+    attrs = factory._row(ctx._dataset, ctx._acc, index=ctx.index, injected={})
+    ctx._acc.setdefault(factory._model.__table_name__, []).append(attrs)
+    return factory._model(**attrs)
+
+
+def resolve_fk(child_factory: Factory, ctx: RowCtx, slot: str) -> Any:
+    """Resolve a Factory used as a column value to a primary key."""
+    from rowsmyth.model import validate_dataset_base
+
+    table = child_factory._model
+    validate_dataset_base(table, ctx._dataset)
+    pk = table.__primary_key__
+    if len(pk) != 1:
+        msg = (
+            f"{table.__table_name__}: Factory() as column value requires a "
+            "single-column primary key; use ctx.parent() for compound keys"
+        )
+        raise CompoundPrimaryKeyError(msg)
+    inst = ctx._parents.get(slot)
+    if inst is None:
+        inst = new_parent(child_factory, ctx)
+        ctx._parents[slot] = inst
+    return inst.attrs[pk[0]]
+
+
+def resolve_row_values(attrs: dict[str, Any], ctx: RowCtx) -> None:
+    """Resolve Factory and callable values in place."""
+    from rowsmyth.factory import Factory
+
+    for col, value in list(attrs.items()):
+        if isinstance(value, Factory):
+            attrs[col] = resolve_fk(value, ctx, slot=col)
+        elif callable(value):
+            attrs[col] = value(ctx)
+
+
+def validate_row(table: type[Model], attrs: dict[str, Any]) -> None:
+    """Validate one generated row against the model schema."""
+    name = table.__table_name__
+    field_names = {field.name for field in table.__definition__.fields}
+    unknown = sorted(set(attrs) - field_names)
+    if unknown:
+        msg = f"{name}: unknown columns: {unknown}"
+        raise UnknownColumnError(msg)
+
+    missing = []
+    nulls = []
+    for field in table.__definition__.fields:
+        if field.nullable:
+            continue
+        if field.name not in attrs:
+            missing.append(field.name)
+        elif attrs[field.name] is None:
+            nulls.append(field.name)
+
+    invalid = missing + nulls
+    if invalid:
+        msg = f"{name}: NOT NULL columns without a value: {invalid}"
+        raise MissingRequiredColumnError(msg)
+
+
+def apply_variant(
+    table: type[Model],
+    obj: Model,
+    variant_name: str,
+    ctx: RowCtx,
+) -> dict[str, Any]:
+    """Run a named variant method and return its partial override."""
+    method = table._variants[variant_name]
+    return dict(method(obj, ctx))

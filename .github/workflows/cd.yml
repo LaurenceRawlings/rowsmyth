@@ -6,8 +6,47 @@ on:
       - "v*.*.*"
 
 jobs:
+  verify:
+    name: Verify release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Run pre-commit checks
+        run: uv run pre-commit run --all-files
+        env:
+          SKIP: no-commit-to-branch
+
+      - name: Run type check
+        run: uv run ty check src/
+
+      - name: Run security scan
+        run: uv run bandit -r src/ -c pyproject.toml
+
+      - name: Run tests
+        run: uv run pytest
+
   build:
     name: Build distribution
+    needs: verify
     runs-on: ubuntu-latest
 
     steps:
@@ -64,3 +103,31 @@ jobs:
             dist/*.whl
             dist/*.tar.gz
           fail_on_unmatched_files: true
+
+  deploy-docs:
+    name: Build and deploy docs to GitHub Pages
+    needs: publish-pypi
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Build docs
+        run: uv run portray as_html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
