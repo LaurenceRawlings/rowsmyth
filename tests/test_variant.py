@@ -1,17 +1,23 @@
-from rowsmyth._variant import variant
+"""Tests for variant decorator and merge."""
+
+from __future__ import annotations
+
+import pytest
+from chispa import assert_column_equality
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+
+from rowsmyth import generate
 
 
-def test_variant_marks_function():
-    @variant
-    def premium(cls):
-        return {cls: "premium"}
+def test_variant_override(spark: SparkSession, user_model) -> None:
+    with generate(spark, seed=1) as gen:
+        created = user_model.factory().count(3).variant("churned").create()
+        df = gen.dataframe("users").withColumn("expected_status", F.lit("inactive"))
+    assert all(user.status == "inactive" for user in created)
+    assert_column_equality(df, "status", "expected_status")
 
-    assert getattr(premium, "_is_variant", False) is True
 
-
-def test_variant_preserves_return_value():
-    @variant
-    def admin(cls):
-        return {"name": "admin"}
-
-    assert admin("ignored_cls") == {"name": "admin"}
+def test_unknown_variant_raises(user_model) -> None:
+    with pytest.raises(KeyError, match="no variant 'missing'"):
+        user_model.factory().variant("missing")

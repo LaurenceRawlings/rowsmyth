@@ -1,16 +1,26 @@
-from importlib.metadata import version
+"""
+Rowsmyth: declarative relational test data as Spark DataFrames.
 
-from ._base import TableSpecMixin, declarative_base
-from ._builder import FactoryBuilder
-from ._dataset import Dataset
-from ._variant import variant
+Generate seed datasets row-by-row with real foreign-key integrity.
+"""
 
-__version__ = version("rowsmyth")
+from rowsmyth.context import Generation, RowCtx, generate
+from rowsmyth.factory import Factory
+from rowsmyth.pool import Pool
+from rowsmyth.table import Model, variant
+
+try:
+    from rowsmyth._version import __version__
+except ImportError:
+    __version__ = "0.0.0"
+
 __all__ = [
-    "Dataset",
-    "FactoryBuilder",
-    "TableSpecMixin",
+    "Factory",
+    "Generation",
+    "Model",
+    "Pool",
+    "RowCtx",
     "__version__",
-    "declarative_base",
+    "generate",
     "variant",
 ]
