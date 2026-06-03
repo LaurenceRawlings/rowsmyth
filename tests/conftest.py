@@ -5,7 +5,10 @@ from __future__ import annotations
 import os
 import sys
 from pathlib import Path
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
 import pytest
 from pyspark.sql import SparkSession
@@ -281,7 +284,7 @@ def _configure_pyspark_env() -> None:
 
 
 @pytest.fixture(scope="session")
-def spark() -> SparkSession:
+def spark() -> Generator[SparkSession, None, None]:
     _ensure_java_on_path()
     _configure_pyspark_env()
     session = (
