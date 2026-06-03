@@ -131,7 +131,7 @@ User.factory()
 
 | Method | Behaviour |
 |--------|-----------|
-| `count(n)` | Rows to generate for this table |
+| `count(n)` | Rows to generate for this table; `0` is a no-op, negative/non-integer values raise `FactoryError` |
 | `variant(name)` | Merge partial dict from `@variant` method |
 | `where(**kwargs)` | Overrides; merged after variant |
 | `has(child, via=None)` | For each parent row, generate child rows with parent injected |
@@ -158,7 +158,7 @@ with Base.dataset(spark, seed=42) as dataset:
 
 ## Row materialisation pipeline
 
-For each row, `Factory.row()` runs:
+For each row, the factory materialisation pipeline runs:
 
 1. `attrs = table().generator(ctx)`
 2. If a variant is selected: `attrs.update(variant_method(table_instance, ctx))`
@@ -204,7 +204,12 @@ Use `order.key` (dict of PK columns), `order.pk` (scalar, single-column PK only;
 
 ### `ctx.pool(view, col)`
 
-Not an FK mode: read distinct values from an existing **temp view** in the session. `choice()` returns a deferred token that is resolved in Spark during commit using hidden rowsmyth columns, which are dropped before public DataFrames and temp views are registered. Raises `EmptyPoolError` if the view has no values, `PoolSampleError` when `sample(k)` cannot be satisfied and `UnresolvedPoolError` if a deferred choice cannot resolve to a concrete value.
+Not an FK mode: read distinct non-null values from an existing **temp view** in
+the session. `choice()` returns a deferred token that is resolved in Spark during
+commit using hidden rowsmyth columns, which are dropped before public DataFrames
+and temp views are registered. Raises `EmptyPoolError` if the view has no
+non-null values, `PoolSampleError` when `sample(k)` cannot be satisfied and
+`UnresolvedPoolError` if a deferred choice cannot resolve to a concrete value.
 
 ```python
 "role_id": ctx.pool("roles", "id").choice()
@@ -299,7 +304,8 @@ Temp views use the bare `__table_name__` (not `fqn()`). Factories return instanc
 | `Dataset.dataframe(name)` before that table is created | `DataframeNotFoundError` |
 | Unknown `.variant(name)` | `UnknownVariantError` |
 | NOT NULL column missing or `None` in any generated row | `MissingRequiredColumnError` |
-| `ctx.pool` on empty view | `EmptyPoolError` |
+| `Factory.count()` with a negative or non-integer value | `FactoryError` |
+| `ctx.pool` on empty view or all-null source column | `EmptyPoolError` |
 | `Pool.sample(k)` cannot sample without replacement | `PoolSampleError` |
 | Deferred `Pool.choice()` cannot resolve a concrete value | `UnresolvedPoolError` |
 | `Factory()` as column value for compound-PK parent | `CompoundPrimaryKeyError` |
@@ -310,7 +316,7 @@ Validation runs on every generated row before commit.
 
 ## Unity Catalog integration
 
-`StructField.metadata` holds UC column metadata. Use `metadata={"comment": "...", "tags": {...}}` for column comments and tags. `__comment__`, `__table_tags__`, `column_comments()`, `column_tags()` and `uc_tag_sql()` are available on the `Model` class - rowsmyth generates SQL strings but does not execute catalog writes.
+`StructField.metadata` holds UC column metadata. Use `metadata={"comment": "...", "tags": {...}}` for column comments and tags. `__comment__`, `__table_tags__`, `column_comments()`, `column_tags()` and `uc_tag_sql()` are available on the `Model` class - rowsmyth generates comment/tag SQL strings but does not execute catalog writes.
 
 ```python
 for statement in User.uc_tag_sql():
@@ -335,7 +341,7 @@ for statement in User.uc_tag_sql():
 
 **Ordering.** No topological sort. Call `.create()` in dependency order when using `pool()`; FK inject/create does not require it.
 
-**Catalog.** No `saveAsTable`, tags, or grants - only temp views.
+**Catalog.** No `saveAsTable`, comments, tags, or grants - only temp views.
 
 **Out of scope.** Production-scale throughput, automatic cycle breaking, distributed generation and schema inference.
 

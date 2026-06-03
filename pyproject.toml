@@ -11,7 +11,7 @@ authors = [
 requires-python = ">=3.12"
 keywords = ["testing", "test-data", "fixtures", "databricks", "spark"]
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
@@ -69,7 +69,6 @@ include = [
   "SECURITY.md",
   "LICENSE",
   "docs/",
-  "tests/",
 ]
 
 [tool.uv]
@@ -129,7 +128,7 @@ bump_message = "chore(release): bump version to $new_version"
 update_changelog_on_bump = true
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "src/rowsmyth"]
 pythonpath = ["."]
 addopts = "--cov=rowsmyth --cov-report=term-missing --cov-fail-under=100 --doctest-modules --ignore=src/rowsmyth/_version.py"
 doctest_optionflags = ["NORMALIZE_WHITESPACE", "ELLIPSIS"]
@@ -173,4 +172,7 @@ extra_markdown_modules = [
 [tool.portray.mkdocs]
 site_name = "rowsmyth"
 site_description = "Declarative relational test data as Spark DataFrames with referential integrity"
+site_url = "https://laurencerawlings.github.io/rowsmyth/"
 repo_url = "https://github.com/LaurenceRawlings/rowsmyth"
+repo_name = "LaurenceRawlings/rowsmyth"
+edit_uri = "edit/main/"

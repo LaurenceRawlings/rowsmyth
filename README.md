@@ -154,6 +154,8 @@ for statement in Customer.uc_tag_sql():
     spark.sql(statement)
 ```
 
+`uc_tag_sql()` emits table comments, table tags, column comments and column tags.
+
 ### Generate test fixtures
 
 Write fixtures to the source your pipeline reads - either a Unity Catalog volume or a persistent bronze table:
@@ -188,6 +190,9 @@ make install
 make test        # requires JAVA_HOME / java on PATH
 make lint
 make typecheck
+make security
+make pre-commit
+make ci          # local equivalent of CI checks
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for details.

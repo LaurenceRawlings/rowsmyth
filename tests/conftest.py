@@ -1,4 +1,4 @@
-"""Shared pytest fixtures."""
+"""Shared integration fixtures for the public rowsmyth API."""
 
 from __future__ import annotations
 
@@ -44,6 +44,10 @@ class User(Base):
     __comment__ = "Application users"
     __primary_key__ = ("id",)
     __table_tags__: ClassVar[dict[str, str]] = {"layer": "silver"}
+    __expectations__: ClassVar[dict[str, str]] = {
+        "id_not_null": "id IS NOT NULL",
+        "email_not_null": "email IS NOT NULL",
+    }
     __definition__ = StructType([
         StructField("id", LongType(), False),
         StructField("role_id", LongType(), False),
@@ -51,9 +55,7 @@ class User(Base):
             "full_name",
             StringType(),
             False,
-            metadata={
-                "comment": "User display name",
-            },
+            metadata={"comment": "User display name"},
         ),
         StructField(
             "email",
@@ -102,28 +104,6 @@ class Post(Base):
         }
 
 
-class OrderLine(Base):
-    """Child with compound FK to Order."""
-
-    __table_name__ = "order_lines"
-    __primary_key__ = ("line_id",)
-    __definition__ = StructType([
-        StructField("line_id", LongType(), False),
-        StructField("order_id", LongType(), False),
-        StructField("order_region", StringType(), False),
-        StructField("qty", LongType(), False),
-    ])
-
-    def generator(self, ctx) -> dict:
-        order = ctx.parent(Order)
-        return {
-            "line_id": ctx.sequence(),
-            "order_id": order.key["order_id"],
-            "order_region": order.key["region"],
-            "qty": ctx.random.randint(1, 5),
-        }
-
-
 class Order(Base):
     __table_name__ = "orders"
     __primary_key__ = ("order_id", "region")
@@ -139,9 +119,27 @@ class Order(Base):
         }
 
 
-class BadCompoundFk(Base):
-    """Model that incorrectly uses Factory() with compound PK parent."""
+class OrderLine(Base):
+    __table_name__ = "order_lines"
+    __primary_key__ = ("line_id",)
+    __definition__ = StructType([
+        StructField("line_id", LongType(), False),
+        StructField("order_id", LongType(), False),
+        StructField("order_region", StringType(), False),
+        StructField("qty", LongType(), False),
+    ])
 
+    def generator(self, ctx) -> dict:
+        order = ctx.parent(Order, role="placed_order")
+        return {
+            "line_id": ctx.sequence(),
+            "order_id": order.key["order_id"],
+            "order_region": order.key["region"],
+            "qty": ctx.random.randint(1, 5),
+        }
+
+
+class BadCompoundFk(Base):
     __table_name__ = "bad_compound_fk"
     __primary_key__ = ("id",)
     __definition__ = StructType([
@@ -156,23 +154,21 @@ class BadCompoundFk(Base):
         }
 
 
-class AbstractBase(Base):
-    """Intermediate base without __table_name__ - not registered."""
-
-    __definition__ = StructType([StructField("id", LongType(), False)])
+class PoolConsumer(Base):
+    __table_name__ = "pool_consumer"
     __primary_key__ = ("id",)
+    __definition__ = StructType([
+        StructField("id", LongType(), False),
+        StructField("role_id", LongType(), False),
+        StructField("fallback_role_id", LongType(), False),
+    ])
 
     def generator(self, ctx) -> dict:
-        return {"id": 1}
-
-
-class ConcreteChild(AbstractBase):
-    __table_name__ = "concrete_child"
-    __definition__ = StructType([StructField("id", LongType(), False)])
-    __primary_key__ = ("id",)
-
-    def generator(self, ctx) -> dict:
-        return {"id": ctx.sequence()}
+        return {
+            "id": ctx.sequence(),
+            "role_id": ctx.pool("roles", "id").choice(),
+            "fallback_role_id": 0,
+        }
 
 
 class NullableDemo(Base):
@@ -199,19 +195,49 @@ class MissingRequired(Base):
         return {"id": ctx.sequence()}
 
 
-class PoolConsumer(Base):
-    __table_name__ = "pool_consumer"
+class AbstractState(Base):
+    __definition__ = StructType([StructField("id", LongType(), False)])
+    __primary_key__ = ("id",)
+
+    @variant
+    def archived(self, ctx) -> dict:
+        return {"status": "archived"}
+
+
+class StatefulItem(AbstractState):
+    __table_name__ = "stateful_items"
     __primary_key__ = ("id",)
     __definition__ = StructType([
         StructField("id", LongType(), False),
-        StructField("role_id", LongType(), False),
+        StructField("status", StringType(), False),
     ])
 
     def generator(self, ctx) -> dict:
-        return {
-            "id": ctx.sequence(),
-            "role_id": ctx.pool("roles", "id").choice(),
-        }
+        return {"id": ctx.sequence(), "status": "active"}
+
+
+class SequenceLeft(Base):
+    __table_name__ = "sequence_left"
+    __primary_key__ = ("id",)
+    __definition__ = StructType([
+        StructField("id", LongType(), False),
+        StructField("shared_id", LongType(), False),
+    ])
+
+    def generator(self, ctx) -> dict:
+        return {"id": ctx.sequence(), "shared_id": ctx.sequence("shared")}
+
+
+class SequenceRight(Base):
+    __table_name__ = "sequence_right"
+    __primary_key__ = ("id",)
+    __definition__ = StructType([
+        StructField("id", LongType(), False),
+        StructField("shared_id", LongType(), False),
+    ])
+
+    def generator(self, ctx) -> dict:
+        return {"id": ctx.sequence(), "shared_id": ctx.sequence("shared")}
 
 
 @pytest.fixture
@@ -220,57 +246,24 @@ def app_base():
 
 
 @pytest.fixture
-def role_model() -> type[Role]:
-    return Role
-
-
-@pytest.fixture
-def user_model() -> type[User]:
-    return User
-
-
-@pytest.fixture
-def post_model() -> type[Post]:
-    return Post
-
-
-@pytest.fixture
-def order_model() -> type[Order]:
-    return Order
-
-
-@pytest.fixture
-def order_line_model() -> type[OrderLine]:
-    return OrderLine
-
-
-@pytest.fixture
-def bad_compound_fk_model() -> type[BadCompoundFk]:
-    return BadCompoundFk
-
-
-@pytest.fixture
-def concrete_child_model() -> type[ConcreteChild]:
-    return ConcreteChild
-
-
-@pytest.fixture
-def nullable_demo_model() -> type[NullableDemo]:
-    return NullableDemo
-
-
-@pytest.fixture
-def missing_required_model() -> type[MissingRequired]:
-    return MissingRequired
-
-
-@pytest.fixture
-def pool_consumer_model() -> type[PoolConsumer]:
-    return PoolConsumer
+def models():
+    return {
+        "bad_compound_fk": BadCompoundFk,
+        "missing_required": MissingRequired,
+        "nullable_demo": NullableDemo,
+        "order": Order,
+        "order_line": OrderLine,
+        "pool_consumer": PoolConsumer,
+        "post": Post,
+        "role": Role,
+        "sequence_left": SequenceLeft,
+        "sequence_right": SequenceRight,
+        "stateful_item": StatefulItem,
+        "user": User,
+    }
 
 
 def _ensure_java_on_path() -> None:
-    """Prepend JAVA_HOME/bin when JAVA_HOME is set (common on Windows)."""
     java_home = os.environ.get("JAVA_HOME")
     if not java_home:
         return
@@ -281,7 +274,6 @@ def _ensure_java_on_path() -> None:
 
 
 def _configure_pyspark_env() -> None:
-    """Stable local Spark settings (especially on Windows)."""
     python = sys.executable
     os.environ.setdefault("PYSPARK_PYTHON", python)
     os.environ.setdefault("PYSPARK_DRIVER_PYTHON", python)
@@ -290,7 +282,6 @@ def _configure_pyspark_env() -> None:
 
 @pytest.fixture(scope="session")
 def spark() -> SparkSession:
-    """Single local Spark session for the test run."""
     _ensure_java_on_path()
     _configure_pyspark_env()
     session = (

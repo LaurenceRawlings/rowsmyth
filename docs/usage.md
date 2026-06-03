@@ -58,7 +58,9 @@ class Role(Base):
 | `__table_tags__` | no | `dict[str, str]` | UC table tags |
 | `__expectations__` | no | `dict[str, str]` | `{name: sql}` pairs for Lakeflow data quality expectations |
 
-`Model.fqn()` returns `catalog.schema.table_name` when both `__catalog__` and `__schema__` are set, otherwise just `__table_name__`.
+`Model.fqn()` joins the configured catalog parts in order. A model with both
+`__catalog__` and `__schema__` returns `catalog.schema.table_name`; a partial
+configuration returns the available prefix plus `__table_name__`.
 
 ### Registry
 
@@ -70,7 +72,9 @@ Base.registry["roles"]  # -> Role class
 
 ### Column metadata
 
-Attach Unity Catalog column comments and column tags directly on `StructField`. The comment is applied automatically when the table is created from the schema; column tags are applied separately (see [Apply Unity Catalog tags](#apply-unity-catalog-tags-after-pipeline-run)).
+Attach Unity Catalog column comments and column tags directly on `StructField`.
+`uc_tag_sql()` can generate SQL for table comments, table tags, column comments
+and column tags (see [Apply Unity Catalog metadata](#apply-unity-catalog-metadata-after-pipeline-run)).
 
 ```python
 StructField("email", StringType(), False, metadata={
@@ -157,7 +161,7 @@ User.factory()
 
 | Method | Description |
 |--------|-------------|
-| `count(n)` | Number of rows to generate (default: 1) |
+| `count(n)` | Number of rows to generate (default: 1); `0` is an explicit no-op, negative/non-integer values raise `FactoryError` |
 | `variant(name)` | Apply a named `@variant`; raises `UnknownVariantError` if unknown |
 | `where(**kwargs)` | Column overrides; merged last, wins over `generator()` and `@variant`. Values may be scalars, `Factory` instances, deferred pool choices, or `callable(ctx) -> value` |
 | `has(child_factory, via=None)` | For each parent row, generate child rows and inject this parent. `via` names the injection slot (usually the FK column name) |
@@ -374,9 +378,10 @@ with Base.dataset(spark):
 
 `pool.choice()` - a deferred value resolved against Spark during commit
 `pool.sample(k)` - immediate `k` distinct values without replacement
-Raises `EmptyPoolError` if the view is empty, `PoolSampleError` if `k` cannot
-be sampled without replacement, and `UnresolvedPoolError` if a deferred choice
-cannot resolve to a concrete value during commit.
+Null source values are ignored. Raises `EmptyPoolError` if the view has no
+non-null values, `PoolSampleError` if `k` cannot be sampled without replacement,
+and `UnresolvedPoolError` if a deferred choice cannot resolve to a concrete
+value during commit.
 
 ### Disambiguation with `via`
 
@@ -498,9 +503,10 @@ def customers():
 
 `__expectations__` is a `dict[str, str]` - keys are constraint names, values are SQL expressions - which maps directly to `expect_all_or_fail`.
 
-### Apply Unity Catalog tags after pipeline run
+### Apply Unity Catalog metadata after pipeline run
 
-rowsmyth stores metadata on the class but does not write to the catalog itself. Generate tag SQL in a notebook or job that runs after the pipeline:
+rowsmyth stores metadata on the class but does not write to the catalog itself.
+Generate comment and tag SQL in a notebook or job that runs after the pipeline:
 
 ```python
 for statement in Customer.uc_tag_sql():
@@ -509,7 +515,7 @@ for statement in Customer.uc_tag_sql():
 
 ### `Model.fqn()`
 
-Returns the fully-qualified catalog name when `__catalog__` and `__schema__` are both set:
+Returns the table name with any configured catalog/schema prefix:
 
 ```python
 Customer.fqn()  # → "main.commerce.customers"
@@ -608,7 +614,8 @@ all_customers.write.mode("overwrite").saveAsTable("main.bronze.raw_customers")
 | Unknown `.variant(name)` | `UnknownVariantError` | `{table} has no variant {name!r}` |
 | Model primary key references columns absent from `__definition__` | `InvalidModelDefinitionError` | `{table}: missing primary key columns: {cols}` |
 | NOT NULL column missing or `None` in any generated row | `MissingRequiredColumnError` | `{table}: NOT NULL columns without a value: {cols}` |
-| `ctx.pool()` on empty temp view | `EmptyPoolError` | `pool({view!r}, {col!r}): no values in temp view` |
+| `Factory.count()` with a negative or non-integer value | `FactoryError` | `Factory.count() requires a non-negative integer` |
+| `ctx.pool()` on empty temp view or all-null source column | `EmptyPoolError` | `pool({view!r}, {col!r}): no non-null values in temp view` |
 | `pool.sample(k)` cannot sample without replacement | `PoolSampleError` | `pool({view!r}, {col!r}): cannot sample {k} values from {n} available values` |
 | `pool.choice()` cannot resolve a concrete value | `UnresolvedPoolError` | `pool choice for {table}.{column} could not be resolved` |
 | `Factory()` as value for compound-PK parent | `CompoundPrimaryKeyError` | `{table}: Factory() as column value requires single-column PK; use ctx.parent()` |
@@ -622,7 +629,10 @@ non-nullable columns must be present, and non-nullable values cannot be `None`.
 
 ## Gotchas
 
-**Scale.** Row generation runs in the Spark driver, row by row. This suits dev, test and seed volumes (thousands to low millions). For large-scale synthetic data prefer vectorised tools such as dbldatagen.
+**Scale.** Row generation runs in the Spark driver, row by row. Deferred pool
+choices are resolved with Spark joins, but rowsmyth still returns model objects
+to the driver. This suits dev, test and seed volumes. For large-scale synthetic
+data prefer vectorised tools such as dbldatagen.
 
 **Schema.** Always pass `__definition__` to `createDataFrame`. Schema inference miss-handles `None` values and conflates Python `int` with Spark `LongType`.
 
@@ -636,4 +646,5 @@ non-nullable columns must be present, and non-nullable values cannot be `None`.
 
 **Temp view names.** `createOrReplaceTempView` uses the bare `__table_name__`, not the fully-qualified name. Queries against temp views must use the bare name.
 
-**No catalog writes.** rowsmyth only creates temp views. Writing to Unity Catalog tables, volumes, or applying tags is always your responsibility.
+**No catalog writes.** rowsmyth only creates temp views. Writing to Unity Catalog
+tables, volumes, comments, tags or grants is always your responsibility.

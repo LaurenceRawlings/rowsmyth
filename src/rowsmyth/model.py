@@ -67,6 +67,7 @@ class Model:
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
+        cls._variants = _collect_variants(cls)
         if not getattr(cls, "__table_name__", None):
             return
         base = declarative_base_for(cls)
@@ -79,15 +80,6 @@ class Model:
         if internal:
             msg = f"{cls.__table_name__}: reserved rowsmyth columns: {internal}"
             raise ReservedColumnError(msg)
-        variants: dict[str, Callable[..., dict[str, Any]]] = {}
-        for parent in reversed(cls.__mro__[1:]):
-            variants.update(getattr(parent, "_variants", {}))
-        variants.update({
-            m.__variant__: m  # type: ignore[attr-defined]
-            for m in vars(cls).values()
-            if callable(m) and hasattr(m, "__variant__")
-        })
-        cls._variants = variants
         base.registry[cls.__table_name__] = cls
 
     def __init__(self, **attrs: Any) -> None:
@@ -95,11 +87,6 @@ class Model:
         object.__setattr__(self, "attrs", dict(attrs))
         for key, value in attrs.items():
             object.__setattr__(self, key, value)
-
-    @property
-    def table(self) -> type[Model]:
-        """Return the model class for compatibility with parent internals."""
-        return type(self)
 
     def __getattr__(self, name: str) -> Any:
         try:
@@ -155,8 +142,6 @@ class Model:
     @classmethod
     def fqn(cls) -> str:
         """Fully qualified table name (catalog.schema.table)."""
-        if not (cls.__catalog__ and cls.__schema__):
-            return cls.__table_name__
         parts = (cls.__catalog__, cls.__schema__, cls.__table_name__)
         return ".".join(p for p in parts if p)
 
@@ -182,12 +167,22 @@ class Model:
 
     @classmethod
     def uc_tag_sql(cls) -> list[str]:
-        """SQL statements needed to apply Unity Catalog table and column tags."""
+        """SQL statements needed to apply Unity Catalog comments and tags."""
         statements: list[str] = []
         table_name = _quote_fqn(cls.fqn())
+        if cls.__comment__:
+            statements.append(
+                f"COMMENT ON TABLE {table_name} IS {_quote_literal(cls.__comment__)}"
+            )
         if cls.__table_tags__:
             statements.append(
                 f"ALTER TABLE {table_name} SET TAGS ({_tag_pairs(cls.__table_tags__)})"
+            )
+        for column, comment in cls.column_comments().items():
+            statements.append(
+                "ALTER TABLE "
+                f"{table_name} ALTER COLUMN {_quote_identifier(column)} "
+                f"COMMENT {_quote_literal(comment)}"
             )
         for column, tags in cls.column_tags().items():
             statements.append(
@@ -217,8 +212,23 @@ def _tag_pairs(tags: dict[str, str]) -> str:
     )
 
 
+def _collect_variants(model: type[Model]) -> dict[str, Callable[..., dict[str, Any]]]:
+    variants: dict[str, Callable[..., dict[str, Any]]] = {}
+    for parent in reversed(model.__mro__[1:]):
+        variants.update(getattr(parent, "_variants", {}))
+    variants.update({
+        method.__variant__: method  # type: ignore[attr-defined]
+        for method in vars(model).values()
+        if callable(method) and hasattr(method, "__variant__")
+    })
+    return variants
+
+
 def _validate_model_definition(model: type[Model]) -> None:
     field_names = model._field_names()
+    if not model.__primary_key__:
+        msg = f"{model.__table_name__}: primary key must contain at least one column"
+        raise InvalidModelDefinitionError(msg)
     missing_pk = [col for col in model.__primary_key__ if col not in field_names]
     if missing_pk:
         msg = f"{model.__table_name__}: missing primary key columns: {missing_pk}"

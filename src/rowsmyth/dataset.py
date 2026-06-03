@@ -15,7 +15,7 @@ from rowsmyth.errors import (
     EmptyPoolError,
     UnresolvedPoolError,
 )
-from rowsmyth.pool import Pool, PoolChoice
+from rowsmyth.pool import Pool, PoolChoice, _empty_pool_message
 
 if TYPE_CHECKING:
     from types import TracebackType
@@ -33,10 +33,7 @@ def require_active() -> Dataset:
     try:
         return _active.get()
     except LookupError as exc:
-        msg = (
-            "rowsmyth factories must be used inside dataset context via "
-            "Base.dataset(spark, ...)"
-        )
+        msg = "rowsmyth factories must be used inside Base.dataset(spark, ...)"
         raise DatasetContextError(msg) from exc
 
 
@@ -47,7 +44,6 @@ class Dataset:
         "_rows",
         "_seq",
         "_token",
-        "_validated",
         "base",
         "dataframes",
         "faker",
@@ -73,7 +69,6 @@ class Dataset:
         self.registry = base.registry
         self._seq: dict[str, int] = {}
         self._rows: dict[str, list[dict[str, Any]]] = {}
-        self._validated: set[str] = set()
         self._token: Any = None
         self.dataframes: dict[str, DataFrame] = {}
 
@@ -196,12 +191,12 @@ class Dataset:
                 self.spark
                 .table(view)
                 .select(F.col(source_col).alias(resolved_col))
+                .where(F.col(resolved_col).isNotNull())
                 .distinct()
             )
             value_count = source.count()
             if value_count == 0:
-                msg = f"pool({view!r}, {source_col!r}): no values in temp view"
-                raise EmptyPoolError(msg)
+                raise EmptyPoolError(_empty_pool_message(view, source_col))
             ranked = source.withColumn(
                 f"{resolved_col}_rank",
                 F.row_number().over(Window.orderBy(F.col(resolved_col))),
@@ -232,17 +227,17 @@ class Dataset:
 class RowCtx:
     """Per-row context passed to :meth:`Model.generator` and variants."""
 
-    __slots__ = ("_acc", "_gen", "_parents", "_table", "index", "row")
+    __slots__ = ("_acc", "_dataset", "_parents", "_table", "index", "row")
 
     def __init__(
         self,
-        gen: Dataset,
+        dataset: Dataset,
         table: type[Model],
         index: int,
         parents: dict[str, Model],
         acc: dict[str, list[dict[str, Any]]],
     ) -> None:
-        self._gen = gen
+        self._dataset = dataset
         self._table = table
         self.index = index
         self.row: dict[str, Any] = {}
@@ -251,34 +246,34 @@ class RowCtx:
 
     @property
     def faker(self) -> Faker:
-        return self._gen.faker
+        return self._dataset.faker
 
     @property
     def random(self) -> random_module.Random:
-        return self._gen.random
+        return self._dataset.random
 
     @property
     def seed(self) -> int | None:
-        return self._gen.seed
+        return self._dataset.seed
 
     @property
     def spark(self) -> SparkSession:
-        return self._gen.spark
+        return self._dataset.spark
 
     def sequence(self, name: str | None = None) -> int:
         """Monotonic counter; defaults to the current table name."""
-        return self._gen.next_seq(name or self._table.__table_name__)
+        return self._dataset.next_seq(name or self._table.__table_name__)
 
     def pool(self, view: str, col: str) -> Pool:
         """Distinct values from an existing temp view."""
-        return self._gen.pool(view, col)
+        return self._dataset.pool(view, col)
 
     def parent(self, table: type[Model], role: str | None = None) -> Model:
         """Resolve a parent row (injected or created once per slot)."""
         from rowsmyth.model import validate_dataset_base
         from rowsmyth.resolution import new_parent
 
-        validate_dataset_base(table, self._gen)
+        validate_dataset_base(table, self._dataset)
         slot = role or table.__table_name__
         if slot not in self._parents:
             self._parents[slot] = new_parent(table.factory(), self)

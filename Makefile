@@ -1,4 +1,4 @@
-.PHONY: install lint format typecheck security test pre-commit \
+.PHONY: install lint format typecheck security test pre-commit ci \
         docs docs-serve
 
 install:
@@ -22,6 +22,8 @@ test:
 
 pre-commit:
 	uv run pre-commit run --all-files
+
+ci: pre-commit typecheck security test
 
 docs:
 	uv run portray as_html

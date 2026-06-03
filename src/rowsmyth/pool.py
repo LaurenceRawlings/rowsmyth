@@ -22,6 +22,10 @@ class PoolChoice:
     seed: int
 
 
+def _empty_pool_message(view: str, column: str) -> str:
+    return f"pool({view!r}, {column!r}): no non-null values in temp view"
+
+
 class Pool:
     """Distinct column values from a session temp view."""
 
@@ -65,9 +69,17 @@ class Pool:
             raise PoolSampleError(msg) from exc
 
     def _values(self) -> list[Any]:
-        rows = self._spark.table(self.view).select(self.column).distinct().collect()
+        from pyspark.sql import functions as F
+
+        rows = (
+            self._spark
+            .table(self.view)
+            .select(self.column)
+            .where(F.col(self.column).isNotNull())
+            .distinct()
+            .collect()
+        )
         values = [row[0] for row in rows]
         if not values:
-            msg = f"pool({self.view!r}, {self.column!r}): no values in temp view"
-            raise EmptyPoolError(msg)
+            raise EmptyPoolError(_empty_pool_message(self.view, self.column))
         return values

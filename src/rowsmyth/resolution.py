@@ -11,7 +11,7 @@ from rowsmyth.errors import (
 )
 
 if TYPE_CHECKING:
-    from rowsmyth.dataset import Dataset, RowCtx
+    from rowsmyth.dataset import RowCtx
     from rowsmyth.factory import Factory
     from rowsmyth.model import Model
 
@@ -20,18 +20,18 @@ def new_parent(factory: Factory, ctx: RowCtx) -> Model:
     """Create one parent row and append it to the accumulator."""
     from rowsmyth.model import validate_dataset_base
 
-    validate_dataset_base(factory.table, ctx._gen)
-    attrs = factory.row(ctx._gen, ctx._acc, index=ctx.index, injected={})
-    ctx._acc.setdefault(factory.table.__table_name__, []).append(attrs)
-    return factory.table(**attrs)
+    validate_dataset_base(factory._model, ctx._dataset)
+    attrs = factory._row(ctx._dataset, ctx._acc, index=ctx.index, injected={})
+    ctx._acc.setdefault(factory._model.__table_name__, []).append(attrs)
+    return factory._model(**attrs)
 
 
 def resolve_fk(child_factory: Factory, ctx: RowCtx, slot: str) -> Any:
     """Resolve a Factory used as a column value to a primary key."""
     from rowsmyth.model import validate_dataset_base
 
-    table = child_factory.table
-    validate_dataset_base(table, ctx._gen)
+    table = child_factory._model
+    validate_dataset_base(table, ctx._dataset)
     pk = table.__primary_key__
     if len(pk) != 1:
         msg = (
@@ -80,11 +80,6 @@ def validate_row(table: type[Model], attrs: dict[str, Any]) -> None:
     if invalid:
         msg = f"{name}: NOT NULL columns without a value: {invalid}"
         raise MissingRequiredColumnError(msg)
-
-
-def validate_once(gen: Dataset, table: type[Model], attrs: dict[str, Any]) -> None:
-    """Validate a row; retained for compatibility with older internal tests."""
-    validate_row(table, attrs)
 
 
 def apply_variant(

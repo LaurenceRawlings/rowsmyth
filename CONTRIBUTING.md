@@ -7,7 +7,6 @@ Thank you for your interest in contributing!
 - Python 3.12+
 - Java 17+ with `java` on your `PATH` (or `JAVA_HOME` set) for PySpark integration tests
 - [uv](https://docs.astral.sh/uv/) - package manager
-- [pre-commit](https://pre-commit.com/) - git hooks
 
 PySpark 4.x requires a JDK; CI installs Temurin 17 automatically. Set `JAVA_HOME`
 or add `java` to your `PATH` before running `make test`.
@@ -59,18 +58,19 @@ flexible - what matters is the **PR title**.
 
 ```bash
 make test        # tests only
-make lint        # ruff check
+make lint        # ruff check --fix
 make format      # ruff format
 make typecheck   # ty strict mode
 make security    # bandit scan
 make pre-commit  # run all pre-commit hooks on all files
+make ci          # run the full local CI suite
 ```
 
 ## Adding tests
 
 All PRs must maintain **100% test coverage**. If you add or change code, add
-tests that cover it. Docstring examples in `src/` must also be valid doctests -
-run `pytest --doctest-modules src/rowsmyth/` to verify them separately.
+tests that cover it through the public API. Docstring examples in `src/` are
+collected by the default `pytest` command.
 
 Spark integration tests use [chispa](https://github.com/MrPowers/chispa) for
 DataFrame assertions (`assert_df_equality`, `assert_column_equality`, etc.).
