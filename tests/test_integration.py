@@ -6,11 +6,11 @@ from chispa import assert_column_equality
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
-from rowsmyth import generate
 
-
-def test_users_posts_temp_views(spark: SparkSession, post_model, user_model) -> None:
-    with generate(spark, seed=50) as gen:
+def test_users_posts_temp_views(
+    spark: SparkSession, app_base, post_model, user_model
+) -> None:
+    with app_base.dataset(spark, seed=50) as dataset:
         users = (
             user_model
             .factory()
@@ -18,7 +18,7 @@ def test_users_posts_temp_views(spark: SparkSession, post_model, user_model) -> 
             .has(post_model.factory().count(2).where(published=True), via="author_id")
             .create()
         )
-        posts = gen.dataframe("posts")
+        posts = dataset.dataframe("posts")
     assert spark.catalog.tableExists("users")
     assert spark.catalog.tableExists("posts")
     assert len(users) == 2
@@ -27,11 +27,13 @@ def test_users_posts_temp_views(spark: SparkSession, post_model, user_model) -> 
     assert_column_equality(published, "published", "expected")
 
 
-def test_where_factory_fk(spark: SparkSession, role_model, user_model) -> None:
-    with generate(spark, seed=51) as gen:
+def test_where_factory_fk(
+    spark: SparkSession, app_base, role_model, user_model
+) -> None:
+    with app_base.dataset(spark, seed=51) as dataset:
         user_model.factory().count(1).where(role_id=role_model.factory()).create()
-        users = gen.dataframe("users")
-        roles = gen.dataframe("roles")
+        users = dataset.dataframe("users")
+        roles = dataset.dataframe("roles")
     joined = (
         users
         .alias("u")

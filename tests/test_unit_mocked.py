@@ -8,8 +8,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from rowsmyth import generate, variant
-from rowsmyth.context import Generation, RowCtx, require_active
+from rowsmyth import variant
+from rowsmyth.dataset import Dataset, RowCtx, require_active
 from rowsmyth.pool import PoolChoice
 from rowsmyth.resolution import (
     apply_variant,
@@ -47,26 +47,27 @@ def _mock_spark(
 
 
 def test_require_active_raises() -> None:
-    with pytest.raises(RuntimeError, match="inside generate"):
+    with pytest.raises(RuntimeError, match="inside dataset"):
         require_active()
 
 
-def test_generation_exposes_spark() -> None:
+def test_dataset_exposes_spark(app_base) -> None:
     spark = _mock_spark()
-    gen = Generation(spark, MagicMock(), random.Random(0), 1)
-    assert gen.spark is spark
+    dataset = Dataset(spark, MagicMock(), random.Random(0), 1, app_base)
+    assert dataset.spark is spark
+    assert dataset.base is app_base
 
 
-def test_pool_empty_mocked() -> None:
+def test_pool_empty_mocked(app_base) -> None:
     spark = _mock_spark(pool_values=[])
-    gen = Generation(spark, MagicMock(), random.Random(0), None)
+    gen = Dataset(spark, MagicMock(), random.Random(0), None, app_base)
     with pytest.raises(ValueError, match="no values"):
         gen.pool("roles", "id").sample(1)
 
 
-def test_pool_with_values() -> None:
+def test_pool_with_values(app_base) -> None:
     spark = _mock_spark(pool_values=[1, 2, 3])
-    gen = Generation(spark, MagicMock(), random.Random(0), None)
+    gen = Dataset(spark, MagicMock(), random.Random(0), None, app_base)
     pool = gen.pool("roles", "id")
     assert pool.sample(1)[0] in (1, 2, 3)
     choice = pool.choice()
@@ -75,9 +76,9 @@ def test_pool_with_values() -> None:
     assert choice.column == "id"
 
 
-def test_create_mocked(role_model) -> None:
+def test_create_mocked(app_base, role_model) -> None:
     spark = _mock_spark()
-    with generate(spark, seed=0) as gen:
+    with app_base.dataset(spark, seed=0) as gen:
         result = role_model.factory().count(2).create()
     assert len(result) == 2
     assert "roles" in gen.dataframes
@@ -85,9 +86,9 @@ def test_create_mocked(role_model) -> None:
     gen.dataframes["roles"].createOrReplaceTempView.assert_called_with("roles")
 
 
-def test_resolve_fk_injected(role_model, user_model) -> None:
+def test_resolve_fk_injected(app_base, role_model, user_model) -> None:
     spark = _mock_spark()
-    with generate(spark):
+    with app_base.dataset(spark):
         acc: dict[str, list[dict[str, Any]]] = {}
         gen = require_active()
         ctx = RowCtx(gen, user_model, 0, {}, acc)
@@ -97,9 +98,9 @@ def test_resolve_fk_injected(role_model, user_model) -> None:
         assert value == 99
 
 
-def test_resolve_fk_creates_parent(role_model, user_model) -> None:
+def test_resolve_fk_creates_parent(app_base, role_model, user_model) -> None:
     spark = _mock_spark()
-    with generate(spark):
+    with app_base.dataset(spark):
         acc: dict[str, list[dict[str, Any]]] = {}
         gen = require_active()
         ctx = RowCtx(gen, user_model, 0, {}, acc)
@@ -108,9 +109,9 @@ def test_resolve_fk_creates_parent(role_model, user_model) -> None:
         assert "roles" in acc
 
 
-def test_resolve_row_callable(user_model) -> None:
+def test_resolve_row_callable(app_base, user_model) -> None:
     spark = _mock_spark()
-    with generate(spark):
+    with app_base.dataset(spark):
         acc: dict[str, list[dict[str, Any]]] = {}
         gen = require_active()
         ctx = RowCtx(gen, user_model, 0, {}, acc)
@@ -120,9 +121,9 @@ def test_resolve_row_callable(user_model) -> None:
         assert attrs["email"] == "active@x.com"
 
 
-def test_new_parent(role_model, user_model) -> None:
+def test_new_parent(app_base, role_model, user_model) -> None:
     spark = _mock_spark()
-    with generate(spark):
+    with app_base.dataset(spark):
         acc: dict[str, list[dict[str, Any]]] = {}
         gen = require_active()
         ctx = RowCtx(gen, user_model, 0, {}, acc)
@@ -131,32 +132,32 @@ def test_new_parent(role_model, user_model) -> None:
         assert "roles" in acc
 
 
-def test_validate_once_skips_second(nullable_demo_model) -> None:
+def test_validate_once_skips_second(app_base, nullable_demo_model) -> None:
     spark = _mock_spark()
-    gen = Generation(spark, MagicMock(), random.Random(0), None)
+    gen = Dataset(spark, MagicMock(), random.Random(0), None, app_base)
     validate_once(gen, nullable_demo_model, {"id": 1})
     validate_once(gen, nullable_demo_model, {})
 
 
-def test_validate_once_raises(missing_required_model) -> None:
+def test_validate_once_raises(app_base, missing_required_model) -> None:
     spark = _mock_spark()
-    gen = Generation(spark, MagicMock(), random.Random(0), None)
+    gen = Dataset(spark, MagicMock(), random.Random(0), None, app_base)
     with pytest.raises(ValueError, match="required_col"):
         validate_once(gen, missing_required_model, {"id": 1})
 
 
-def test_apply_variant(user_model) -> None:
+def test_apply_variant(app_base, user_model) -> None:
     spark = _mock_spark()
-    with generate(spark):
+    with app_base.dataset(spark):
         gen = require_active()
         ctx = RowCtx(gen, user_model, 0, {}, {})
         result = apply_variant(user_model, user_model(), "churned", ctx)
         assert result == {"status": "inactive"}
 
 
-def test_rowctx_parent(role_model, user_model) -> None:
+def test_rowctx_parent(app_base, role_model, user_model) -> None:
     spark = _mock_spark()
-    with generate(spark):
+    with app_base.dataset(spark):
         acc: dict[str, list[dict[str, Any]]] = {}
         gen = require_active()
         ctx = RowCtx(gen, user_model, 0, {}, acc)
@@ -181,9 +182,9 @@ def test_factory_fluent_methods(role_model, user_model) -> None:
     assert g._variant == "churned"
 
 
-def test_rowctx_properties(user_model) -> None:
+def test_rowctx_properties(app_base, user_model) -> None:
     spark = _mock_spark(pool_values=[10, 20])
-    with generate(spark, seed=5) as gen:
+    with app_base.dataset(spark, seed=5) as gen:
         ctx = RowCtx(gen, user_model, 0, {}, {})
         assert ctx.faker is gen.faker
         assert ctx.random is gen.random
@@ -203,9 +204,9 @@ def test_model_key_and_pk(role_model) -> None:
         _ = role.missing
 
 
-def test_resolve_factory_in_attrs(role_model, user_model) -> None:
+def test_resolve_factory_in_attrs(app_base, role_model, user_model) -> None:
     spark = _mock_spark()
-    with generate(spark):
+    with app_base.dataset(spark):
         acc: dict[str, list[dict[str, Any]]] = {}
         gen = require_active()
         ctx = RowCtx(gen, user_model, 0, {}, acc)
@@ -215,24 +216,28 @@ def test_resolve_factory_in_attrs(role_model, user_model) -> None:
         assert isinstance(attrs["role_id"], int)
 
 
-def test_has_children_mocked(post_model, user_model) -> None:
+def test_has_children_mocked(app_base, post_model, user_model) -> None:
     spark = _mock_spark()
-    with generate(spark, seed=1):
+    with app_base.dataset(spark, seed=1):
         user_model.factory().count(1).has(
             post_model.factory().count(2),
             via="author_id",
         ).create()
 
 
-def test_variant_create_mocked(user_model) -> None:
+def test_variant_create_mocked(app_base, user_model) -> None:
     spark = _mock_spark()
-    with generate(spark, seed=2):
+    with app_base.dataset(spark, seed=2):
         user_model.factory().count(1).variant("churned").create()
 
 
-def test_compound_fk_resolve_raises(bad_compound_fk_model, order_model) -> None:
+def test_compound_fk_resolve_raises(
+    app_base,
+    bad_compound_fk_model,
+    order_model,
+) -> None:
     spark = _mock_spark()
-    with generate(spark):
+    with app_base.dataset(spark):
         acc: dict[str, list[dict[str, Any]]] = {}
         gen = require_active()
         ctx = RowCtx(gen, bad_compound_fk_model, 0, {}, acc)

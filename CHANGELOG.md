@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- commitizen will append entries here on `cz bump` -->
 
+## 1.0.0 (2026-06-03)
+
+### BREAKING CHANGES
+
+- Complete API overhaul - all `0.x` public symbols removed
+- Dropped SQLAlchemy / factory-boy dependency; library now targets PySpark exclusively
+- `FactoryBuilder`, `Dataset.create()` and `@variant` decorator (old form) all removed
+- `Model.factory(n)` signature changed; see new `Factory.count()` fluent API
+- Direct `Model` subclassing replaced by explicit scoped bases from `declarative_base()`
+- `generate()` removed in favour of `Base.dataset(spark, seed=None)`
+- `context.py` removed; dataset-session internals now live in `dataset.py`
+
+### Feat
+
+- `declarative_base()` - creates a scoped rowsmyth base with an independent model registry; concrete subclasses declare `__table_name__`, `__definition__` (PySpark `StructType`) and `__primary_key__`; implement `generator(ctx)` to produce one row
+- `Base.dataset(spark, seed=None)` context manager - activates a dataset session bound to one declarative base; all factories must run inside this block
+- `Dataset` session object - exposes `spark`, `base`, `registry`, `faker`, `random`, `seed`, `dataframes`; provides `next_seq(name)`, `pool(view, col)` and `dataframe(name)`; auto-registers every committed table as a Spark temp view
+- `Factory` fluent builder - `Model.factory()` returns a `Factory`; chain `.count(n)`, `.where(**cols)`, `.has(child, via=None)`, `.variant(name)`, then call `.create()` to generate rows and receive root model instances
+- `Model.create(**cols)` - create a single row imperatively inside an active dataset, with optional column overrides
+- `RowCtx` per-row context passed to `generator()` - exposes `faker`, `random`, `spark`, `index`, `row`; provides `sequence(name)`, `pool(view, col)` and `parent(table, role=None)` for FK resolution
+- `WrongDeclarativeBaseError` - raised when a model from one declarative base is created inside a dataset for another base
+- `Pool` - wraps a Spark temp view column; `.choice()` returns a deferred `PoolChoice` resolved deterministically in Spark; `.sample(k)` picks distinct values without replacement
+- `@variant` decorator - marks a `Model` method as a named partial override; apply with `Factory.variant(name)`
+- Unity Catalog support - `__catalog__`, `__schema__`, `__table_tags__`, `__comment__`; `Model.fqn()`, `Model.uc_tag_sql()`, `Model.column_tags()`, `Model.column_comments()`
+- `Model.__expectations__` - named `dict[str, str]` of check expressions for data quality frameworks
+
 ## 0.1.0 (2026-05-25)
 
 ### Feat

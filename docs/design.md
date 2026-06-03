@@ -1,12 +1,12 @@
 # Design & Architecture
 
-Rowsmyth generates relational test and seed datasets as Spark DataFrames **row by row**, with referential integrity between tables. Generation runs in the driver; the library registers temp views in the active session. Writing to Unity Catalog (or elsewhere) is your responsibility.
+Rowsmyth generates relational test and seed datasets as Spark DataFrames **row by row**, with referential integrity between tables. Row generation runs in the driver; the library registers temp views in the active dataset session. Writing to Unity Catalog (or elsewhere) is your responsibility.
 
 ## Influences
 
 | Idea | Source |
 |------|--------|
-| Subclass `Model`, auto-register in a catalog | SQLAlchemy declarative bases |
+| Create a declarative base, subclass it, auto-register in a catalog | SQLAlchemy declarative bases |
 | Faker, weights, column ergonomics | dbldatagen (but rowsmyth is not vectorized and supports cross-table FKs) |
 
 dbldatagen optimises for throughput on a single DataFrame. Rowsmyth trades that for per-row control and real parent/child relationships.
@@ -17,38 +17,41 @@ Import from `rowsmyth`:
 
 | Symbol | Role |
 |--------|------|
-| `Model` | Declarative model base and `Model.registry` |
+| `declarative_base` | Creates a scoped declarative base with its own registry |
+| `Model` | Abstract model machinery inherited by declarative bases |
 | `variant` | Decorator for named partial row overrides |
-| `generate` | Context manager; activates a generation session |
 | `Factory` | Fluent builder (`Model.factory()` is the usual entry) |
 | `RowCtx` | Per-row context in `generator()` and variants |
-| `Generation` | Object yielded by `generate()` (`spark`, `dataframes`, `faker`, `random`, `seed`) |
+| `Dataset` | Object yielded by `Base.dataset()` (`spark`, `dataframes`, `faker`, `random`, `seed`) |
 | `Pool` | Spark-backed distinct values from a temp view (`choice`, `sample`) |
+| `WrongDeclarativeBaseError` | Error raised when a model is created in a dataset for another base |
 
-`Model.create()` and `Factory.create()` must run inside `generate()`. Calling either outside raises `RuntimeError`.
+`Model.create()` and `Factory.create()` must run inside `Base.dataset(...)` for the same declarative base. Calling either outside raises `RuntimeError`; using a model from another base raises `WrongDeclarativeBaseError`.
 
 ## Package layout
 
 ```
 src/rowsmyth/
-  table.py       Model, variant, registry, fqn(), metadata helpers
+  model.py      Model, declarative_base(), variant, registry, fqn(), metadata helpers
   factory.py     Factory - fluent API and create()
-  context.py     generate(), Generation, RowCtx
+  dataset.py     Dataset, RowCtx, active dataset context
   resolution.py  FK resolution, row value resolution, validation
   pool.py        Pool and deferred pool tokens
 ```
 
 ## Defining a table
 
-Subclass `Model`. Declare schema metadata on the class; implement `generator()` for one row.
+Create a base with `declarative_base()`, subclass it, declare schema metadata on the class and implement `generator()` for one row.
 
 ```python
 from pyspark.sql.types import LongType, StringType, StructField, StructType
 
-from rowsmyth import Model, variant
+from rowsmyth import declarative_base, variant
+
+Base = declarative_base()
 
 
-class Role(Model):
+class Role(Base):
     __table_name__ = "roles"
     __primary_key__ = ("id",)
     __definition__ = StructType([
@@ -63,7 +66,7 @@ class Role(Model):
         }
 
 
-class User(Model):
+class User(Base):
     __table_name__ = "users"
     __catalog__ = "main"
     __schema__ = "app"
@@ -110,7 +113,7 @@ Because each row is a single `dict`, columns that depend on each other use norma
 
 ### Registry and abstract bases
 
-On subclass, if `__table_name__` is set, the class is registered in `Model.registry[__table_name__]` and `@variant` methods are collected into `_variants`.
+On subclass, if `__table_name__` is set, the class is registered in `Base.registry[__table_name__]` and `@variant` methods are collected into `_variants`.
 
 If `__table_name__` is omitted (mixin or abstract intermediate base), the class is **not** registered. Concrete children still register normally.
 
@@ -133,21 +136,21 @@ User.factory()
 | `has(child, via=None)` | For each parent row, generate child rows with parent injected |
 | `create()` | Materialise all touched tables; register `createOrReplaceTempView(__table_name__)`; return root-table instances |
 
-`.create()` returns concrete model objects for the root factory table. DataFrames for every touched table (parents created for FKs, children from `.has()` and the root table itself) are stored on the active `Generation` as `gen.dataframes` and are available via `gen.dataframe(name)`.
+`.create()` returns concrete model objects for the root factory table. DataFrames for every touched table (parents created for FKs, children from `.has()` and the root table itself) are stored on the active `Dataset` as `dataset.dataframes` and are available via `dataset.dataframe(name)`.
 
 ## Static row creation
 
 Use `Model.create(**cols)` for reference data that should already exist before factories sample from a pool:
 
 ```python
-with generate(spark, seed=42) as gen:
+with Base.dataset(spark, seed=42) as dataset:
     admin = Role.create(name="admin")
     user = Role.create(name="user")
     users = User.factory().count(10).create()
 
     role_ids = {admin.id, user.id}
     assert all(created_user.role_id in role_ids for created_user in users)
-    users_df = gen.dataframe("users")
+    users_df = dataset.dataframe("users")
 ```
 
 `Model.create()` builds one row through the same `generator(ctx)`, sequence, callable, FK resolution and validation pipeline as factories. Explicit columns override generator defaults, so `Role.create(name="admin")` can rely on `generator()` for the `id` sequence.
@@ -163,7 +166,7 @@ For each row, `Factory.row()` runs:
 5. **Resolve** each value in `attrs`:
    - `Factory` → FK resolution (see below); slot = column name
    - `callable` → `value(ctx)`; siblings visible on `ctx.row`
-6. **Validate** NOT NULL columns once per table per `generate()` session (first row only)
+6. **Validate** NOT NULL columns once per table per `Dataset` session (first row only)
 
 Variants are bound methods: `def churned(self, ctx) -> dict`.
 
@@ -228,18 +231,16 @@ or:
 ctx.parent(User, role="author_id")
 ```
 
-## `generate(spark, seed=None)`
+## `Base.dataset(spark, seed=None)`
 
-Activates generation via a `ContextVar`. Factories and FK logic use the active session without threading `spark` through every call.
+Activates a dataset via a `ContextVar`. Factories and FK logic use the active session without threading `spark` through every call. The dataset is bound to the declarative base, so model creation can reject models from other bases before commit.
 
-When `seed` is set, rowsmyth seeds only session-owned objects: `ctx.random` / `gen.random` and `ctx.faker` / `gen.faker`. It does not call global `random.seed()` or `Faker.seed()`.
+When `seed` is set, rowsmyth seeds only session-owned objects: `ctx.random` / `dataset.random` and `ctx.faker` / `dataset.faker`. It does not call global `random.seed()` or `Faker.seed()`.
 
 Use `ctx.random` and `ctx.faker` for deterministic custom logic. Avoid unseeded sources (`uuid4`, wall clock) unless intentional.
 
 ```python
-from rowsmyth import generate
-
-with generate(spark, seed=42) as gen:
+with Base.dataset(spark, seed=42) as dataset:
     Role.create(name="admin")
     Role.create(name="user")
     users = (
@@ -248,9 +249,9 @@ with generate(spark, seed=42) as gen:
         .has(Post.factory().count(3).where(published=True), via="author_id")
         .create()
     )
-    users_df = gen.dataframe("users")
-    posts_df = gen.dataframe("posts")
-    # temp views "users", "posts"; gen.spark is the active SparkSession
+    users_df = dataset.dataframe("users")
+    posts_df = dataset.dataframe("posts")
+    # temp views "users", "posts"; dataset.spark is the active SparkSession
 
 # Persist yourself, e.g.:
 # users_df.write.mode("overwrite").saveAsTable(User.fqn())
@@ -262,7 +263,7 @@ with generate(spark, seed=42) as gen:
 |--------|-------------|
 | `ctx.faker` | Shared `Faker` instance |
 | `ctx.random` | Seeded `random.Random` |
-| `ctx.seed` | Seed passed to `generate()`, or `None` |
+| `ctx.seed` | Seed passed to `Base.dataset()`, or `None` |
 | `ctx.spark` | Active `SparkSession` |
 | `ctx.index` | 0-based row index for the current factory |
 | `ctx.row` | In-progress attribute dict (for callables and FK resolution) |
@@ -270,17 +271,17 @@ with generate(spark, seed=42) as gen:
 | `ctx.parent(table, role=None)` | Resolve parent model object |
 | `ctx.pool(view, col)` | Spark-backed pool from a temp view |
 
-### `Generation`
+### `Dataset`
 
-Yielded by `generate()`. Exposes `spark`, `dataframes`, `dataframe(name)`, `faker`, `random` and `seed`. Internal rows, counters, deferred pool tokens and validation state are not part of the public contract.
+Yielded by `Base.dataset()`. Exposes `spark`, `base`, `registry`, `dataframes`, `dataframe(name)`, `faker`, `random` and `seed`. Internal rows, counters, deferred pool tokens and validation state are not part of the public contract.
 
 ## Create output
 
 For each table name touched by `Model.create()` or `Factory.create()`:
 
-1. `createDataFrame(rows, Model.registry[name].__definition__)` - schema is **always** explicit; never inferred
+1. `createDataFrame(rows, dataset.registry[name].__definition__)` - schema is **always** explicit; never inferred
 2. `createOrReplaceTempView(__table_name__)`
-3. Store the DataFrame in `gen.dataframes[name]`
+3. Store the DataFrame in `dataset.dataframes[name]`
 
 Temp views use the bare `__table_name__` (not `fqn()`). Factories return instances, not DataFrames.
 
@@ -288,7 +289,8 @@ Temp views use the bare `__table_name__` (not `fqn()`). Factories return instanc
 
 | Situation | Exception |
 |-----------|-----------|
-| `create()` outside `generate()` | `RuntimeError` |
+| `create()` outside `Base.dataset()` | `RuntimeError` |
+| Model from another declarative base used in active dataset | `WrongDeclarativeBaseError` |
 | `Model.create()` with unknown columns | `ValueError` |
 | Unknown `.variant(name)` | `KeyError` |
 | NOT NULL column missing on first row of a table | `ValueError` |
@@ -296,7 +298,7 @@ Temp views use the bare `__table_name__` (not `fqn()`). Factories return instanc
 | `Factory()` as column value for compound-PK parent | `TypeError` |
 | `generator()` not implemented | `NotImplementedError` |
 
-Validation runs on the **first row** produced for each table in a `generate()` block, then is skipped for subsequent rows of that table.
+Validation runs on the **first row** produced for each table in a `Dataset` block, then is skipped for subsequent rows of that table.
 
 ## Unity Catalog integration
 
@@ -319,7 +321,7 @@ for statement in User.uc_tag_sql():
 
 **Determinism.** `seed` fixes generated values. Spark may not preserve row order across partitions - sort if you need stable ordering.
 
-**Uniqueness.** Use `ctx.faker.unique.*` or `ctx.sequence()` for unique columns; Faker’s `.unique` resets each `generate()` block.
+**Uniqueness.** Use `ctx.faker.unique.*` or `ctx.sequence()` for unique columns; Faker’s `.unique` resets each `Base.dataset()` block.
 
 **FK cycles.** Inject-or-create recurses forever on cyclic `Factory()` graphs. Break cycles by seeding one table and using `ctx.pool()` for the back-reference.
 

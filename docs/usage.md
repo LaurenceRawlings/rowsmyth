@@ -7,7 +7,7 @@ Full API reference and usage patterns. For a quick overview see the [README](../
 - [Defining a table](#defining-a-table)
 - [Variants](#variants)
 - [Factory API](#factory-api)
-- [generate() context manager](#generate-context-manager)
+- [Base.dataset() context manager](#basedataset-context-manager)
 - [RowCtx reference](#rowctx-reference)
 - [Foreign keys and referential integrity](#foreign-keys-and-referential-integrity)
 - [Create output](#create-output)
@@ -20,15 +20,17 @@ Full API reference and usage patterns. For a quick overview see the [README](../
 
 ## Defining a table
 
-Subclass `Model`. Declare schema metadata as class attributes; implement `generator()` to return one row as a plain `dict`.
+Create a declarative base with `declarative_base()`, then subclass that base. Declare schema metadata as class attributes; implement `generator()` to return one row as a plain `dict`.
 
 ```python
 from pyspark.sql.types import LongType, StringType, StructField, StructType
 
-from rowsmyth import Model
+from rowsmyth import declarative_base
+
+Base = declarative_base()
 
 
-class Role(Model):
+class Role(Base):
     __table_name__ = "roles"
     __primary_key__ = ("id",)
     __definition__ = StructType([
@@ -60,10 +62,10 @@ class Role(Model):
 
 ### Registry
 
-Every subclass that declares `__table_name__` is auto-registered in `Model.registry[__table_name__]`. Omit `__table_name__` on a mixin or abstract intermediate base; concrete children still register normally.
+Every subclass that declares `__table_name__` is auto-registered in its declarative base registry. Omit `__table_name__` on a mixin or abstract intermediate base; concrete children still register normally.
 
 ```python
-Model.registry["roles"]  # -> Role class
+Base.registry["roles"]  # -> Role class
 ```
 
 ### Column metadata
@@ -99,10 +101,12 @@ def generator(self, ctx):
 A `@variant` method returns a partial `dict` that is **merged into** the row produced by `generator()`. It lets you describe named states (churn, suspension, premium tier) without duplicating the full row.
 
 ```python
-from rowsmyth import Model, variant
+from rowsmyth import declarative_base, variant
+
+Base = declarative_base()
 
 
-class User(Model):
+class User(Base):
     __table_name__ = "users"
     __primary_key__ = ("id",)
     __definition__ = StructType([
@@ -159,14 +163,14 @@ User.factory()
 | `has(child_factory, via=None)` | For each parent row, generate child rows and inject this parent. `via` names the injection slot (usually the FK column name) |
 | `create()` | Materialise all touched tables; register temp views; return a list of concrete root model objects |
 
-`.create()` must run inside a `generate()` block, or it raises `RuntimeError`.
+`.create()` must run inside a `Base.dataset(...)` block for the same declarative base, or it raises `RuntimeError`.
 
 ### `Model.create()` for static rows
 
 Use `Model.create(**cols)` for reference data that should exist before generated rows sample from `ctx.pool(...)`:
 
 ```python
-with generate(spark, seed=42) as gen:
+with Base.dataset(spark, seed=42) as dataset:
     admin = Role.create(name="admin")
     user = Role.create(name="user")
     users = User.factory().count(20).create()
@@ -175,7 +179,7 @@ with generate(spark, seed=42) as gen:
     assert all(created_user.role_id in role_ids for created_user in users)
 ```
 
-`Model.create()` returns one concrete model object and immediately updates `gen.dataframes[table_name]` plus the matching temp view. Explicit columns override defaults from `generator(ctx)`, so `Role.create(name="admin")` can still use `ctx.sequence()` from `generator()` for the primary key.
+`Model.create()` returns one concrete model object and immediately updates `dataset.dataframes[table_name]` plus the matching temp view. Explicit columns override defaults from `generator(ctx)`, so `Role.create(name="admin")` can still use `ctx.sequence()` from `generator()` for the primary key.
 
 ### `.where()` with callables
 
@@ -195,7 +199,7 @@ Callables are resolved after `generator()` and `@variant`, so `ctx.row` contains
 Generate child rows for each parent:
 
 ```python
-with generate(spark) as gen:
+with Base.dataset(spark) as dataset:
     users = (
         User.factory()
         .count(5)
@@ -203,7 +207,7 @@ with generate(spark) as gen:
         .create()
     )
 # users - 5 user instances
-# gen.dataframe("posts") - 15 rows (3 per user), each with the correct author_id
+# dataset.dataframe("posts") - 15 rows (3 per user), each with the correct author_id
 ```
 
 `via` names the slot used to inject the parent. In `Post.generator()`, reference it as:
@@ -216,14 +220,12 @@ with generate(spark) as gen:
 
 ---
 
-## `generate()` context manager
+## `Base.dataset()` context manager
 
-All `.create()` calls must run inside `generate()`. It activates a session-scoped `ContextVar` so table creation, factories and FK resolution can find the active `SparkSession` and generators without threading them through every call.
+All `.create()` calls must run inside `Base.dataset(...)` for the declarative base that owns the models being created. It activates a session-scoped `ContextVar` so table creation, factories and FK resolution can find the active `SparkSession` and generators without threading them through every call.
 
 ```python
-from rowsmyth import generate
-
-with generate(spark, seed=42) as gen:
+with Base.dataset(spark, seed=42) as dataset:
     Role.create(name="admin")
     Role.create(name="user")
     users = (
@@ -232,32 +234,34 @@ with generate(spark, seed=42) as gen:
         .has(Post.factory().count(3).where(published=True), via="author_id")
         .create()
     )
-    users_df = gen.dataframe("users")
-    posts_df = gen.dataframe("posts")
-    # gen.spark, gen.faker, gen.random, gen.seed - shared generator state
+    users_df = dataset.dataframe("users")
+    posts_df = dataset.dataframe("posts")
+    # dataset.spark, dataset.faker, dataset.random, dataset.seed - shared state
 ```
 
 ### Seeding
 
-When `seed` is provided, rowsmyth seeds only the active generation state:
+When `seed` is provided, rowsmyth seeds only the active dataset state:
 
-- `ctx.random` / `gen.random` is a dedicated `random.Random(seed)` instance
-- `ctx.faker` / `gen.faker` is a dedicated Faker instance seeded with `seed`
+- `ctx.random` / `dataset.random` is a dedicated `random.Random(seed)` instance
+- `ctx.faker` / `dataset.faker` is a dedicated Faker instance seeded with `seed`
 
 Rowsmyth does not call global `random.seed()` or `Faker.seed()`. Use `ctx.random` and `ctx.faker` inside `generator()` for deterministic output. Avoid unseeded sources (`uuid4`, wall-clock timestamps) unless non-determinism is intentional.
 
-### `Generation` object
+### `Dataset` object
 
-The object yielded by `with generate(...) as gen`:
+The object yielded by `with Base.dataset(...) as dataset`:
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
-| `gen.spark` | `SparkSession` | Active session |
-| `gen.dataframes` | `dict[str, DataFrame]` | DataFrames created in this generation |
-| `gen.dataframe(name)` | `DataFrame` | Checked lookup by table name |
-| `gen.faker` | `Faker` | Shared Faker instance |
-| `gen.random` | `random.Random` | Seeded RNG |
-| `gen.seed` | `int \| None` | Seed passed to `generate()` |
+| `dataset.spark` | `SparkSession` | Active session |
+| `dataset.base` | `type[Model]` | Declarative base bound to this dataset |
+| `dataset.registry` | `dict[str, type[Model]]` | Registry for the bound declarative base |
+| `dataset.dataframes` | `dict[str, DataFrame]` | DataFrames created in this dataset |
+| `dataset.dataframe(name)` | `DataFrame` | Checked lookup by table name |
+| `dataset.faker` | `Faker` | Shared Faker instance |
+| `dataset.random` | `random.Random` | Seeded RNG |
+| `dataset.seed` | `int \| None` | Seed passed to `Base.dataset()` |
 
 ---
 
@@ -269,7 +273,7 @@ The object yielded by `with generate(...) as gen`:
 |--------|-------------|
 | `ctx.faker` | Shared `Faker` instance |
 | `ctx.random` | Seeded `random.Random` |
-| `ctx.seed` | Seed from `generate()`, or `None` |
+| `ctx.seed` | Seed from `Base.dataset()`, or `None` |
 | `ctx.spark` | Active `SparkSession` |
 | `ctx.index` | 0-based row index for the current factory |
 | `ctx.row` | In-progress attribute dict (populated during resolution; useful in callables) |
@@ -295,7 +299,7 @@ Returns an ever-increasing integer, distinct per named counter. Useful for surro
 "status": ctx.random.choices(["active", "inactive"], weights=[9, 1])[0]
 ```
 
-`ctx.faker.unique` resets at the start of each `generate()` block.
+`ctx.faker.unique` resets at the start of each `Base.dataset()` block.
 
 ---
 
@@ -306,7 +310,7 @@ Returns an ever-increasing integer, distinct per named counter. Useful for surro
 Return a `Factory` as a column value. Rowsmyth resolves it to the parent's primary key, creating a new parent row per child row if none has been injected via `.has()`:
 
 ```python
-class OrderItem(Model):
+class OrderItem(Base):
     ...
     def generator(self, ctx):
         return {
@@ -320,13 +324,13 @@ Use `.has()` to share the same parent across a batch of children, or `ctx.pool()
 
 ```python
 # Reference tables: create first, sample with pool()
-with generate(spark):
+with Base.dataset(spark):
     Role.create(name="admin")
     Role.create(name="user")
     User.factory().count(20).create()  # User.generator() uses ctx.pool("roles", "id").choice()
 
 # Parent/child: use .has() to wire the relationship
-with generate(spark):
+with Base.dataset(spark):
     orders = Order.factory().count(10).has(OrderItem.factory().count(3)).create()
 ```
 
@@ -357,7 +361,7 @@ Slot defaults to `table.__table_name__`; pass `role="slot_name"` to disambiguate
 Read distinct values from a temp view already registered in the session. Does **not** create rows:
 
 ```python
-with generate(spark):
+with Base.dataset(spark):
     Role.create(name="admin")             # must create first
     Role.create(name="user")
     users = User.factory().count(20).create()  # pool() safe to use now
@@ -391,16 +395,16 @@ author = ctx.parent(User, role="author_id")
 
 ## Create output
 
-`Factory.create()` returns concrete model objects for the root table. DataFrames for every table touched in the factory tree (parents created for FKs, children from `.has()` and the root table itself) are stored on the active generation.
+`Factory.create()` returns concrete model objects for the root table. DataFrames for every table touched in the factory tree (parents created for FKs, children from `.has()` and the root table itself) are stored on the active dataset.
 
 For each table:
 
 1. `createDataFrame(rows, Model.__definition__)` - schema is **always** explicit; inference is never used
 2. `createOrReplaceTempView(__table_name__)` - bare name, not the fully qualified name
-3. DataFrame stored in `gen.dataframes[__table_name__]`
+3. DataFrame stored in `dataset.dataframes[__table_name__]`
 
 ```python
-with generate(spark, seed=42) as gen:
+with Base.dataset(spark, seed=42) as dataset:
     users = (
         User.factory()
         .count(10)
@@ -409,14 +413,14 @@ with generate(spark, seed=42) as gen:
     )
 
 users                 # list[User], 10 users
-gen.dataframe("users")  # DataFrame, 10 rows
-gen.dataframe("posts")  # DataFrame, 30 rows (3 per user)
+dataset.dataframe("users")  # DataFrame, 10 rows
+dataset.dataframe("posts")  # DataFrame, 30 rows (3 per user)
 ```
 
 Persist to Unity Catalog yourself:
 
 ```python
-gen.dataframe("users").write.mode("overwrite").saveAsTable(User.fqn())
+dataset.dataframe("users").write.mode("overwrite").saveAsTable(User.fqn())
 ```
 
 ---
@@ -430,10 +434,12 @@ A single `Model` subclass serves as the source of truth for your pipeline declar
 ```python
 from pyspark.sql.types import LongType, StringType, StructField, StructType
 
-from rowsmyth import Model, variant
+from rowsmyth import declarative_base, variant
+
+Base = declarative_base()
 
 
-class Customer(Model):
+class Customer(Base):
     __table_name__ = "customers"
     __catalog__ = "main"
     __schema__ = "commerce"
@@ -518,14 +524,14 @@ The pipeline reads from a volume path; write fixture parquet there:
 ```python
 from pyspark.sql import SparkSession
 
-from rowsmyth import generate
+from tables.base import Base
 from tables.customer import Customer
 
 spark = SparkSession.builder.getOrCreate()
 
-with generate(spark, seed=42) as gen:
+with Base.dataset(spark, seed=42) as dataset:
     Customer.factory().count(100).create()
-    customers_df = gen.dataframe("customers")
+    customers_df = dataset.dataframe("customers")
 
 customers_df.write.mode("overwrite").parquet(
     "/Volumes/main/bronze/ingest/raw_customers/"
@@ -537,9 +543,9 @@ customers_df.write.mode("overwrite").parquet(
 The pipeline reads from a Unity Catalog table; populate it directly:
 
 ```python
-with generate(spark, seed=42) as gen:
+with Base.dataset(spark, seed=42) as dataset:
     Customer.factory().count(100).create()
-    customers_df = gen.dataframe("customers")
+    customers_df = dataset.dataframe("customers")
 
 customers_df.write.mode("overwrite").saveAsTable("main.bronze.raw_customers")
 ```
@@ -553,12 +559,12 @@ from tables.order import Order
 from tables.order_item import OrderItem
 from tables.customer import Customer
 
-with generate(spark, seed=42) as gen:
+with Base.dataset(spark, seed=42) as dataset:
     Customer.factory().count(50).create()
     Order.factory().count(200).has(OrderItem.factory().count(3), via="order_id").create()
-    customers_df = gen.dataframe("customers")
-    orders_df = gen.dataframe("orders")
-    order_items_df = gen.dataframe("order_items")
+    customers_df = dataset.dataframe("customers")
+    orders_df = dataset.dataframe("orders")
+    order_items_df = dataset.dataframe("order_items")
 
 customers_df.write.mode("overwrite").saveAsTable(
     "main.bronze.raw_customers"
@@ -574,11 +580,11 @@ order_items_df.write.mode("overwrite").saveAsTable(
 Use variants to generate a realistic mix of row states:
 
 ```python
-with generate(spark, seed=42) as gen:
+with Base.dataset(spark, seed=42) as dataset:
     # 70 standard + 30 premium customers
     Customer.factory().count(70).create()
     Customer.factory().count(30).variant("premium").create()
-    all_customers = gen.dataframe("customers")
+    all_customers = dataset.dataframe("customers")
 
 all_customers.write.mode("overwrite").saveAsTable("main.bronze.raw_customers")
 ```
@@ -589,7 +595,8 @@ all_customers.write.mode("overwrite").saveAsTable("main.bronze.raw_customers")
 
 | Situation | Exception | Message |
 |-----------|-----------|---------|
-| `.create()` called outside `generate()` | `RuntimeError` | `rowsmyth factories must be used inside generate(spark, ...)` |
+| `.create()` called outside `Base.dataset()` | `RuntimeError` | `rowsmyth factories must be used inside Base.dataset(spark, ...)` |
+| Model from another declarative base used in active dataset | `WrongDeclarativeBaseError` | `{model} belongs to a different declarative base than the active dataset` |
 | `Model.create()` with unknown columns | `ValueError` | `{table}: unknown columns: {cols}` |
 | Unknown `.variant(name)` | `KeyError` | `{table} has no variant {name!r}` |
 | NOT NULL column missing on first row | `ValueError` | `{table}: NOT NULL columns without a value: {cols}` |
@@ -597,19 +604,19 @@ all_customers.write.mode("overwrite").saveAsTable("main.bronze.raw_customers")
 | `Factory()` as value for compound-PK parent | `TypeError` | `{table}: Factory() as column value requires single-column PK; use ctx.parent()` |
 | `generator()` not implemented | `NotImplementedError` | `{table} must implement generator()` |
 
-NOT NULL validation runs on the **first** row produced for each table in a `generate()` block, then is skipped for subsequent rows.
+NOT NULL validation runs on the **first** row produced for each table in a `Base.dataset()` block, then is skipped for subsequent rows.
 
 ---
 
 ## Gotchas
 
-**Scale.** Generation runs in the Spark driver, row by row. This suits dev, test and seed volumes (thousands to low millions). For large-scale synthetic data prefer vectorised tools such as dbldatagen.
+**Scale.** Row generation runs in the Spark driver, row by row. This suits dev, test and seed volumes (thousands to low millions). For large-scale synthetic data prefer vectorised tools such as dbldatagen.
 
 **Schema.** Always pass `__definition__` to `createDataFrame`. Schema inference miss-handles `None` values and conflates Python `int` with Spark `LongType`.
 
 **Determinism.** `seed` fixes generated values, but Spark does not guarantee row order across partitions. Sort the DataFrame if stable ordering matters.
 
-**Uniqueness.** Use `ctx.faker.unique.*` or `ctx.sequence()` for columns with unique constraints. `ctx.faker.unique` resets at the start of each `generate()` block.
+**Uniqueness.** Use `ctx.faker.unique.*` or `ctx.sequence()` for columns with unique constraints. `ctx.faker.unique` resets at the start of each `Base.dataset()` block.
 
 **FK cycles.** Inject-or-create recurses forever on cyclic `Factory()` graphs. Break cycles by creating one side with `.create()` first, then referencing it with `ctx.pool()` for the back-reference.
 

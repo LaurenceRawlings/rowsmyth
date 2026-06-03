@@ -1,49 +1,50 @@
-"""Generation context, row context and the generate() context manager."""
+"""Dataset context and per-row context."""
 
 from __future__ import annotations
 
 import random as random_module
-from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import TYPE_CHECKING, Any
 
 from faker import Faker
-from pyspark.sql import Window
-from pyspark.sql import functions as F
-from pyspark.sql.types import LongType, StringType, StructField, StructType
 
 from rowsmyth.pool import Pool, PoolChoice
 
 if TYPE_CHECKING:
-    from collections.abc import Generator
+    from types import TracebackType
 
     from pyspark.sql import DataFrame, SparkSession
+    from pyspark.sql.types import StructType
 
-    from rowsmyth.table import Model
+    from rowsmyth.model import Model
 
-_active: ContextVar[Generation] = ContextVar("rowsmyth_active_generation")
+_active: ContextVar[Dataset] = ContextVar("rowsmyth_active_dataset")
 _INTERNAL_PREFIX = "__rowsmyth_"
 
 
-def require_active() -> Generation:
-    """Return the active generation or raise."""
+def require_active() -> Dataset:
+    """Return the active dataset or raise."""
     try:
         return _active.get()
     except LookupError as exc:
-        msg = "rowsmyth factories must be used inside generate(spark, ...)"
+        msg = "rowsmyth factories must be used inside dataset context "
+        "Base.dataset(spark, ...)"
         raise RuntimeError(msg) from exc
 
 
-class Generation:
-    """Session-scoped generation state (yielded by :func:`generate`)."""
+class Dataset:
+    """Session-scoped dataset state."""
 
     __slots__ = (
         "_rows",
         "_seq",
+        "_token",
         "_validated",
+        "base",
         "dataframes",
         "faker",
         "random",
+        "registry",
         "seed",
         "spark",
     )
@@ -54,15 +55,33 @@ class Generation:
         faker: Faker,
         rng: random_module.Random,
         seed: int | None,
+        base: type[Model],
     ) -> None:
         self.spark = spark
         self.faker = faker
         self.random = rng
         self.seed = seed
+        self.base = base
+        self.registry = base.registry
         self._seq: dict[str, int] = {}
         self._rows: dict[str, list[dict[str, Any]]] = {}
         self._validated: set[str] = set()
+        self._token: Any = None
         self.dataframes: dict[str, DataFrame] = {}
+
+    def __enter__(self) -> Dataset:
+        self._token = _active.set(self)
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        if self._token is not None:
+            _active.reset(self._token)
+            self._token = None
 
     def next_seq(self, name: str) -> int:
         """Return the next monotonic counter for ``name``."""
@@ -74,20 +93,18 @@ class Generation:
         return Pool(self.spark, view, col, self.random)
 
     def dataframe(self, name: str) -> DataFrame:
-        """Return a DataFrame created in this generation session."""
+        """Return a DataFrame created in this dataset session."""
         try:
             return self.dataframes[name]
         except KeyError as exc:
-            msg = f"{name!r} has not been created in this generation"
+            msg = f"{name!r} has not been created in this dataset"
             raise KeyError(msg) from exc
 
     def _commit(self, rows_by_table: dict[str, list[dict[str, Any]]]) -> None:
         """Append rows, refresh DataFrames and register temp views."""
-        from rowsmyth.table import Model
-
         for name, rows in rows_by_table.items():
             self._rows.setdefault(name, []).extend(rows)
-            table = Model.registry[name]
+            table = self.registry[name]
             public_df = self._dataframe_with_resolved_pools(name, table)
             public_df.createOrReplaceTempView(name)
             self.dataframes[name] = public_df
@@ -142,6 +159,9 @@ class Generation:
 
     def _resolve_pool_column(self, df: DataFrame, target_col: str) -> DataFrame:
         """Resolve one deferred pool target column against Spark temp views."""
+        from pyspark.sql import Window
+        from pyspark.sql import functions as F
+
         view_col = f"{_INTERNAL_PREFIX}{target_col}_view"
         source_col_col = f"{_INTERNAL_PREFIX}{target_col}_column"
         seed_col = f"{_INTERNAL_PREFIX}{target_col}_seed"
@@ -199,7 +219,7 @@ class RowCtx:
 
     def __init__(
         self,
-        gen: Generation,
+        gen: Dataset,
         table: type[Model],
         index: int,
         parents: dict[str, Model],
@@ -238,40 +258,32 @@ class RowCtx:
 
     def parent(self, table: type[Model], role: str | None = None) -> Model:
         """Resolve a parent row (injected or created once per slot)."""
+        from rowsmyth.model import validate_dataset_base
         from rowsmyth.resolution import new_parent
 
+        validate_dataset_base(table, self._gen)
         slot = role or table.__table_name__
         if slot not in self._parents:
             self._parents[slot] = new_parent(table.factory(), self)
         return self._parents[slot]
 
 
-@contextmanager
-def generate(
+def dataset(
     spark: SparkSession,
+    base: type[Model],
     seed: int | None = None,
-) -> Generator[Generation, None, None]:
-    """
-    Activate a generation session for factories and FK resolution.
-
-    Example::
-
-        with generate(spark, seed=42):
-            User.factory().count(10).create()
-    """
+) -> Dataset:
+    """Create a dataset context manager for a declarative base."""
     faker = Faker()
     if seed is not None:
         faker.seed_instance(seed)
     rng = random_module.Random(seed)
-    gen = Generation(spark, faker, rng, seed)
-    token = _active.set(gen)
-    try:
-        yield gen
-    finally:
-        _active.reset(token)
+    return Dataset(spark, faker, rng, seed, base)
 
 
 def _internal_schema(definition: StructType, pool_columns: set[str]) -> StructType:
+    from pyspark.sql.types import LongType, StringType, StructField, StructType
+
     fields: list[StructField] = [
         StructField(field.name, field.dataType, True, field.metadata)
         for field in definition.fields

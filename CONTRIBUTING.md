@@ -80,9 +80,9 @@ See [docs/design.md](docs/design.md) for the product design and API behaviour.
 
 Source layout:
 
-- `src/rowsmyth/table.py` - declarative `Model` base, `variant` decorator
+- `src/rowsmyth/model.py` - declarative `Model` base, `variant` decorator
 - `src/rowsmyth/factory.py` - fluent `Factory` and `create()`
-- `src/rowsmyth/context.py` - `generate()`, `RowCtx`, `Generation`
+- `src/rowsmyth/dataset.py` - `Dataset`, `RowCtx`, active dataset context
 - `src/rowsmyth/resolution.py` - FK resolution and validation
 - `src/rowsmyth/pool.py` - `Pool` and deferred pool tokens
 

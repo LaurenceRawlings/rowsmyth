@@ -17,10 +17,12 @@ from pyspark.sql.types import (
     StructType,
 )
 
-from rowsmyth import Model, variant
+from rowsmyth import declarative_base, variant
+
+Base = declarative_base()
 
 
-class Role(Model):
+class Role(Base):
     __table_name__ = "roles"
     __primary_key__ = ("id",)
     __definition__ = StructType([
@@ -35,7 +37,7 @@ class Role(Model):
         }
 
 
-class User(Model):
+class User(Base):
     __table_name__ = "users"
     __catalog__ = "main"
     __schema__ = "app"
@@ -81,7 +83,7 @@ class User(Model):
         return {"status": "inactive"}
 
 
-class Post(Model):
+class Post(Base):
     __table_name__ = "posts"
     __primary_key__ = ("id",)
     __definition__ = StructType([
@@ -100,7 +102,7 @@ class Post(Model):
         }
 
 
-class OrderLine(Model):
+class OrderLine(Base):
     """Child with compound FK to Order."""
 
     __table_name__ = "order_lines"
@@ -122,7 +124,7 @@ class OrderLine(Model):
         }
 
 
-class Order(Model):
+class Order(Base):
     __table_name__ = "orders"
     __primary_key__ = ("order_id", "region")
     __definition__ = StructType([
@@ -137,7 +139,7 @@ class Order(Model):
         }
 
 
-class BadCompoundFk(Model):
+class BadCompoundFk(Base):
     """Model that incorrectly uses Factory() with compound PK parent."""
 
     __table_name__ = "bad_compound_fk"
@@ -154,7 +156,7 @@ class BadCompoundFk(Model):
         }
 
 
-class AbstractBase(Model):
+class AbstractBase(Base):
     """Intermediate base without __table_name__ - not registered."""
 
     __definition__ = StructType([StructField("id", LongType(), False)])
@@ -173,7 +175,7 @@ class ConcreteChild(AbstractBase):
         return {"id": ctx.sequence()}
 
 
-class NullableDemo(Model):
+class NullableDemo(Base):
     __table_name__ = "nullable_demo"
     __primary_key__ = ("id",)
     __definition__ = StructType([
@@ -185,7 +187,7 @@ class NullableDemo(Model):
         return {"id": ctx.sequence()}
 
 
-class MissingRequired(Model):
+class MissingRequired(Base):
     __table_name__ = "missing_required"
     __primary_key__ = ("id",)
     __definition__ = StructType([
@@ -197,7 +199,7 @@ class MissingRequired(Model):
         return {"id": ctx.sequence()}
 
 
-class PoolConsumer(Model):
+class PoolConsumer(Base):
     __table_name__ = "pool_consumer"
     __primary_key__ = ("id",)
     __definition__ = StructType([
@@ -210,6 +212,11 @@ class PoolConsumer(Model):
             "id": ctx.sequence(),
             "role_id": ctx.pool("roles", "id").choice(),
         }
+
+
+@pytest.fixture
+def app_base():
+    return Base
 
 
 @pytest.fixture

@@ -8,10 +8,15 @@ from typing import TYPE_CHECKING, Any, ClassVar
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from pyspark.sql import SparkSession
     from pyspark.sql.types import StructType
 
-    from rowsmyth.context import RowCtx
+    from rowsmyth.dataset import Dataset, RowCtx
     from rowsmyth.factory import Factory
+
+
+class WrongDeclarativeBaseError(RuntimeError):
+    """Raised when a model is used with a dataset for another declarative base."""
 
 
 def variant(fn: Callable[..., dict[str, Any]]) -> Callable[..., dict[str, Any]]:
@@ -30,6 +35,7 @@ class Model:
     """
 
     registry: ClassVar[dict[str, type[Model]]] = {}
+    __rowsmyth_base__: ClassVar[type[Model] | None] = None
 
     __table_name__: ClassVar[str]
     __definition__: ClassVar[StructType]
@@ -50,6 +56,7 @@ class Model:
         super().__init_subclass__(**kwargs)
         if not getattr(cls, "__table_name__", None):
             return
+        base = declarative_base_for(cls)
         internal = [
             field.name
             for field in cls.__definition__.fields
@@ -63,7 +70,7 @@ class Model:
             for m in vars(cls).values()
             if callable(m) and hasattr(m, "__variant__")
         }
-        Model.registry[cls.__table_name__] = cls
+        base.registry[cls.__table_name__] = cls
 
     def __init__(self, **attrs: Any) -> None:
         unknown = set(attrs) - type(self)._field_names()
@@ -103,8 +110,8 @@ class Model:
 
     @classmethod
     def create(cls, **cols: Any) -> Model:
-        """Create one row in the active generation and return its model."""
-        from rowsmyth.context import RowCtx, require_active
+        """Create one row in the active dataset and return its model."""
+        from rowsmyth.dataset import RowCtx, require_active
         from rowsmyth.resolution import resolve_row_values, validate_once
 
         unknown = set(cols) - cls._field_names()
@@ -113,6 +120,7 @@ class Model:
             raise ValueError(msg)
 
         gen = require_active()
+        validate_dataset_base(cls, gen)
         acc: dict[str, list[dict[str, Any]]] = {}
         index = len(gen._rows.get(cls.__table_name__, []))
         obj = cls()
@@ -132,6 +140,18 @@ class Model:
         from rowsmyth.factory import Factory
 
         return Factory(cls)
+
+    @classmethod
+    def dataset(
+        cls,
+        spark: SparkSession,
+        seed: int | None = None,
+    ) -> Dataset:
+        """Return a dataset context manager bound to this declarative base."""
+        from rowsmyth.dataset import dataset
+
+        base = declarative_base_for(cls)
+        return dataset(spark, base, seed)
 
     @classmethod
     def fqn(cls) -> str:
@@ -194,3 +214,39 @@ def _tag_pairs(tags: dict[str, str]) -> str:
         f"{_quote_literal(key)} = {_quote_literal(value)}"
         for key, value in tags.items()
     )
+
+
+def declarative_base(name: str = "Base") -> type[Model]:
+    """Create a scoped declarative base for rowsmyth models."""
+
+    class Base(Model):
+        registry: ClassVar[dict[str, type[Model]]] = {}
+
+    Base.__name__ = name
+    Base.__qualname__ = name
+    Base.__rowsmyth_base__ = Base
+    return Base
+
+
+def declarative_base_for(model: type[Model]) -> type[Model]:
+    """Return the declarative base for a rowsmyth model class."""
+    base = getattr(model, "__rowsmyth_base__", None)
+    if base is None:
+        msg = (
+            f"{model.__name__} must extend a rowsmyth declarative base created by "
+            "declarative_base()"
+        )
+        raise TypeError(msg)
+    return base
+
+
+def validate_dataset_base(model: type[Model], dataset: Dataset) -> None:
+    """Raise if ``model`` belongs to a different base than ``dataset``."""
+    model_base = declarative_base_for(model)
+    if model_base is dataset.base:
+        return
+    msg = (
+        f"{model.__name__} belongs to a different declarative base than the "
+        "active dataset"
+    )
+    raise WrongDeclarativeBaseError(msg)

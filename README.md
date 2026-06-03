@@ -16,12 +16,13 @@ Requires Python 3.12+ and Java 17+.
 from pyspark.sql import SparkSession
 from pyspark.sql.types import LongType, StringType, StructField, StructType
 
-from rowsmyth import Model, generate, variant
+from rowsmyth import declarative_base, variant
 
 spark = SparkSession.builder.master("local[*]").getOrCreate()
+Base = declarative_base()
 
 
-class Role(Model):
+class Role(Base):
     __table_name__ = "roles"
     __primary_key__ = ("id",)
     __definition__ = StructType([
@@ -36,7 +37,7 @@ class Role(Model):
         }
 
 
-class User(Model):
+class User(Base):
     __table_name__ = "users"
     __primary_key__ = ("id",)
     __definition__ = StructType([
@@ -57,14 +58,14 @@ class User(Model):
         return {"email": "inactive@example.com"}
 
 
-with generate(spark, seed=42) as gen:
+with Base.dataset(spark, seed=42) as dataset:
     admin = Role.create(name="admin")
     user = Role.create(name="user")
     users = User.factory().count(10).variant("inactive").create()
 
     role_ids = {admin.id, user.id}
     assert all(created_user.role_id in role_ids for created_user in users)
-    users_df = gen.dataframe("users")
+    users_df = dataset.dataframe("users")
     # users_df is a DataFrame; temp view "users" is registered
 ```
 
@@ -77,10 +78,12 @@ A `Model` subclass carries all the metadata your Lakeflow pipeline and Unity Cat
 ```python
 from pyspark.sql.types import LongType, StringType, StructField, StructType
 
-from rowsmyth import Model, variant
+from rowsmyth import declarative_base, variant
+
+Base = declarative_base()
 
 
-class Customer(Model):
+class Customer(Base):
     __table_name__ = "customers"
     __catalog__ = "main"
     __schema__ = "commerce"
@@ -154,14 +157,14 @@ Write fixtures to the source your pipeline reads - either a Unity Catalog volume
 ```python
 from pyspark.sql import SparkSession
 
-from rowsmyth import generate
+from tables.base import Base
 from tables.customer import Customer
 
 spark = SparkSession.builder.getOrCreate()
 
-with generate(spark, seed=42) as gen:
+with Base.dataset(spark, seed=42) as dataset:
     customers = Customer.factory().count(100).create()
-    customers_df = gen.dataframe("customers")
+    customers_df = dataset.dataframe("customers")
 
 # Option A - ingest volume (pipeline reads parquet from path)
 customers_df.write.mode("overwrite").parquet(

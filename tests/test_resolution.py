@@ -4,17 +4,16 @@ from __future__ import annotations
 
 from pyspark.sql import SparkSession
 
-from rowsmyth import generate, variant
+from rowsmyth import variant
+from rowsmyth.dataset import RowCtx, require_active
 from rowsmyth.resolution import apply_variant
 
 
-def test_apply_variant(spark: SparkSession, user_model) -> None:
-    with generate(spark, seed=60):
-        from rowsmyth.context import RowCtx, require_active
-
-        gen = require_active()
+def test_apply_variant(spark: SparkSession, app_base, user_model) -> None:
+    with app_base.dataset(spark, seed=60):
+        dataset = require_active()
         obj = user_model()
-        ctx = RowCtx(gen, user_model, 0, {}, {})
+        ctx = RowCtx(dataset, user_model, 0, {}, {})
         result = apply_variant(user_model, obj, "churned", ctx)
         assert result == {"status": "inactive"}
 

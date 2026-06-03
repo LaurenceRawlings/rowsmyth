@@ -5,13 +5,16 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from rowsmyth.context import Generation, RowCtx
+    from rowsmyth.dataset import Dataset, RowCtx
     from rowsmyth.factory import Factory
-    from rowsmyth.table import Model
+    from rowsmyth.model import Model
 
 
 def new_parent(factory: Factory, ctx: RowCtx) -> Model:
     """Create one parent row and append it to the accumulator."""
+    from rowsmyth.model import validate_dataset_base
+
+    validate_dataset_base(factory.table, ctx._gen)
     attrs = factory.row(ctx._gen, ctx._acc, index=ctx.index, injected={})
     ctx._acc.setdefault(factory.table.__table_name__, []).append(attrs)
     return factory.table(**attrs)
@@ -19,7 +22,10 @@ def new_parent(factory: Factory, ctx: RowCtx) -> Model:
 
 def resolve_fk(child_factory: Factory, ctx: RowCtx, slot: str) -> Any:
     """Resolve a Factory used as a column value to a primary key."""
+    from rowsmyth.model import validate_dataset_base
+
     table = child_factory.table
+    validate_dataset_base(table, ctx._gen)
     pk = table.__primary_key__
     if len(pk) != 1:
         msg = (
@@ -45,7 +51,7 @@ def resolve_row_values(attrs: dict[str, Any], ctx: RowCtx) -> None:
             attrs[col] = value(ctx)
 
 
-def validate_once(gen: Generation, table: type[Model], attrs: dict[str, Any]) -> None:
+def validate_once(gen: Dataset, table: type[Model], attrs: dict[str, Any]) -> None:
     """Fail fast on the first row if NOT NULL columns are missing."""
     name = table.__table_name__
     if name in gen._validated:

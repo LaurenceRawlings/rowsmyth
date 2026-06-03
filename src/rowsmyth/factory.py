@@ -5,9 +5,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from rowsmyth.table import Model
+    from rowsmyth.model import Model
 
-from rowsmyth.context import Generation, RowCtx, require_active
+from rowsmyth.dataset import Dataset, RowCtx, require_active
+from rowsmyth.model import validate_dataset_base
 from rowsmyth.resolution import (
     apply_variant,
     resolve_row_values,
@@ -53,29 +54,31 @@ class Factory:
     def create(self) -> list[Model]:
         """Generate rows, register temp views and return root models."""
         gen = require_active()
+        validate_dataset_base(self.table, gen)
         acc: dict[str, list[dict[str, Any]]] = {}
-        self.generate(gen, acc, injected={})
+        self._generate(gen, acc, injected={})
         gen._commit(acc)
         return [self.table(**attrs) for attrs in acc.get(self.table.__table_name__, [])]
 
-    def generate(
+    def _generate(
         self,
-        gen: Generation,
+        gen: Dataset,
         acc: dict[str, list[dict[str, Any]]],
         injected: dict[str, Model],
     ) -> None:
         """Generate ``_n`` rows and recurse into children."""
+        validate_dataset_base(self.table, gen)
         for i in range(self._n):
             attrs = self.row(gen, acc, index=i, injected=injected)
             acc.setdefault(self.table.__table_name__, []).append(attrs)
             inst = self.table(**attrs)
             for child, via in self._children:
                 slot = via or self.table.__table_name__
-                child.generate(gen, acc, {**injected, slot: inst})
+                child._generate(gen, acc, {**injected, slot: inst})
 
     def row(
         self,
-        gen: Generation,
+        gen: Dataset,
         acc: dict[str, list[dict[str, Any]]],
         *,
         index: int,
