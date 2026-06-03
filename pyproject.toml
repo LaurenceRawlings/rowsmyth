@@ -37,14 +37,14 @@ Changelog = "https://github.com/LaurenceRawlings/rowsmyth/blob/main/CHANGELOG.md
 dev = [
   "chispa>=0.12.0",
   "bandit[toml]>=1.9.4",
-  "commitizen>=4.16.2",
+  "commitizen>=4.16.3",
   "portray>=1.8.0",
   "pre-commit>=4.6.0",
   "pyspark>=4.1.2",
   "pytest>=9.0.3",
   "pytest-cov>=7.1.0",
-  "ruff>=0.15.14",
-  "ty>=0.0.39",
+  "ruff>=0.15.15",
+  "ty>=0.0.42",
 ]
 
 [build-system]
