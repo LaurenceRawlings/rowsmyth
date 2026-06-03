@@ -6,12 +6,14 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Forged test data for SQLAlchemy models - no boilerplate required.">
+        <meta name="description" content="Declarative relational test data as Spark DataFrames with referential integrity">
       
       
+      
+        <link rel="canonical" href="https://laurencerawlings.github.io/rowsmyth/CHANGELOG/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.5.4">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.4">
     
     
       
@@ -151,7 +153,7 @@
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
   </div>
   <div class="md-source__repository">
-    rowsmyth
+    LaurenceRawlings/rowsmyth
   </div>
 </a>
       </div>
@@ -196,7 +198,7 @@
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
   </div>
   <div class="md-source__repository">
-    rowsmyth
+    LaurenceRawlings/rowsmyth
   </div>
 </a>
     </div>
@@ -260,6 +262,33 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#100-2026-06-03" class="md-nav__link">
+    1.0.0 (2026-06-03)
+  </a>
+  
+    <nav class="md-nav" aria-label="1.0.0 (2026-06-03)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    BREAKING CHANGES
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feat" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#010-2026-05-25" class="md-nav__link">
     0.1.0 (2026-05-25)
   </a>
@@ -268,7 +297,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#feat" class="md-nav__link">
+  <a href="#feat_1" class="md-nav__link">
     Feat
   </a>
   
@@ -380,10 +409,127 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7_1" type="checkbox" id="__nav_7_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7_1">
+          Rowsmyth
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Rowsmyth" data-md-level="2">
+        <label class="md-nav__title" for="__nav_7_1">
+          <span class="md-nav__icon md-icon"></span>
+          Rowsmyth
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/rowsmyth/dataset/" class="md-nav__link">
+        Dataset
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/rowsmyth/errors/" class="md-nav__link">
+        Errors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/rowsmyth/factory/" class="md-nav__link">
+        Factory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     <li class="md-nav__item">
       <a href="../reference/rowsmyth/" class="md-nav__link">
-        Rowsmyth
+        Index
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/rowsmyth/model/" class="md-nav__link">
+        Model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/rowsmyth/pool/" class="md-nav__link">
+        Pool
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/rowsmyth/resolution/" class="md-nav__link">
+        Resolution
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -422,6 +568,33 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#100-2026-06-03" class="md-nav__link">
+    1.0.0 (2026-06-03)
+  </a>
+  
+    <nav class="md-nav" aria-label="1.0.0 (2026-06-03)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    BREAKING CHANGES
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feat" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#010-2026-05-25" class="md-nav__link">
     0.1.0 (2026-05-25)
   </a>
@@ -430,7 +603,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#feat" class="md-nav__link">
+  <a href="#feat_1" class="md-nav__link">
     Feat
   </a>
   
@@ -467,8 +640,37 @@
 and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <!-- commitizen will append entries here on `cz bump` -->
 
-<h2 id="010-2026-05-25">0.1.0 (2026-05-25)</h2>
+<h2 id="100-2026-06-03">1.0.0 (2026-06-03)</h2>
+<h3 id="breaking-changes">BREAKING CHANGES</h3>
+<ul>
+<li>Complete API overhaul - all <code>0.x</code> public symbols removed</li>
+<li>Dropped SQLAlchemy / factory-boy dependency; library now targets PySpark exclusively</li>
+<li><code>FactoryBuilder</code>, <code>Dataset.create()</code> and <code>@variant</code> decorator (old form) all removed</li>
+<li><code>Model.factory(n)</code> signature changed; see new <code>Factory.count()</code> fluent API</li>
+<li>Direct <code>Model</code> subclassing replaced by explicit scoped bases from <code>declarative_base()</code></li>
+<li><code>generate()</code> removed in favour of <code>Base.dataset(spark, seed=None)</code></li>
+<li><code>context.py</code> removed; dataset-session internals now live in <code>dataset.py</code></li>
+<li>Domain failures now raise rowsmyth-specific errors rooted at <code>RowsmythError</code>;
+  catch the named rowsmyth errors instead of builtin <code>ValueError</code>, <code>TypeError</code>,
+  <code>KeyError</code> or <code>RuntimeError</code></li>
+</ul>
 <h3 id="feat">Feat</h3>
+<ul>
+<li><code>declarative_base()</code> - creates a scoped rowsmyth base with an independent model registry; concrete subclasses declare <code>__table_name__</code>, <code>__definition__</code> (PySpark <code>StructType</code>) and <code>__primary_key__</code>; implement <code>generator(ctx)</code> to produce one row</li>
+<li><code>Base.dataset(spark, seed=None)</code> context manager - activates a dataset session bound to one declarative base; all factories must run inside this block</li>
+<li><code>Dataset</code> session object - exposes <code>spark</code>, <code>base</code>, <code>registry</code>, <code>faker</code>, <code>random</code>, <code>seed</code>, <code>dataframes</code>; provides <code>next_seq(name)</code>, <code>pool(view, col)</code> and <code>dataframe(name)</code>; auto-registers every committed table as a Spark temp view</li>
+<li><code>Factory</code> fluent builder - <code>Model.factory()</code> returns a <code>Factory</code>; chain <code>.count(n)</code>, <code>.where(**cols)</code>, <code>.has(child, via=None)</code>, <code>.variant(name)</code>, then call <code>.create()</code> to generate rows and receive root model instances</li>
+<li><code>Model.create(**cols)</code> - create a single row imperatively inside an active dataset, with optional column overrides</li>
+<li><code>RowCtx</code> per-row context passed to <code>generator()</code> - exposes <code>faker</code>, <code>random</code>, <code>spark</code>, <code>index</code>, <code>row</code>; provides <code>sequence(name)</code>, <code>pool(view, col)</code> and <code>parent(table, role=None)</code> for FK resolution</li>
+<li><code>WrongDeclarativeBaseError</code> - raised when a model from one declarative base is created inside a dataset for another base</li>
+<li>Custom error hierarchy - <code>RowsmythError</code> roots named domain failures such as <code>DatasetContextError</code>, <code>UnknownColumnError</code>, <code>EmptyPoolError</code>, <code>CompoundPrimaryKeyError</code> and <code>UnknownVariantError</code></li>
+<li><code>Pool</code> - wraps a Spark temp view column; <code>.choice()</code> returns a deferred <code>PoolChoice</code> resolved deterministically in Spark; <code>.sample(k)</code> picks distinct values without replacement</li>
+<li><code>@variant</code> decorator - marks a <code>Model</code> method as a named partial override; apply with <code>Factory.variant(name)</code></li>
+<li>Unity Catalog support - <code>__catalog__</code>, <code>__schema__</code>, <code>__table_tags__</code>, <code>__comment__</code>; <code>Model.fqn()</code>, <code>Model.uc_tag_sql()</code>, <code>Model.column_tags()</code>, <code>Model.column_comments()</code></li>
+<li><code>Model.__expectations__</code> - named <code>dict[str, str]</code> of check expressions for data quality frameworks</li>
+</ul>
+<h2 id="010-2026-05-25">0.1.0 (2026-05-25)</h2>
+<h3 id="feat_1">Feat</h3>
 <ul>
 <li><code>declarative_base()</code> with rowsmyth capabilities mixed in; accepts <code>metadata</code>, <code>type_annotation_map</code> and <code>registry</code> arguments matching <code>DeclarativeBase</code></li>
 <li><code>generators()</code> classmethod for co-located factory-boy declarations; keys are column attributes or strings, values are any factory-boy declaration</li>

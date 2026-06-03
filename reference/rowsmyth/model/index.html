@@ -1,0 +1,2048 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Declarative relational test data as Spark DataFrames with referential integrity">
+      
+      
+      
+        <link rel="canonical" href="https://laurencerawlings.github.io/rowsmyth/reference/rowsmyth/model/">
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.4">
+    
+    
+      
+        <title>Model - rowsmyth</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.80dcb947.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4cae4f">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="green" data-md-color-accent="lightgreen">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-rowsmythmodel" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="rowsmyth" class="md-header__button md-logo" aria-label="rowsmyth" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            rowsmyth
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Model
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/LaurenceRawlings/rowsmyth" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    LaurenceRawlings/rowsmyth
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="rowsmyth" class="md-nav__button md-logo" aria-label="rowsmyth" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    rowsmyth
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/LaurenceRawlings/rowsmyth" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    LaurenceRawlings/rowsmyth
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CHANGELOG/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTING/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../SECURITY/" class="md-nav__link">
+        Security
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/design/" class="md-nav__link">
+        Design
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/usage/" class="md-nav__link">
+        Usage
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7_1" type="checkbox" id="__nav_7_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7_1">
+          Rowsmyth
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Rowsmyth" data-md-level="2">
+        <label class="md-nav__title" for="__nav_7_1">
+          <span class="md-nav__icon md-icon"></span>
+          Rowsmyth
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dataset/" class="md-nav__link">
+        Dataset
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../errors/" class="md-nav__link">
+        Errors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../factory/" class="md-nav__link">
+        Factory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Model
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Model
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#declarative_base" class="md-nav__link">
+    declarative_base
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#declarative_base_for" class="md-nav__link">
+    declarative_base_for
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validate_dataset_base" class="md-nav__link">
+    validate_dataset_base
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#variant" class="md-nav__link">
+    variant
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#model" class="md-nav__link">
+    Model
+  </a>
+  
+    <nav class="md-nav" aria-label="Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#class-variables" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#static-methods" class="md-nav__link">
+    Static methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#column_comments" class="md-nav__link">
+    column_comments
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#column_tags" class="md-nav__link">
+    column_tags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create" class="md-nav__link">
+    create
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dataset" class="md-nav__link">
+    dataset
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#factory" class="md-nav__link">
+    factory
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fqn" class="md-nav__link">
+    fqn
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uc_tag_sql" class="md-nav__link">
+    uc_tag_sql
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instance-variables" class="md-nav__link">
+    Instance variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generator" class="md-nav__link">
+    generator
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pool/" class="md-nav__link">
+        Pool
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resolution/" class="md-nav__link">
+        Resolution
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#declarative_base" class="md-nav__link">
+    declarative_base
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#declarative_base_for" class="md-nav__link">
+    declarative_base_for
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validate_dataset_base" class="md-nav__link">
+    validate_dataset_base
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#variant" class="md-nav__link">
+    variant
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#model" class="md-nav__link">
+    Model
+  </a>
+  
+    <nav class="md-nav" aria-label="Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#class-variables" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#static-methods" class="md-nav__link">
+    Static methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#column_comments" class="md-nav__link">
+    column_comments
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#column_tags" class="md-nav__link">
+    column_tags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create" class="md-nav__link">
+    create
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dataset" class="md-nav__link">
+    dataset
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#factory" class="md-nav__link">
+    factory
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fqn" class="md-nav__link">
+    fqn
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uc_tag_sql" class="md-nav__link">
+    uc_tag_sql
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instance-variables" class="md-nav__link">
+    Instance variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generator" class="md-nav__link">
+    generator
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/LaurenceRawlings/rowsmyth/edit/main/reference/rowsmyth/model.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="module-rowsmythmodel">Module rowsmyth.model</h1>
+<p>Declarative model base and variant decorator.</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Declarative model base and variant decorator.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth._constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">INTERNAL_PREFIX</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth.errors</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+
+    <span class="n">CompoundPrimaryKeyError</span><span class="p">,</span>
+
+    <span class="n">InvalidDeclarativeBaseError</span><span class="p">,</span>
+
+    <span class="n">InvalidModelDefinitionError</span><span class="p">,</span>
+
+    <span class="n">ReservedColumnError</span><span class="p">,</span>
+
+    <span class="n">UnknownColumnError</span><span class="p">,</span>
+
+    <span class="n">WrongDeclarativeBaseError</span><span class="p">,</span>
+
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyspark.sql</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparkSession</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyspark.sql.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">StructType</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">RowCtx</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth.factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">Factory</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">variant</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mark a method as a named partial override for :meth:`Model.generator`.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">):</span>
+
+        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s2">&quot;__variant__&quot;</span><span class="p">,</span> <span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fn</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Model</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Declarative base for a relational model.</span>
+
+<span class="sd">    Subclasses declare ``__table_name__``, ``__definition__`` and</span>
+
+<span class="sd">    ``__primary_key__``, then implement :meth:`generator` to produce one row.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">registry</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">Model</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">__rowsmyth_base__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Model</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">__table_name__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+
+    <span class="n">__definition__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">StructType</span><span class="p">]</span>
+
+    <span class="n">__primary_key__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span>
+
+    <span class="n">__catalog__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">__schema__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">__comment__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">__table_tags__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">__expectations__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">_variants</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]]</span>
+
+    <span class="nd">@classmethod</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_field_names</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__definition__</span><span class="o">.</span><span class="n">fields</span><span class="p">}</span>
+
+    <span class="nd">@classmethod</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_unknown_columns</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">attrs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">unknown</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span> <span class="o">-</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_field_names</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">unknown</span><span class="p">:</span>
+
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">__table_name__</span><span class="si">}</span><span class="s2">: unknown columns: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">unknown</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="k">raise</span> <span class="n">UnknownColumnError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_variants</span> <span class="o">=</span> <span class="n">_collect_variants</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;__table_name__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+
+            <span class="k">return</span>
+
+        <span class="n">base</span> <span class="o">=</span> <span class="n">declarative_base_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+        <span class="n">_validate_model_definition</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+        <span class="n">internal</span> <span class="o">=</span> <span class="p">[</span>
+
+            <span class="n">field</span><span class="o">.</span><span class="n">name</span>
+
+            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__definition__</span><span class="o">.</span><span class="n">fields</span>
+
+            <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">INTERNAL_PREFIX</span><span class="p">)</span>
+
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">internal</span><span class="p">:</span>
+
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">__table_name__</span><span class="si">}</span><span class="s2">: reserved rowsmyth columns: </span><span class="si">{</span><span class="n">internal</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="k">raise</span> <span class="n">ReservedColumnError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">base</span><span class="o">.</span><span class="n">registry</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">__table_name__</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">attrs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_validate_unknown_columns</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
+
+        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;attrs&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">attrs</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+
+    <span class="nd">@property</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">key</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Primary key columns as a dict.&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__primary_key__</span><span class="p">}</span>
+
+    <span class="nd">@property</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">pk</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Scalar primary key (single-column PK only).&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__primary_key__</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__table_name__</span><span class="si">}</span><span class="s2">: pk requires a single-column primary key&quot;</span>
+
+            <span class="p">)</span>
+
+            <span class="k">raise</span> <span class="n">CompoundPrimaryKeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="p">(</span><span class="n">col</span><span class="p">,)</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__primary_key__</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">RowCtx</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return attribute values for one row.&quot;&quot;&quot;</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must implement generator()&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">cols</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create one row in the active dataset and return its model.&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">factory</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="o">**</span><span class="n">cols</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@classmethod</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">factory</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Factory</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a fluent factory for this table.&quot;&quot;&quot;</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth.factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">Factory</span>
+
+        <span class="k">return</span> <span class="n">Factory</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">dataset</span><span class="p">(</span>
+
+        <span class="bp">cls</span><span class="p">,</span>
+
+        <span class="n">spark</span><span class="p">:</span> <span class="n">SparkSession</span><span class="p">,</span>
+
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dataset</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a dataset context manager bound to this declarative base.&quot;&quot;&quot;</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataset</span>
+
+        <span class="n">base</span> <span class="o">=</span> <span class="n">declarative_base_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dataset</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">fqn</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fully qualified table name (catalog.schema.table).&quot;&quot;&quot;</span>
+
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__catalog__</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__schema__</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__table_name__</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parts</span> <span class="k">if</span> <span class="n">p</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">column_tags</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Column-level Unity Catalog tags from Spark schema metadata.&quot;&quot;&quot;</span>
+
+        <span class="n">result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__definition__</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
+
+            <span class="n">tags</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="p">{})</span>
+
+            <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
+
+                <span class="n">result</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@classmethod</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">column_comments</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Column comments from Spark schema metadata.&quot;&quot;&quot;</span>
+
+        <span class="n">result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__definition__</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
+
+            <span class="n">comment</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;comment&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">comment</span><span class="p">:</span>
+
+                <span class="n">result</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@classmethod</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">uc_tag_sql</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;SQL statements needed to apply Unity Catalog comments and tags.&quot;&quot;&quot;</span>
+
+        <span class="n">statements</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">table_name</span> <span class="o">=</span> <span class="n">_quote_fqn</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">fqn</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__comment__</span><span class="p">:</span>
+
+            <span class="n">statements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+
+                <span class="sa">f</span><span class="s2">&quot;COMMENT ON TABLE </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> IS </span><span class="si">{</span><span class="n">_quote_literal</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__comment__</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__table_tags__</span><span class="p">:</span>
+
+            <span class="n">statements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+
+                <span class="sa">f</span><span class="s2">&quot;ALTER TABLE </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> SET TAGS (</span><span class="si">{</span><span class="n">_tag_pairs</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__table_tags__</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">column</span><span class="p">,</span> <span class="n">comment</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">column_comments</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="n">statements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+
+                <span class="s2">&quot;ALTER TABLE &quot;</span>
+
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> ALTER COLUMN </span><span class="si">{</span><span class="n">_quote_identifier</span><span class="p">(</span><span class="n">column</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+
+                <span class="sa">f</span><span class="s2">&quot;COMMENT </span><span class="si">{</span><span class="n">_quote_literal</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">column</span><span class="p">,</span> <span class="n">tags</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">column_tags</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="n">statements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+
+                <span class="s2">&quot;ALTER TABLE &quot;</span>
+
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> ALTER COLUMN </span><span class="si">{</span><span class="n">_quote_identifier</span><span class="p">(</span><span class="n">column</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+
+                <span class="sa">f</span><span class="s2">&quot;SET TAGS (</span><span class="si">{</span><span class="n">_tag_pairs</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">statements</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_quote_literal</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="k">return</span> <span class="s2">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_quote_identifier</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="k">return</span> <span class="s2">&quot;`&quot;</span> <span class="o">+</span> <span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;`&quot;</span><span class="p">,</span> <span class="s2">&quot;``&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;`&quot;</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_quote_fqn</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="k">return</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_quote_identifier</span><span class="p">(</span><span class="n">part</span><span class="p">)</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">))</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_tag_pairs</span><span class="p">(</span><span class="n">tags</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_quote_literal</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">_quote_literal</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">tags</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+
+    <span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_collect_variants</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Model</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]:</span>
+
+    <span class="n">variants</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="vm">__mro__</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+
+        <span class="n">variants</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;_variants&quot;</span><span class="p">,</span> <span class="p">{}))</span>
+
+    <span class="n">variants</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+
+        <span class="n">method</span><span class="o">.</span><span class="n">__variant__</span><span class="p">:</span> <span class="n">method</span>  <span class="c1"># type: ignore[attr-defined]</span>
+
+        <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">method</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="s2">&quot;__variant__&quot;</span><span class="p">)</span>
+
+    <span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">variants</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_model_definition</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Model</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+    <span class="n">field_names</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">_field_names</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">model</span><span class="o">.</span><span class="n">__primary_key__</span><span class="p">:</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">__table_name__</span><span class="si">}</span><span class="s2">: primary key must contain at least one column&quot;</span>
+
+        <span class="k">raise</span> <span class="n">InvalidModelDefinitionError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">missing_pk</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">__primary_key__</span> <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">field_names</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">missing_pk</span><span class="p">:</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">__table_name__</span><span class="si">}</span><span class="s2">: missing primary key columns: </span><span class="si">{</span><span class="n">missing_pk</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">raise</span> <span class="n">InvalidModelDefinitionError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">declarative_base</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Base&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">Model</span><span class="p">]:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a scoped declarative base for rowsmyth models.&quot;&quot;&quot;</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+
+        <span class="n">registry</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">Model</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">Base</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="n">Base</span><span class="o">.</span><span class="vm">__qualname__</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="n">Base</span><span class="o">.</span><span class="n">__rowsmyth_base__</span> <span class="o">=</span> <span class="n">Base</span>
+
+    <span class="k">return</span> <span class="n">Base</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">declarative_base_for</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Model</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">Model</span><span class="p">]:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the declarative base for a rowsmyth model class.&quot;&quot;&quot;</span>
+
+    <span class="n">base</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;__rowsmyth_base__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">base</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must extend a rowsmyth declarative base created by &quot;</span>
+
+            <span class="s2">&quot;declarative_base()&quot;</span>
+
+        <span class="p">)</span>
+
+        <span class="k">raise</span> <span class="n">InvalidDeclarativeBaseError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">base</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_dataset_base</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Model</span><span class="p">],</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise if ``model`` belongs to a different base than ``dataset``.&quot;&quot;&quot;</span>
+
+    <span class="n">model_base</span> <span class="o">=</span> <span class="n">declarative_base_for</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">model_base</span> <span class="ow">is</span> <span class="n">dataset</span><span class="o">.</span><span class="n">base</span><span class="p">:</span>
+
+        <span class="k">return</span>
+
+    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> belongs to a different declarative base than the &quot;</span>
+
+        <span class="s2">&quot;active dataset&quot;</span>
+
+    <span class="p">)</span>
+
+    <span class="k">raise</span> <span class="n">WrongDeclarativeBaseError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h2 id="variables">Variables</h2>
+<div class="codehilite"><pre><span></span><code><span class="n">INTERNAL_PREFIX</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">TYPE_CHECKING</span>
+</code></pre></div>
+
+<h2 id="functions">Functions</h2>
+<h3 id="declarative_base">declarative_base</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">declarative_base</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span> <span class="o">=</span> <span class="s1">&#39;Base&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;type[Model]&#39;</span>
+</code></pre></div>
+
+<p>Create a scoped declarative base for rowsmyth models.</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">declarative_base</span><span class="p">(</span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;Base&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">type</span><span class="o">[</span><span class="n">Model</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Create a scoped declarative base for rowsmyth models.&quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="k">class</span><span class="w"> </span><span class="n">Base</span><span class="p">(</span><span class="n">Model</span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">        </span><span class="nl">registry</span><span class="p">:</span><span class="w"> </span><span class="n">ClassVar</span><span class="o">[</span><span class="n">dict[str, type[Model</span><span class="o">]</span><span class="err">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
+
+<span class="w">    </span><span class="n">Base</span><span class="p">.</span><span class="n">__name__</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">name</span>
+
+<span class="w">    </span><span class="n">Base</span><span class="p">.</span><span class="n">__qualname__</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">name</span>
+
+<span class="w">    </span><span class="n">Base</span><span class="p">.</span><span class="n">__rowsmyth_base__</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Base</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Base</span>
+</code></pre></div>
+
+</details>
+<h3 id="declarative_base_for">declarative_base_for</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">declarative_base_for</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">:</span> <span class="s1">&#39;type[Model]&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;type[Model]&#39;</span>
+</code></pre></div>
+
+<p>Return the declarative base for a rowsmyth model class.</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">declarative_base_for</span><span class="p">(</span><span class="nl">model</span><span class="p">:</span><span class="w"> </span><span class="n">type</span><span class="o">[</span><span class="n">Model</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">type</span><span class="o">[</span><span class="n">Model</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Return the declarative base for a rowsmyth model class.&quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="n">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;__rowsmyth_base__&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">None</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">        </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span>
+
+<span class="w">            </span><span class="n">f</span><span class="ss">&quot;{model.__name__} must extend a rowsmyth declarative base created by &quot;</span>
+
+<span class="w">            </span><span class="ss">&quot;declarative_base()&quot;</span>
+
+<span class="w">        </span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">raise</span><span class="w"> </span><span class="n">InvalidDeclarativeBaseError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">base</span>
+</code></pre></div>
+
+</details>
+<h3 id="validate_dataset_base">validate_dataset_base</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validate_dataset_base</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">:</span> <span class="s1">&#39;type[Model]&#39;</span><span class="p">,</span>
+    <span class="n">dataset</span><span class="p">:</span> <span class="s1">&#39;Dataset&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;None&#39;</span>
+</code></pre></div>
+
+<p>Raise if <code>model</code> belongs to a different base than <code>dataset</code>.</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">validate_dataset_base</span><span class="p">(</span><span class="n">model</span><span class="o">:</span><span class="w"> </span><span class="k">type</span><span class="err">[</span><span class="n">Model</span><span class="err">]</span><span class="p">,</span><span class="w"> </span><span class="n">dataset</span><span class="o">:</span><span class="w"> </span><span class="n">Dataset</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="o">:</span>
+
+<span class="w">    </span><span class="s2">&quot;</span><span class="se">&quot;&quot;</span><span class="s2">Raise if ``model`` belongs to a different base than ``dataset``.</span><span class="se">&quot;&quot;</span><span class="s2">&quot;</span>
+
+<span class="w">    </span><span class="n">model_base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">declarative_base_for</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">model_base</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">dataset</span><span class="p">.</span><span class="n">base</span><span class="o">:</span>
+
+<span class="w">        </span><span class="k">return</span>
+
+<span class="w">    </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">f</span><span class="s2">&quot;{model.__name__} belongs to a different declarative base than the &quot;</span>
+
+<span class="w">        </span><span class="s2">&quot;active dataset&quot;</span>
+
+<span class="w">    </span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">raise</span><span class="w"> </span><span class="n">WrongDeclarativeBaseError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h3 id="variant">variant</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">variant</span><span class="p">(</span>
+    <span class="n">fn</span><span class="p">:</span> <span class="s1">&#39;Callable[..., dict[str, Any]]&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Callable[..., dict[str, Any]]&#39;</span>
+</code></pre></div>
+
+<p>Mark a method as a named partial override for :meth:<code>Model.generator</code>.</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">variant</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span><span class="w"> </span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span><span class="w"> </span><span class="n">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">Any</span><span class="p">]])</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span><span class="w"> </span><span class="n">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">Any</span><span class="p">]]:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mark a method as a named partial override for :meth:`Model.generator`.&quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">isinstance</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="w"> </span><span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">):</span>
+
+<span class="w">        </span><span class="n">object</span><span class="o">.</span><span class="n">__setattr__</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;__variant__&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fn</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">fn</span>
+</code></pre></div>
+
+</details>
+<h2 id="classes">Classes</h2>
+<h3 id="model">Model</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Model</span><span class="p">(</span>
+    <span class="o">**</span><span class="n">attrs</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Declarative base for a relational model.</p>
+<p>Subclasses declare <code>__table_name__</code>, <code>__definition__</code> and
+<code>__primary_key__</code>, then implement :meth:<code>generator</code> to produce one row.</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nl">Model</span><span class="p">:</span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">    Declarative base for a relational model.</span>
+
+<span class="ss">    Subclasses declare ``__table_name__``, ``__definition__`` and</span>
+
+<span class="ss">    ``__primary_key__``, then implement :meth:`generator` to produce one row.</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="nl">registry</span><span class="p">:</span><span class="w"> </span><span class="n">ClassVar</span><span class="o">[</span><span class="n">dict[str, type[Model</span><span class="o">]</span><span class="err">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
+
+<span class="w">    </span><span class="nl">__rowsmyth_base__</span><span class="p">:</span><span class="w"> </span><span class="n">ClassVar</span><span class="o">[</span><span class="n">type[Model</span><span class="o">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">None</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span>
+
+<span class="w">    </span><span class="nl">__table_name__</span><span class="p">:</span><span class="w"> </span><span class="n">ClassVar</span><span class="o">[</span><span class="n">str</span><span class="o">]</span>
+
+<span class="w">    </span><span class="nl">__definition__</span><span class="p">:</span><span class="w"> </span><span class="n">ClassVar</span><span class="o">[</span><span class="n">StructType</span><span class="o">]</span>
+
+<span class="w">    </span><span class="nl">__primary_key__</span><span class="p">:</span><span class="w"> </span><span class="n">ClassVar</span><span class="o">[</span><span class="n">tuple[str, ...</span><span class="o">]</span><span class="err">]</span>
+
+<span class="w">    </span><span class="nl">__catalog__</span><span class="p">:</span><span class="w"> </span><span class="n">ClassVar</span><span class="o">[</span><span class="n">str | None</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span>
+
+<span class="w">    </span><span class="nl">__schema__</span><span class="p">:</span><span class="w"> </span><span class="n">ClassVar</span><span class="o">[</span><span class="n">str | None</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span>
+
+<span class="w">    </span><span class="nl">__comment__</span><span class="p">:</span><span class="w"> </span><span class="n">ClassVar</span><span class="o">[</span><span class="n">str | None</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span>
+
+<span class="w">    </span><span class="nl">__table_tags__</span><span class="p">:</span><span class="w"> </span><span class="n">ClassVar</span><span class="o">[</span><span class="n">dict[str, str</span><span class="o">]</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
+
+<span class="w">    </span><span class="nl">__expectations__</span><span class="p">:</span><span class="w"> </span><span class="n">ClassVar</span><span class="o">[</span><span class="n">dict[str, str</span><span class="o">]</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
+
+<span class="w">    </span><span class="nl">_variants</span><span class="p">:</span><span class="w"> </span><span class="n">ClassVar</span><span class="o">[</span><span class="n">dict[str, Callable[..., dict[str, Any</span><span class="o">]</span><span class="err">]]]</span>
+
+<span class="w">    </span><span class="nv">@classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_field_names</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">set</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="err">{</span><span class="n">field</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">field</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">__definition__</span><span class="p">.</span><span class="n">fields</span><span class="err">}</span>
+
+<span class="w">    </span><span class="nv">@classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_validate_unknown_columns</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="w"> </span><span class="nl">attrs</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, Any</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">        </span><span class="k">unknown</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">set</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">_field_names</span><span class="p">()</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="k">unknown</span><span class="err">:</span>
+
+<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="ss">&quot;{cls.__table_name__}: unknown columns: {sorted(unknown)}&quot;</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">UnknownColumnError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init_subclass__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="nl">kwargs</span><span class="p">:</span><span class="w"> </span><span class="ow">Any</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">        </span><span class="n">super</span><span class="p">().</span><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">cls</span><span class="p">.</span><span class="n">_variants</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_collect_variants</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">getattr</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;__table_name__&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">            </span><span class="k">return</span>
+
+<span class="w">        </span><span class="n">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">declarative_base_for</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">_validate_model_definition</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">internal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>
+
+<span class="n">            field.name</span>
+
+<span class="n">            for field in cls.__definition__.fields</span>
+
+<span class="n">            if field.name.startswith(INTERNAL_PREFIX)</span>
+
+<span class="n">        </span><span class="o">]</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nl">internal</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="ss">&quot;{cls.__table_name__}: reserved rowsmyth columns: {internal}&quot;</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">ReservedColumnError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">base</span><span class="p">.</span><span class="n">registry</span><span class="o">[</span><span class="n">cls.__table_name__</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cls</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="nl">attrs</span><span class="p">:</span><span class="w"> </span><span class="ow">Any</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">        </span><span class="n">type</span><span class="p">(</span><span class="n">self</span><span class="p">).</span><span class="n">_validate_unknown_columns</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">object</span><span class="p">.</span><span class="n">__setattr__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;attrs&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">dict</span><span class="p">(</span><span class="n">attrs</span><span class="p">))</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="k">key</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">attrs</span><span class="p">.</span><span class="n">items</span><span class="p">()</span><span class="err">:</span>
+
+<span class="w">            </span><span class="k">object</span><span class="p">.</span><span class="n">__setattr__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="k">key</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__getattr__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="ow">Any</span><span class="err">:</span>
+
+<span class="w">        </span><span class="k">try</span><span class="err">:</span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">attrs</span><span class="o">[</span><span class="n">name</span><span class="o">]</span>
+
+<span class="w">        </span><span class="ow">except</span><span class="w"> </span><span class="n">KeyError</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nl">exc</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">AttributeError</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">exc</span>
+
+<span class="w">    </span><span class="nv">@property</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="k">key</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, Any</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Primary key columns as a dict.&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="err">{</span><span class="nl">k</span><span class="p">:</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">attrs</span><span class="o">[</span><span class="n">k</span><span class="o">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">type</span><span class="p">(</span><span class="n">self</span><span class="p">).</span><span class="n">__primary_key__</span><span class="err">}</span>
+
+<span class="w">    </span><span class="nv">@property</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">pk</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="ow">Any</span><span class="err">:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Scalar primary key (single-column PK only).&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nf">len</span><span class="p">(</span><span class="n">type</span><span class="p">(</span><span class="n">self</span><span class="p">).</span><span class="n">__primary_key__</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="err">:</span>
+
+<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot;{type(self).__table_name__}: pk requires a single-column primary key&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">CompoundPrimaryKeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">        </span><span class="p">(</span><span class="n">col</span><span class="p">,)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">type</span><span class="p">(</span><span class="n">self</span><span class="p">).</span><span class="n">__primary_key__</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">attrs</span><span class="o">[</span><span class="n">col</span><span class="o">]</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">generator</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">ctx</span><span class="p">:</span><span class="w"> </span><span class="n">RowCtx</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, Any</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Return attribute values for one row.&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="ss">&quot;{type(self).__name__} must implement generator()&quot;</span>
+
+<span class="w">        </span><span class="n">raise</span><span class="w"> </span><span class="n">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">    </span><span class="nv">@classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="k">create</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="nl">cols</span><span class="p">:</span><span class="w"> </span><span class="ow">Any</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">Model</span><span class="p">:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Create one row in the active dataset and return its model.&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">factory</span><span class="p">().</span><span class="k">where</span><span class="p">(</span><span class="o">**</span><span class="n">cols</span><span class="p">).</span><span class="k">create</span><span class="p">()</span><span class="o">[</span><span class="n">0</span><span class="o">]</span>
+
+<span class="w">    </span><span class="nv">@classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">factory</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">Factory</span><span class="p">:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Return a fluent factory for this table.&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">from</span><span class="w"> </span><span class="n">rowsmyth</span><span class="p">.</span><span class="n">factory</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="n">Factory</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Factory</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span>
+
+<span class="w">    </span><span class="nv">@classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">dataset</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">cls</span><span class="p">,</span>
+
+<span class="w">        </span><span class="nl">spark</span><span class="p">:</span><span class="w"> </span><span class="n">SparkSession</span><span class="p">,</span>
+
+<span class="w">        </span><span class="nl">seed</span><span class="p">:</span><span class="w"> </span><span class="nc">int</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span>
+
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">Dataset</span><span class="p">:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Return a dataset context manager bound to this declarative base.&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">from</span><span class="w"> </span><span class="n">rowsmyth</span><span class="p">.</span><span class="n">dataset</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="n">dataset</span>
+
+<span class="w">        </span><span class="n">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">declarative_base_for</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">dataset</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span><span class="w"> </span><span class="n">base</span><span class="p">,</span><span class="w"> </span><span class="n">seed</span><span class="p">)</span>
+
+<span class="w">    </span><span class="nv">@classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">fqn</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nf">str</span><span class="err">:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Fully qualified table name (catalog.schema.table).&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="n">parts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">cls</span><span class="p">.</span><span class="n">__catalog__</span><span class="p">,</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">__schema__</span><span class="p">,</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">__table_name__</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="ss">&quot;.&quot;</span><span class="p">.</span><span class="k">join</span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">parts</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">p</span><span class="p">)</span>
+
+<span class="w">    </span><span class="nv">@classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">column_tags</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, dict[str, str</span><span class="o">]</span><span class="err">]:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Column-level Unity Catalog tags from Spark schema metadata.&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">result</span><span class="err">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, dict[str, str</span><span class="o">]</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">field</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">__definition__</span><span class="p">.</span><span class="nl">fields</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">tags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">field</span><span class="p">.</span><span class="n">metadata</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;tags&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">{}</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nl">tags</span><span class="p">:</span>
+
+<span class="w">                </span><span class="k">result</span><span class="o">[</span><span class="n">field.name</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">result</span>
+
+<span class="w">    </span><span class="nv">@classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">column_comments</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, str</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Column comments from Spark schema metadata.&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">result</span><span class="err">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, str</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">field</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">__definition__</span><span class="p">.</span><span class="nl">fields</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">comment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">field</span><span class="p">.</span><span class="n">metadata</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;comment&quot;</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nl">comment</span><span class="p">:</span>
+
+<span class="w">                </span><span class="k">result</span><span class="o">[</span><span class="n">field.name</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">result</span>
+
+<span class="w">    </span><span class="nv">@classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">uc_tag_sql</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;SQL statements needed to apply Unity Catalog comments and tags.&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="nl">statements</span><span class="p">:</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span>
+
+<span class="w">        </span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_quote_fqn</span><span class="p">(</span><span class="n">cls</span><span class="p">.</span><span class="n">fqn</span><span class="p">())</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="nl">__comment__</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">statements</span><span class="p">.</span><span class="n">append</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot;COMMENT ON TABLE {table_name} IS {_quote_literal(cls.__comment__)}&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="nl">__table_tags__</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">statements</span><span class="p">.</span><span class="n">append</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot;ALTER TABLE {table_name} SET TAGS ({_tag_pairs(cls.__table_tags__)})&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="k">column</span><span class="p">,</span><span class="w"> </span><span class="n">comment</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">column_comments</span><span class="p">().</span><span class="n">items</span><span class="p">()</span><span class="err">:</span>
+
+<span class="w">            </span><span class="n">statements</span><span class="p">.</span><span class="n">append</span><span class="p">(</span>
+
+<span class="w">                </span><span class="ss">&quot;ALTER TABLE &quot;</span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot;{table_name} ALTER COLUMN {_quote_identifier(column)} &quot;</span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot;COMMENT {_quote_literal(comment)}&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="k">column</span><span class="p">,</span><span class="w"> </span><span class="n">tags</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">column_tags</span><span class="p">().</span><span class="n">items</span><span class="p">()</span><span class="err">:</span>
+
+<span class="w">            </span><span class="n">statements</span><span class="p">.</span><span class="n">append</span><span class="p">(</span>
+
+<span class="w">                </span><span class="ss">&quot;ALTER TABLE &quot;</span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot;{table_name} ALTER COLUMN {_quote_identifier(column)} &quot;</span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot;SET TAGS ({_tag_pairs(tags)})&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">statements</span>
+</code></pre></div>
+
+</details>
+<hr />
+<h4 id="class-variables">Class variables</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">registry</span>
+</code></pre></div>
+
+<h4 id="static-methods">Static methods</h4>
+<h4 id="column_comments">column_comments</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">column_comments</span><span class="p">(</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;dict[str, str]&#39;</span>
+</code></pre></div>
+
+<p>Column comments from Spark schema metadata.</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="nv">@classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">column_comments</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, str</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Column comments from Spark schema metadata.&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">result</span><span class="err">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, str</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">field</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">__definition__</span><span class="p">.</span><span class="nl">fields</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">comment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">field</span><span class="p">.</span><span class="n">metadata</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;comment&quot;</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nl">comment</span><span class="p">:</span>
+
+<span class="w">                </span><span class="k">result</span><span class="o">[</span><span class="n">field.name</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">result</span>
+</code></pre></div>
+
+</details>
+<h4 id="column_tags">column_tags</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">column_tags</span><span class="p">(</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;dict[str, dict[str, str]]&#39;</span>
+</code></pre></div>
+
+<p>Column-level Unity Catalog tags from Spark schema metadata.</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="nv">@classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">column_tags</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, dict[str, str</span><span class="o">]</span><span class="err">]:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Column-level Unity Catalog tags from Spark schema metadata.&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">result</span><span class="err">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, dict[str, str</span><span class="o">]</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">field</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">__definition__</span><span class="p">.</span><span class="nl">fields</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">tags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">field</span><span class="p">.</span><span class="n">metadata</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;tags&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">{}</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nl">tags</span><span class="p">:</span>
+
+<span class="w">                </span><span class="k">result</span><span class="o">[</span><span class="n">field.name</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">result</span>
+</code></pre></div>
+
+</details>
+<h4 id="create">create</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span>
+    <span class="o">**</span><span class="n">cols</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Model&#39;</span>
+</code></pre></div>
+
+<p>Create one row in the active dataset and return its model.</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="nv">@classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="k">create</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="nl">cols</span><span class="p">:</span><span class="w"> </span><span class="ow">Any</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">Model</span><span class="p">:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Create one row in the active dataset and return its model.&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">factory</span><span class="p">().</span><span class="k">where</span><span class="p">(</span><span class="o">**</span><span class="n">cols</span><span class="p">).</span><span class="k">create</span><span class="p">()</span><span class="o">[</span><span class="n">0</span><span class="o">]</span>
+</code></pre></div>
+
+</details>
+<h4 id="dataset">dataset</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">dataset</span><span class="p">(</span>
+    <span class="n">spark</span><span class="p">:</span> <span class="s1">&#39;SparkSession&#39;</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="s1">&#39;int | None&#39;</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Dataset&#39;</span>
+</code></pre></div>
+
+<p>Return a dataset context manager bound to this declarative base.</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code>    <span class="nd">@classmethod</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">dataset</span><span class="p">(</span>
+
+        <span class="bp">cls</span><span class="p">,</span>
+
+        <span class="n">spark</span><span class="p">:</span> <span class="n">SparkSession</span><span class="p">,</span>
+
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dataset</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a dataset context manager bound to this declarative base.&quot;&quot;&quot;</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataset</span>
+
+        <span class="n">base</span> <span class="o">=</span> <span class="n">declarative_base_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dataset</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h4 id="factory">factory</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">factory</span><span class="p">(</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Factory&#39;</span>
+</code></pre></div>
+
+<p>Return a fluent factory for this table.</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code>    <span class="nd">@classmethod</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">factory</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Factory</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a fluent factory for this table.&quot;&quot;&quot;</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth.factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">Factory</span>
+
+        <span class="k">return</span> <span class="n">Factory</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h4 id="fqn">fqn</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fqn</span><span class="p">(</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;str&#39;</span>
+</code></pre></div>
+
+<p>Fully qualified table name (catalog.schema.table).</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="nv">@classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">fqn</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nf">str</span><span class="err">:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Fully qualified table name (catalog.schema.table).&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="n">parts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">cls</span><span class="p">.</span><span class="n">__catalog__</span><span class="p">,</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">__schema__</span><span class="p">,</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">__table_name__</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="ss">&quot;.&quot;</span><span class="p">.</span><span class="k">join</span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">parts</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">p</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h4 id="uc_tag_sql">uc_tag_sql</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">uc_tag_sql</span><span class="p">(</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;list[str]&#39;</span>
+</code></pre></div>
+
+<p>SQL statements needed to apply Unity Catalog comments and tags.</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="nv">@classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">uc_tag_sql</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;SQL statements needed to apply Unity Catalog comments and tags.&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="nl">statements</span><span class="p">:</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span>
+
+<span class="w">        </span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_quote_fqn</span><span class="p">(</span><span class="n">cls</span><span class="p">.</span><span class="n">fqn</span><span class="p">())</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="nl">__comment__</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">statements</span><span class="p">.</span><span class="n">append</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot;COMMENT ON TABLE {table_name} IS {_quote_literal(cls.__comment__)}&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="nl">__table_tags__</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">statements</span><span class="p">.</span><span class="n">append</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot;ALTER TABLE {table_name} SET TAGS ({_tag_pairs(cls.__table_tags__)})&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="k">column</span><span class="p">,</span><span class="w"> </span><span class="n">comment</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">column_comments</span><span class="p">().</span><span class="n">items</span><span class="p">()</span><span class="err">:</span>
+
+<span class="w">            </span><span class="n">statements</span><span class="p">.</span><span class="n">append</span><span class="p">(</span>
+
+<span class="w">                </span><span class="ss">&quot;ALTER TABLE &quot;</span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot;{table_name} ALTER COLUMN {_quote_identifier(column)} &quot;</span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot;COMMENT {_quote_literal(comment)}&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="k">column</span><span class="p">,</span><span class="w"> </span><span class="n">tags</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">cls</span><span class="p">.</span><span class="n">column_tags</span><span class="p">().</span><span class="n">items</span><span class="p">()</span><span class="err">:</span>
+
+<span class="w">            </span><span class="n">statements</span><span class="p">.</span><span class="n">append</span><span class="p">(</span>
+
+<span class="w">                </span><span class="ss">&quot;ALTER TABLE &quot;</span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot;{table_name} ALTER COLUMN {_quote_identifier(column)} &quot;</span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot;SET TAGS ({_tag_pairs(tags)})&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">statements</span>
+</code></pre></div>
+
+</details>
+<h4 id="instance-variables">Instance variables</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">key</span>
+</code></pre></div>
+
+<p>Primary key columns as a dict.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">pk</span>
+</code></pre></div>
+
+<p>Scalar primary key (single-column PK only).</p>
+<h4 id="methods">Methods</h4>
+<h4 id="generator">generator</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generator</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">ctx</span><span class="p">:</span> <span class="s1">&#39;RowCtx&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;dict[str, Any]&#39;</span>
+</code></pre></div>
+
+<p>Return attribute values for one row.</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="nx">def</span><span class="w"> </span><span class="nx">generator</span><span class="p">(</span><span class="kp">self</span><span class="p">,</span><span class="w"> </span><span class="nx">ctx</span><span class="p">:</span><span class="w"> </span><span class="nx">RowCtx</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nx">dict</span><span class="p">[</span><span class="nx">str</span><span class="p">,</span><span class="w"> </span><span class="nx">Any</span><span class="p">]:</span>
+
+<span class="w">        </span><span class="s">&quot;&quot;&quot;Return attribute values for one row.&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="nx">msg</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">f</span><span class="s">&quot;{type(self).__name__} must implement generator()&quot;</span>
+
+<span class="w">        </span><span class="nx">raise</span><span class="w"> </span><span class="nx">NotImplementedError</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+    
+      <nav class="md-footer__inner md-grid" aria-label="Footer">
+        
+          
+          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Index" rel="prev">
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Previous
+                </span>
+                Index
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../pool/" class="md-footer__link md-footer__link--next" aria-label="Next: Pool" rel="next">
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Next
+                </span>
+                Pool
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+            
+            Powered by
+            <a href="http://timothycrosley.github.io/portray">portray.</a>
+            You too can
+            <a href="http://timothycrosley.github.io/portray">
+              portray</a>
+            your Python project well using automatic documentation.
+          </div>
+        
+      </div>
+    </div>
+  </footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.078830c0.min.js"></script>
+      
+    
+  </body>
+</html>
