@@ -1354,7 +1354,7 @@ non-null values, <code>PoolSampleError</code> when <code>sample(k)</code> cannot
 <p><strong>Catalog.</strong> No <code>saveAsTable</code>, comments, tags, or grants - only temp views.</p>
 <p><strong>Out of scope.</strong> Production-scale throughput, automatic cycle breaking, distributed generation and schema inference.</p>
 <h2 id="testing-library-development">Testing (library development)</h2>
-<p>Integration tests use a session-scoped local <code>SparkSession</code> (Java 17+). DataFrame assertions use <a href="https://github.com/MrPowers/chispa">chispa</a>. Unit tests mock Spark where a JVM is not required. See <code>tests/</code> and <code>CONTRIBUTING.md</code>.</p>
+<p>Integration tests use a session-scoped local <code>SparkSession</code> (Java 17+). DataFrame assertions use <a href="https://github.com/MrPowers/chispa">chispa</a>. Unit tests mock Spark where a JVM is not required. See <code>tests/</code> and <code>CONTRIBUTING.md</code>. Local development installs PySpark via the <code>spark</code> uv dependency group / <code>rowsmyth[spark]</code> extra; end users on managed Spark typically install rowsmyth without that extra.</p>
 
 
 

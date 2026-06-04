@@ -667,14 +667,20 @@
 <h1 id="rowsmyth">rowsmyth</h1>
 <p>A blacksmith forges metal. A rowsmyth forges rows - mythical ones that exist only in your tests. <code>rowsmyth</code> is declarative relational test and seed data for Apache Spark: generate rows <strong>one at a time</strong> with real foreign-key integrity, then materialise ordinary <code>DataFrame</code>s and temp views.</p>
 <h2 id="install">Install</h2>
+<div class="codehilite"><pre><span></span><code>uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;rowsmyth[spark]&quot;</span>
+<span class="c1"># or</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;rowsmyth[spark]&quot;</span>
+</code></pre></div>
+
+<p>Requires Python 3.12+, PySpark 4.0+ and Java 17+ when running Spark locally.
+The <code>[spark]</code> extra installs <code>pyspark</code>; omit it on Databricks or anywhere you
+already have a compatible PySpark on the cluster (avoids version clashes):</p>
 <div class="codehilite"><pre><span></span><code>uv<span class="w"> </span>add<span class="w"> </span>rowsmyth
 <span class="c1"># or</span>
 pip<span class="w"> </span>install<span class="w"> </span>rowsmyth
 </code></pre></div>
 
-<p>Requires Python 3.12+, PySpark 4.0+ and Java 17+. <code>pyspark</code> is installed as a
-runtime dependency; Java must be available on your <code>PATH</code> or via <code>JAVA_HOME</code>
-when running Spark locally.</p>
+<p>Java must be on your <code>PATH</code> or via <code>JAVA_HOME</code> when running Spark locally.</p>
 <h2 id="quick-start">Quick start</h2>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pyspark.sql</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparkSession</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyspark.sql.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">LongType</span><span class="p">,</span> <span class="n">StringType</span><span class="p">,</span> <span class="n">StructField</span><span class="p">,</span> <span class="n">StructType</span>

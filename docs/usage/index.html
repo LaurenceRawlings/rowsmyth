@@ -322,6 +322,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#install" class="md-nav__link">
+    Install
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#contents" class="md-nav__link">
     Contents
   </a>
@@ -815,6 +822,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#install" class="md-nav__link">
+    Install
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#contents" class="md-nav__link">
     Contents
   </a>
@@ -1130,6 +1144,11 @@
 
 <h1 id="rowsmyth-usage-guide">rowsmyth - usage guide</h1>
 <p>Full API reference and usage patterns. For a quick overview see the <a href="../..">README</a>; for internal design decisions see <a href="../design/">design.md</a>.</p>
+<h2 id="install">Install</h2>
+<ul>
+<li><strong>Local / CI:</strong> <code>pip install "rowsmyth[spark]"</code> or <code>uv add "rowsmyth[spark]"</code> to install PySpark 4.0+ alongside rowsmyth.</li>
+<li><strong>Databricks / managed Spark:</strong> <code>pip install rowsmyth</code> (no extra) and use the cluster's PySpark. rowsmyth requires PySpark 4.0+ at import time but does not pin it as a core dependency.</li>
+</ul>
 <h2 id="contents">Contents</h2>
 <ul>
 <li><a href="#defining-a-table">Defining a table</a></li>

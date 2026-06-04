@@ -668,6 +668,9 @@ or add <code>java</code> to your <code>PATH</code> before running <code>make tes
 make<span class="w"> </span>install
 </code></pre></div>
 
+<p><code>make install</code> runs <code>uv sync --all-groups</code>, including the <code>spark</code> dependency
+group (<code>pyspark</code>) used for integration tests. PySpark is not a core runtime
+dependency so published installs do not override cluster-provided versions.</p>
 <h2 id="pull-requests">Pull requests</h2>
 <p>PRs are merged via <strong>squash merge</strong> - the PR title becomes the single commit
 on <code>main</code>. Keep each PR focused on one type of change so <code>cz bump</code> can
