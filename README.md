@@ -5,14 +5,22 @@ A blacksmith forges metal. A rowsmyth forges rows - mythical ones that exist onl
 ## Install
 
 ```bash
+uv add "rowsmyth[spark]"
+# or
+pip install "rowsmyth[spark]"
+```
+
+Requires Python 3.12+, PySpark 4.0+ and Java 17+ when running Spark locally.
+The `[spark]` extra installs `pyspark`; omit it on Databricks or anywhere you
+already have a compatible PySpark on the cluster (avoids version clashes):
+
+```bash
 uv add rowsmyth
 # or
 pip install rowsmyth
 ```
 
-Requires Python 3.12+, PySpark 4.0+ and Java 17+. `pyspark` is installed as a
-runtime dependency; Java must be available on your `PATH` or via `JAVA_HOME`
-when running Spark locally.
+Java must be on your `PATH` or via `JAVA_HOME` when running Spark locally.
 
 ## Quick start
 

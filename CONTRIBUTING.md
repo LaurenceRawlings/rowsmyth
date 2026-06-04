@@ -19,6 +19,10 @@ cd rowsmyth
 make install
 ```
 
+`make install` runs `uv sync --all-groups`, including the `spark` dependency
+group (`pyspark`) used for integration tests. PySpark is not a core runtime
+dependency so published installs do not override cluster-provided versions.
+
 ## Pull requests
 
 PRs are merged via **squash merge** - the PR title becomes the single commit

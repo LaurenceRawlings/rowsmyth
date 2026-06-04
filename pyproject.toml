@@ -24,6 +24,10 @@ classifiers = [
 ]
 dependencies = [
   "faker>=40.20.0",
+]
+
+[project.optional-dependencies]
+spark = [
   "pyspark>=4.0.0",
 ]
 
@@ -35,6 +39,9 @@ Issues = "https://github.com/LaurenceRawlings/rowsmyth/issues"
 Changelog = "https://github.com/LaurenceRawlings/rowsmyth/blob/main/CHANGELOG.md"
 
 [dependency-groups]
+spark = [
+  "pyspark>=4.0.0",
+]
 dev = [
   "chispa>=0.12.0",
   "bandit[toml]>=1.9.4",

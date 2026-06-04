@@ -2,6 +2,11 @@
 
 Full API reference and usage patterns. For a quick overview see the [README](../README.md); for internal design decisions see [design.md](design.md).
 
+## Install
+
+- **Local / CI:** `pip install "rowsmyth[spark]"` or `uv add "rowsmyth[spark]"` to install PySpark 4.0+ alongside rowsmyth.
+- **Databricks / managed Spark:** `pip install rowsmyth` (no extra) and use the cluster's PySpark. rowsmyth requires PySpark 4.0+ at import time but does not pin it as a core dependency.
+
 ## Contents
 
 - [Defining a table](#defining-a-table)
