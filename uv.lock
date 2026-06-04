@@ -1291,6 +1291,10 @@ name = "rowsmyth"
 source = { editable = "." }
 dependencies = [
     { name = "faker" },
+]
+
+[package.optional-dependencies]
+spark = [
     { name = "pyspark" },
 ]
 
@@ -1308,12 +1312,16 @@ dev = [
     { name = "ruff" },
     { name = "ty" },
 ]
+spark = [
+    { name = "pyspark" },
+]
 
 [package.metadata]
 requires-dist = [
     { name = "faker", specifier = ">=40.20.0" },
-    { name = "pyspark", specifier = ">=4.0.0" },
+    { name = "pyspark", marker = "extra == 'spark'", specifier = ">=4.0.0" },
 ]
+provides-extras = ["spark"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -1329,6 +1337,7 @@ dev = [
     { name = "ruff", specifier = ">=0.15.15" },
     { name = "ty", specifier = ">=0.0.42" },
 ]
+spark = [{ name = "pyspark", specifier = ">=4.0.0" }]
 
 [[package]]
 name = "ruff"

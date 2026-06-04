@@ -347,4 +347,4 @@ for statement in User.uc_tag_sql():
 
 ## Testing (library development)
 
-Integration tests use a session-scoped local `SparkSession` (Java 17+). DataFrame assertions use [chispa](https://github.com/MrPowers/chispa). Unit tests mock Spark where a JVM is not required. See `tests/` and `CONTRIBUTING.md`.
+Integration tests use a session-scoped local `SparkSession` (Java 17+). DataFrame assertions use [chispa](https://github.com/MrPowers/chispa). Unit tests mock Spark where a JVM is not required. See `tests/` and `CONTRIBUTING.md`. Local development installs PySpark via the `spark` uv dependency group / `rowsmyth[spark]` extra; end users on managed Spark typically install rowsmyth without that extra.

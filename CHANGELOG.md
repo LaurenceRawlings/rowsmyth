@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- commitizen will append entries here on `cz bump` -->
 
+## 1.1.0 (2026-06-04)
+
+- PySpark is no longer a core dependency; install `rowsmyth[spark]` or the `spark` uv dependency group when you need rowsmyth to pull in `pyspark` (e.g. local development). On Databricks and other managed Spark, install `rowsmyth` alone and use the cluster PySpark
+
 ## 1.0.0 (2026-06-03)
 
 ### BREAKING CHANGES
