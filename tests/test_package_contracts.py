@@ -12,17 +12,21 @@ def test_public_namespace_contains_supported_user_symbols() -> None:
     expected = {
         "Dataset",
         "Factory",
+        "Lazy",
         "Model",
         "Pool",
         "RowCtx",
         "RowsmythError",
+        "RowsmythWarning",
         "__version__",
         "declarative_base",
+        "lazy",
         "variant",
     }
 
     assert expected.issubset(set(rowsmyth.__all__))
     assert all(hasattr(rowsmyth, name) for name in rowsmyth.__all__)
+    assert sorted(rowsmyth.__all__) == list(rowsmyth.__all__)
 
 
 def test_version_fallback_when_generated_module_is_unavailable(monkeypatch) -> None:

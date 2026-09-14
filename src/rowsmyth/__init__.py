@@ -1,33 +1,43 @@
 """
 Rowsmyth: declarative relational test data as Spark DataFrames.
 
-Generate seed datasets row-by-row with real foreign-key integrity.
+Generate seed datasets with real foreign-key integrity, then materialise
+ordinary DataFrames and temp views.
 """
 
 from rowsmyth.dataset import Dataset, RowCtx
 from rowsmyth.errors import (
+    ColumnTypeError,
     CompoundPrimaryKeyError,
-    DataframeNotFoundError,
+    DatasetConfigurationError,
     DatasetContextError,
+    DatasetError,
     DatasetLookupError,
     DeclarativeBaseError,
+    DuplicatePrimaryKeyError,
     EmptyPoolError,
     FactoryError,
+    ForeignKeyViolationError,
+    IntegrityError,
     InvalidDeclarativeBaseError,
     InvalidModelDefinitionError,
+    LazyValueError,
     MissingRequiredColumnError,
     PoolError,
     PoolSampleError,
     ReservedColumnError,
     RowsmythError,
+    RowsmythWarning,
     SchemaError,
+    TableNotFoundError,
     UnknownColumnError,
     UnknownVariantError,
-    UnresolvedPoolError,
     VariantError,
+    ViewCollisionError,
     WrongDeclarativeBaseError,
 )
 from rowsmyth.factory import Factory
+from rowsmyth.lazy import Lazy, lazy
 from rowsmyth.model import (
     Model,
     declarative_base,
@@ -41,17 +51,24 @@ except ImportError:
     __version__ = "0.0.0"
 
 __all__ = [
+    "ColumnTypeError",
     "CompoundPrimaryKeyError",
-    "DataframeNotFoundError",
     "Dataset",
+    "DatasetConfigurationError",
     "DatasetContextError",
+    "DatasetError",
     "DatasetLookupError",
     "DeclarativeBaseError",
+    "DuplicatePrimaryKeyError",
     "EmptyPoolError",
     "Factory",
     "FactoryError",
+    "ForeignKeyViolationError",
+    "IntegrityError",
     "InvalidDeclarativeBaseError",
     "InvalidModelDefinitionError",
+    "Lazy",
+    "LazyValueError",
     "MissingRequiredColumnError",
     "Model",
     "Pool",
@@ -60,13 +77,16 @@ __all__ = [
     "ReservedColumnError",
     "RowCtx",
     "RowsmythError",
+    "RowsmythWarning",
     "SchemaError",
+    "TableNotFoundError",
     "UnknownColumnError",
     "UnknownVariantError",
-    "UnresolvedPoolError",
     "VariantError",
+    "ViewCollisionError",
     "WrongDeclarativeBaseError",
     "__version__",
     "declarative_base",
+    "lazy",
     "variant",
 ]

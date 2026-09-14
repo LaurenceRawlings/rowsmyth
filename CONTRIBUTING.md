@@ -86,11 +86,16 @@ See [docs/design.md](docs/design.md) for the product design and API behaviour.
 Source layout:
 
 - `src/rowsmyth/model.py` - declarative `Model` base, `variant` decorator
-- `src/rowsmyth/factory.py` - fluent `Factory` and `create()`
-- `src/rowsmyth/dataset.py` - `Dataset`, `RowCtx`, active dataset context
-- `src/rowsmyth/resolution.py` - FK resolution and validation
-- `src/rowsmyth/pool.py` - `Pool` and deferred pool tokens
+- `src/rowsmyth/factory.py` - fluent copy-on-write `Factory`, `create()`, `from_rows()`
+- `src/rowsmyth/dataset.py` - `Dataset`, `RowCtx`, materialisation, pools, integrity
+- `src/rowsmyth/resolution.py` - FK resolution, lazy resolution and row validation
+- `src/rowsmyth/lazy.py` - `Lazy` marker and `lazy()`
+- `src/rowsmyth/pool.py` - `Pool` and its distinct-value index
 - `src/rowsmyth/errors.py` - rowsmyth exception hierarchy
+
+Generation must stay free of Spark round trips: rows are appended in the driver
+and a table is materialised on its first read. `tests/test_materialisation_contracts.py`
+guards this with a counting `SparkSession` stand-in - keep those assertions green.
 
 ## Releasing (maintainers only)
 

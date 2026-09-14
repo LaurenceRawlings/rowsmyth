@@ -2,65 +2,61 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from rowsmyth.errors import EmptyPoolError, PoolSampleError
 
 if TYPE_CHECKING:
-    import random
+    from collections.abc import Iterable
 
-    from pyspark.sql import SparkSession
-
-
-@dataclass(frozen=True)
-class PoolChoice:
-    """Deferred Spark-resolved choice from a temp view column."""
-
-    view: str
-    column: str
-    seed: int
+    from rowsmyth.dataset import Dataset
 
 
-def _empty_pool_message(view: str, column: str) -> str:
-    return f"pool({view!r}, {column!r}): no non-null values in temp view"
+class PoolIndex:
+    """Incremental distinct-value index for one pooled column."""
+
+    __slots__ = ("cursor", "external", "loaded", "seen", "values")
+
+    def __init__(self, *, external: bool) -> None:
+        self.external = external
+        self.loaded = False
+        self.cursor = 0
+        self.seen: set[Any] = set()
+        self.values: list[Any] = []
+
+    def extend(self, values: Iterable[Any]) -> None:
+        """Add distinct non-null values, preserving first-seen order."""
+        for value in values:
+            if value is None or value in self.seen:
+                continue
+            self.seen.add(value)
+            self.values.append(value)
 
 
 class Pool:
-    """Distinct column values from a session temp view."""
+    """Distinct values from a dataset table or an existing Spark temp view."""
 
-    __slots__ = ("_rng", "_spark", "column", "view")
+    __slots__ = ("_dataset", "column", "view")
 
-    def __init__(
-        self,
-        spark: SparkSession,
-        view: str,
-        column: str,
-        rng: random.Random,
-    ) -> None:
-        self._spark = spark
+    def __init__(self, dataset: Dataset, view: str, column: str) -> None:
+        self._dataset = dataset
         self.view = view
         self.column = column
-        self._rng = rng
 
     @property
     def values(self) -> list[Any]:
-        """Return current distinct values from Spark."""
-        return self._values()
+        """Distinct non-null values currently available in the pool."""
+        return list(self._values())
 
-    def choice(self) -> PoolChoice:
-        """Return a deferred uniformly random Spark pool choice."""
-        return PoolChoice(
-            view=self.view,
-            column=self.column,
-            seed=self._rng.randrange(0, 2**31),
-        )
+    def choice(self) -> Any:
+        """Return one uniformly random value from the pool."""
+        return self._dataset.random.choice(self._values())
 
     def sample(self, k: int) -> list[Any]:
-        """Pick k distinct values without replacement from Spark."""
+        """Pick k distinct values without replacement."""
         values = self._values()
         try:
-            return self._rng.sample(values, k)
+            return self._dataset.random.sample(values, k)
         except ValueError as exc:
             msg = (
                 f"pool({self.view!r}, {self.column!r}): cannot sample "
@@ -69,17 +65,16 @@ class Pool:
             raise PoolSampleError(msg) from exc
 
     def _values(self) -> list[Any]:
-        from pyspark.sql import functions as F
+        return self._dataset._pool_values(self.view, self.column)
 
-        rows = (
-            self._spark
-            .table(self.view)
-            .select(self.column)
-            .where(F.col(self.column).isNotNull())
-            .distinct()
-            .collect()
+
+def empty_pool_error(view: str, column: str, *, external: bool) -> EmptyPoolError:
+    """Build the error raised when a pool holds no usable values."""
+    if external:
+        msg = f"pool({view!r}, {column!r}): no non-null values in temp view"
+    else:
+        msg = (
+            f"pool({view!r}, {column!r}): no non-null values; create {view} rows "
+            "before sampling from them"
         )
-        values = [row[0] for row in rows]
-        if not values:
-            raise EmptyPoolError(_empty_pool_message(self.view, self.column))
-        return values
+    return EmptyPoolError(msg)

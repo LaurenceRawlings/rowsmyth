@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import os
 import sys
+import tempfile
 from pathlib import Path
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -46,6 +47,7 @@ class User(Base):
     __schema__ = "app"
     __comment__ = "Application users"
     __primary_key__ = ("id",)
+    __foreign_keys__: ClassVar[dict[str, str]] = {"role_id": "roles.id"}
     __table_tags__: ClassVar[dict[str, str]] = {"layer": "silver"}
     __expectations__: ClassVar[dict[str, str]] = {
         "id_not_null": "id IS NOT NULL",
@@ -91,6 +93,7 @@ class User(Base):
 class Post(Base):
     __table_name__ = "posts"
     __primary_key__ = ("id",)
+    __foreign_keys__: ClassVar[dict[str, str]] = {"author_id": "users.id"}
     __definition__ = StructType([
         StructField("id", LongType(), False),
         StructField("author_id", LongType(), False),
@@ -125,6 +128,10 @@ class Order(Base):
 class OrderLine(Base):
     __table_name__ = "order_lines"
     __primary_key__ = ("line_id",)
+    __foreign_keys__: ClassVar[dict[str, str]] = {
+        "order_id": "orders.order_id",
+        "order_region": "orders.region",
+    }
     __definition__ = StructType([
         StructField("line_id", LongType(), False),
         StructField("order_id", LongType(), False),
@@ -160,6 +167,7 @@ class BadCompoundFk(Base):
 class PoolConsumer(Base):
     __table_name__ = "pool_consumer"
     __primary_key__ = ("id",)
+    __foreign_keys__: ClassVar[dict[str, str]] = {"role_id": "roles.id"}
     __definition__ = StructType([
         StructField("id", LongType(), False),
         StructField("role_id", LongType(), False),
@@ -171,6 +179,21 @@ class PoolConsumer(Base):
             "id": ctx.sequence(),
             "role_id": ctx.pool("roles", "id").choice(),
             "fallback_role_id": 0,
+        }
+
+
+class ExternalPoolConsumer(Base):
+    __table_name__ = "external_pool_consumer"
+    __primary_key__ = ("id",)
+    __definition__ = StructType([
+        StructField("id", LongType(), False),
+        StructField("source_id", LongType(), False),
+    ])
+
+    def generator(self, ctx) -> dict:
+        return {
+            "id": ctx.sequence(),
+            "source_id": ctx.pool("external_ids", "id").choice(),
         }
 
 
@@ -243,6 +266,41 @@ class SequenceRight(Base):
         return {"id": ctx.sequence(), "shared_id": ctx.sequence("shared")}
 
 
+class FakeDataFrame:
+    """Minimal DataFrame stand-in that records temp view registrations."""
+
+    def __init__(self, rows: list[Any], schema: Any, stats: dict[str, int]) -> None:
+        self.rows = rows
+        self.schema = schema
+        self._stats = stats
+
+    def createOrReplaceTempView(self, name: str) -> None:
+        self._stats["createOrReplaceTempView"] += 1
+        self._stats["views"].add(name)
+
+
+class FakeSpark:
+    """SparkSession stand-in that counts driver round trips."""
+
+    def __init__(self) -> None:
+        self.stats: dict[str, Any] = {
+            "createDataFrame": 0,
+            "createOrReplaceTempView": 0,
+            "rows_serialised": 0,
+            "views": set(),
+        }
+
+    def createDataFrame(self, rows: list[Any], schema: Any = None) -> FakeDataFrame:
+        self.stats["createDataFrame"] += 1
+        self.stats["rows_serialised"] += len(rows)
+        return FakeDataFrame(list(rows), schema, self.stats)
+
+
+@pytest.fixture
+def fake_spark() -> FakeSpark:
+    return FakeSpark()
+
+
 @pytest.fixture
 def app_base():
     return Base
@@ -252,6 +310,7 @@ def app_base():
 def models():
     return {
         "bad_compound_fk": BadCompoundFk,
+        "external_pool_consumer": ExternalPoolConsumer,
         "missing_required": MissingRequired,
         "nullable_demo": NullableDemo,
         "order": Order,
@@ -264,6 +323,21 @@ def models():
         "stateful_item": StatefulItem,
         "user": User,
     }
+
+
+@pytest.fixture
+def temporary_model(app_base):
+    """Register ad-hoc models for one test and drop them afterwards."""
+    created: list[str] = []
+
+    def register(model: type) -> type:
+        created.append(model.__table_name__)
+        return model
+
+    yield register
+
+    for name in created:
+        app_base.registry.pop(name, None)
 
 
 def _ensure_java_on_path() -> None:
@@ -287,12 +361,14 @@ def _configure_pyspark_env() -> None:
 def spark() -> Generator[SparkSession, None, None]:
     _ensure_java_on_path()
     _configure_pyspark_env()
+    warehouse = tempfile.mkdtemp(prefix="rowsmyth-warehouse-")
     session = (
         SparkSession.builder
         .master("local[1]")
         .appName("rowsmyth-tests")
         .config("spark.ui.enabled", "false")
         .config("spark.sql.shuffle.partitions", "1")
+        .config("spark.sql.warehouse.dir", warehouse)
         .config("spark.driver.host", "127.0.0.1")
         .config("spark.driver.bindAddress", "127.0.0.1")
         .config("spark.python.worker.timeout", "600")
