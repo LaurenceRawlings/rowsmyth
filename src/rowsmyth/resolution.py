@@ -2,15 +2,22 @@
 
 from __future__ import annotations
 
+import datetime
+import decimal
+from functools import lru_cache
 from typing import TYPE_CHECKING, Any
 
 from rowsmyth.errors import (
+    ColumnTypeError,
     CompoundPrimaryKeyError,
     MissingRequiredColumnError,
     UnknownColumnError,
 )
+from rowsmyth.lazy import Lazy
 
 if TYPE_CHECKING:
+    from pyspark.sql.types import DataType, StructField
+
     from rowsmyth.dataset import RowCtx
     from rowsmyth.factory import Factory
     from rowsmyth.model import Model
@@ -47,21 +54,20 @@ def resolve_fk(child_factory: Factory, ctx: RowCtx, slot: str) -> Any:
 
 
 def resolve_row_values(attrs: dict[str, Any], ctx: RowCtx) -> None:
-    """Resolve Factory and callable values in place."""
+    """Resolve Factory and lazy values in place."""
     from rowsmyth.factory import Factory
 
     for col, value in list(attrs.items()):
         if isinstance(value, Factory):
             attrs[col] = resolve_fk(value, ctx, slot=col)
-        elif callable(value):
-            attrs[col] = value(ctx)
+        elif isinstance(value, Lazy):
+            attrs[col] = value.fn(ctx)
 
 
 def validate_row(table: type[Model], attrs: dict[str, Any]) -> None:
     """Validate one generated row against the model schema."""
     name = table.__table_name__
-    field_names = {field.name for field in table.__definition__.fields}
-    unknown = sorted(set(attrs) - field_names)
+    unknown = sorted(set(attrs) - table._field_names())
     if unknown:
         msg = f"{name}: unknown columns: {unknown}"
         raise UnknownColumnError(msg)
@@ -69,12 +75,13 @@ def validate_row(table: type[Model], attrs: dict[str, Any]) -> None:
     missing = []
     nulls = []
     for field in table.__definition__.fields:
-        if field.nullable:
+        value = attrs.get(field.name)
+        if value is None:
+            if not field.nullable:
+                (missing if field.name not in attrs else nulls).append(field.name)
             continue
-        if field.name not in attrs:
-            missing.append(field.name)
-        elif attrs[field.name] is None:
-            nulls.append(field.name)
+        if not isinstance(value, _accepted_types(field.dataType)):
+            raise ColumnTypeError(_type_error(name, field, value))
 
     invalid = missing + nulls
     if invalid:
@@ -91,3 +98,66 @@ def apply_variant(
     """Run a named variant method and return its partial override."""
     method = table._variants[variant_name]
     return dict(method(obj, ctx))
+
+
+def _type_error(name: str, field: StructField, value: Any) -> str:
+    accepted = ", ".join(
+        sorted(cls.__name__ for cls in _accepted_types(field.dataType))
+    )
+    msg = (
+        f"{name}.{field.name}: {field.dataType.simpleString()} column expects "
+        f"{accepted}, got {type(value).__name__}"
+    )
+    if callable(value):
+        msg = f"{msg}; wrap callables in rowsmyth.lazy() to defer them per row"
+    return msg
+
+
+def _accepted_types(data_type: DataType) -> tuple[type, ...]:
+    return _type_map().get(type(data_type), (object,))
+
+
+@lru_cache(maxsize=1)
+def _type_map() -> dict[type, tuple[type, ...]]:
+    from pyspark.sql.types import (
+        ArrayType,
+        BinaryType,
+        BooleanType,
+        ByteType,
+        DateType,
+        DayTimeIntervalType,
+        DecimalType,
+        DoubleType,
+        FloatType,
+        IntegerType,
+        LongType,
+        MapType,
+        Row,
+        ShortType,
+        StringType,
+        StructType,
+        TimestampNTZType,
+        TimestampType,
+    )
+
+    integers = (int,)
+    reals = (float, int)
+    return {
+        ArrayType: (list, tuple),
+        BinaryType: (bytearray, bytes),
+        BooleanType: (bool,),
+        ByteType: integers,
+        DateType: (datetime.date,),
+        DayTimeIntervalType: (datetime.timedelta,),
+        DecimalType: (decimal.Decimal,),
+        DoubleType: reals,
+        FloatType: reals,
+        IntegerType: integers,
+        LongType: integers,
+        MapType: (dict,),
+        ShortType: integers,
+        StringType: (str,),
+        StructType: (Row, dict, list, tuple),
+        TimestampNTZType: (datetime.datetime,),
+        TimestampType: (datetime.datetime,),
+    }

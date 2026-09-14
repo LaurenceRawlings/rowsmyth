@@ -35,6 +35,7 @@ def test_declarative_base_scopes_registry(app_base, models) -> None:
     assert app_base.registry["users"] is user_model
     assert other_base.registry == {"users": OtherUser}
     assert "roles" not in Model.registry
+    assert role_model._field_names() == {"id", "name"}
 
 
 def test_abstract_classes_do_not_register_but_concrete_children_do(
@@ -136,7 +137,14 @@ def test_unity_catalog_metadata_helpers_escape_values(models) -> None:
     ]
 
 
-def test_unity_catalog_sql_escapes_quotes(app_base, models) -> None:
+def test_models_without_catalog_metadata_emit_no_sql(models) -> None:
+    assert models["role"].uc_tag_sql() == []
+    assert models["role"].column_tags() == {}
+    assert models["role"].column_comments() == {}
+
+
+def test_unity_catalog_sql_escapes_quotes(app_base, models, temporary_model) -> None:
+    @temporary_model
     class Tagged(app_base):
         __table_name__ = "tagged_test_only"
         __comment__ = "Data's table"
@@ -147,13 +155,10 @@ def test_unity_catalog_sql_escapes_quotes(app_base, models) -> None:
         def generator(self, ctx) -> dict:
             return {}
 
-    try:
-        assert Tagged.uc_tag_sql()[:2] == [
-            "COMMENT ON TABLE `tagged_test_only` IS 'Data''s table'",
-            "ALTER TABLE `tagged_test_only` SET TAGS ('owner' = 'data''s team')",
-        ]
-    finally:
-        app_base.registry.pop("tagged_test_only", None)
+    assert Tagged.uc_tag_sql()[:2] == [
+        "COMMENT ON TABLE `tagged_test_only` IS 'Data''s table'",
+        "ALTER TABLE `tagged_test_only` SET TAGS ('owner' = 'data''s team')",
+    ]
 
 
 def test_model_definition_validation_errors(models) -> None:
@@ -183,14 +188,38 @@ def test_model_definition_validation_errors(models) -> None:
             __definition__ = models["role"].__definition__
 
 
-def test_generator_must_be_implemented(app_base, models) -> None:
+def test_generator_must_be_implemented(app_base, models, temporary_model) -> None:
+    @temporary_model
     class Bare(app_base):
         __table_name__ = "bare_test_only"
         __primary_key__ = ("id",)
         __definition__ = models["role"].__definition__
 
-    try:
-        with pytest.raises(NotImplementedError, match="generator"):
-            Bare().generator(None)  # type: ignore[arg-type]
-    finally:
-        app_base.registry.pop("bare_test_only", None)
+    with pytest.raises(NotImplementedError, match="generator"):
+        Bare().generator(None)  # type: ignore[arg-type]
+
+
+def test_columns_may_not_shadow_the_model_api(models) -> None:
+    base = declarative_base()
+
+    with pytest.raises(ReservedColumnError, match=r"collide with the Model API"):
+
+        class Colliding(base):
+            __table_name__ = "colliding_test_only"
+            __primary_key__ = ("id",)
+            __definition__ = StructType([
+                StructField("id", LongType(), False),
+                StructField("key", LongType(), False),
+                StructField("attrs", LongType(), False),
+            ])
+
+    with pytest.raises(ReservedColumnError, match=r"\['create', 'pk'\]"):
+
+        class AlsoColliding(base):
+            __table_name__ = "also_colliding_test_only"
+            __primary_key__ = ("id",)
+            __definition__ = StructType([
+                StructField("id", LongType(), False),
+                StructField("pk", LongType(), False),
+                StructField("create", LongType(), False),
+            ])

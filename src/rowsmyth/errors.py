@@ -7,8 +7,32 @@ class RowsmythError(Exception):
     """Base class for all rowsmyth domain errors."""
 
 
-class DatasetContextError(RowsmythError):
+class RowsmythWarning(UserWarning):
+    """Base class for all rowsmyth warnings."""
+
+
+class DatasetError(RowsmythError):
+    """Raised for dataset session configuration, lookup or state failures."""
+
+
+class DatasetContextError(DatasetError):
     """Raised when a factory operation needs an active dataset context."""
+
+
+class DatasetConfigurationError(DatasetError):
+    """Raised when a dataset session is configured with unsupported options."""
+
+
+class DatasetLookupError(DatasetError):
+    """Raised when looking up committed dataset outputs fails."""
+
+
+class TableNotFoundError(DatasetLookupError):
+    """Raised when a requested table has not been created in a dataset."""
+
+
+class ViewCollisionError(DatasetError):
+    """Raised when two declarative bases register the same temp view name."""
 
 
 class DeclarativeBaseError(RowsmythError):
@@ -43,8 +67,24 @@ class MissingRequiredColumnError(SchemaError):
     """Raised when a non-nullable column has no generated value."""
 
 
+class ColumnTypeError(SchemaError):
+    """Raised when a generated value does not match its declared Spark type."""
+
+
+class IntegrityError(RowsmythError):
+    """Raised when generated rows break a declared relational constraint."""
+
+
+class DuplicatePrimaryKeyError(IntegrityError):
+    """Raised when two rows in one table share a primary key."""
+
+
+class ForeignKeyViolationError(IntegrityError):
+    """Raised when a declared foreign key points at a missing parent row."""
+
+
 class PoolError(RowsmythError):
-    """Raised for Spark pool lookup failures."""
+    """Raised for pool lookup failures."""
 
 
 class EmptyPoolError(PoolError):
@@ -55,10 +95,6 @@ class PoolSampleError(PoolError):
     """Raised when a pool sample request cannot be satisfied."""
 
 
-class UnresolvedPoolError(PoolError):
-    """Raised when a deferred pool choice cannot be resolved."""
-
-
 class FactoryError(RowsmythError):
     """Raised for invalid factory configuration or use."""
 
@@ -67,17 +103,13 @@ class CompoundPrimaryKeyError(FactoryError):
     """Raised when a scalar FK factory targets a compound primary key."""
 
 
+class LazyValueError(FactoryError):
+    """Raised when :func:`rowsmyth.lazy` is given a non-callable value."""
+
+
 class VariantError(RowsmythError):
     """Raised for model variant lookup or execution failures."""
 
 
 class UnknownVariantError(VariantError):
     """Raised when a named variant is not declared on a model."""
-
-
-class DatasetLookupError(RowsmythError):
-    """Raised when looking up committed dataset outputs fails."""
-
-
-class DataframeNotFoundError(DatasetLookupError):
-    """Raised when a requested DataFrame has not been created in a dataset."""

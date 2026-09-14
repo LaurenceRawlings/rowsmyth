@@ -25,3 +25,5 @@ site/
 
 # Testing scratch (private)
 testing/
+
+uv.lock

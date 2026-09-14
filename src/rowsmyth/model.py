@@ -16,7 +16,7 @@ from rowsmyth.errors import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterable
 
     from pyspark.sql import SparkSession
     from pyspark.sql.types import StructType
@@ -46,6 +46,7 @@ class Model:
     __table_name__: ClassVar[str]
     __definition__: ClassVar[StructType]
     __primary_key__: ClassVar[tuple[str, ...]]
+    __foreign_keys__: ClassVar[dict[str, str]] = {}
     __catalog__: ClassVar[str | None] = None
     __schema__: ClassVar[str | None] = None
     __comment__: ClassVar[str | None] = None
@@ -53,14 +54,15 @@ class Model:
     __expectations__: ClassVar[dict[str, str]] = {}
 
     _variants: ClassVar[dict[str, Callable[..., dict[str, Any]]]]
+    _fields: ClassVar[frozenset[str]] = frozenset()
 
     @classmethod
-    def _field_names(cls) -> set[str]:
-        return {field.name for field in cls.__definition__.fields}
+    def _field_names(cls) -> frozenset[str]:
+        return cls._fields
 
     @classmethod
     def _validate_unknown_columns(cls, attrs: dict[str, Any]) -> None:
-        unknown = set(attrs) - cls._field_names()
+        unknown = set(attrs) - cls._fields
         if unknown:
             msg = f"{cls.__table_name__}: unknown columns: {sorted(unknown)}"
             raise UnknownColumnError(msg)
@@ -68,18 +70,13 @@ class Model:
     def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
         cls._variants = _collect_variants(cls)
+        definition = getattr(cls, "__definition__", None)
+        if definition is not None:
+            cls._fields = frozenset(field.name for field in definition.fields)
         if not getattr(cls, "__table_name__", None):
             return
         base = declarative_base_for(cls)
         _validate_model_definition(cls)
-        internal = [
-            field.name
-            for field in cls.__definition__.fields
-            if field.name.startswith(INTERNAL_PREFIX)
-        ]
-        if internal:
-            msg = f"{cls.__table_name__}: reserved rowsmyth columns: {internal}"
-            raise ReservedColumnError(msg)
         base.registry[cls.__table_name__] = cls
 
     def __init__(self, **attrs: Any) -> None:
@@ -121,6 +118,17 @@ class Model:
         return cls.factory().where(**cols).create()[0]
 
     @classmethod
+    def bulk_create(cls, rows: Iterable[dict[str, Any]], **cols: Any) -> list[Model]:
+        """
+        Create precomputed rows without running :meth:`generator`.
+
+        Each mapping is one complete row; ``cols`` applies the same overrides to
+        every row. Use this when the rows already exist as dicts - it is the
+        cheapest path into a dataset.
+        """
+        return cls.factory().from_rows(rows).where(**cols).create()
+
+    @classmethod
     def factory(cls) -> Factory:
         """Return a fluent factory for this table."""
         from rowsmyth.factory import Factory
@@ -132,12 +140,23 @@ class Model:
         cls,
         spark: SparkSession,
         seed: int | None = None,
+        integrity: str = "raise",
+        *,
+        views: bool = True,
+        view_prefix: str | None = None,
     ) -> Dataset:
         """Return a dataset context manager bound to this declarative base."""
         from rowsmyth.dataset import dataset
 
         base = declarative_base_for(cls)
-        return dataset(spark, base, seed)
+        return dataset(
+            spark,
+            base,
+            seed,
+            integrity,
+            views=views,
+            view_prefix=view_prefix,
+        )
 
     @classmethod
     def fqn(cls) -> str:
@@ -193,6 +212,9 @@ class Model:
         return statements
 
 
+RESERVED_COLUMNS = frozenset(dir(Model)) | {"attrs"}
+
+
 def _quote_literal(value: Any) -> str:
     return "'" + str(value).replace("'", "''") + "'"
 
@@ -225,14 +247,44 @@ def _collect_variants(model: type[Model]) -> dict[str, Callable[..., dict[str, A
 
 
 def _validate_model_definition(model: type[Model]) -> None:
-    field_names = model._field_names()
+    name = model.__table_name__
+    field_names = model._fields
+
+    internal = sorted(col for col in field_names if col.startswith(INTERNAL_PREFIX))
+    if internal:
+        msg = f"{name}: reserved rowsmyth columns: {internal}"
+        raise ReservedColumnError(msg)
+
+    colliding = sorted(field_names & RESERVED_COLUMNS)
+    if colliding:
+        msg = f"{name}: column names collide with the Model API: {colliding}"
+        raise ReservedColumnError(msg)
+
     if not model.__primary_key__:
-        msg = f"{model.__table_name__}: primary key must contain at least one column"
+        msg = f"{name}: primary key must contain at least one column"
         raise InvalidModelDefinitionError(msg)
+
     missing_pk = [col for col in model.__primary_key__ if col not in field_names]
     if missing_pk:
-        msg = f"{model.__table_name__}: missing primary key columns: {missing_pk}"
+        msg = f"{name}: missing primary key columns: {missing_pk}"
         raise InvalidModelDefinitionError(msg)
+
+    _validate_foreign_keys(model)
+
+
+def _validate_foreign_keys(model: type[Model]) -> None:
+    name = model.__table_name__
+    for column, target in model.__foreign_keys__.items():
+        if column not in model._fields:
+            msg = f"{name}: foreign key column {column!r} is not in __definition__"
+            raise InvalidModelDefinitionError(msg)
+        parts = target.split(".")
+        if len(parts) != 2 or not all(parts):
+            msg = (
+                f"{name}: foreign key target for {column!r} must be "
+                f"'table.column', got {target!r}"
+            )
+            raise InvalidModelDefinitionError(msg)
 
 
 def declarative_base(name: str = "Base") -> type[Model]:
