@@ -288,6 +288,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../docs/upgrade-v2/" class="md-nav__link">
+        Upgrade V2
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../docs/usage/" class="md-nav__link">
         Usage
       </a>
@@ -308,18 +323,18 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" type="checkbox" id="__nav_8" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_7">
+        <label class="md-nav__link" for="__nav_8">
           Reference
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Reference" data-md-level="1">
-        <label class="md-nav__title" for="__nav_7">
+        <label class="md-nav__title" for="__nav_8">
           <span class="md-nav__icon md-icon"></span>
           Reference
         </label>
@@ -336,18 +351,18 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7_1" type="checkbox" id="__nav_7_1" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8_1" type="checkbox" id="__nav_8_1" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_7_1">
+        <label class="md-nav__link" for="__nav_8_1">
           Rowsmyth
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Rowsmyth" data-md-level="2">
-        <label class="md-nav__title" for="__nav_7_1">
+        <label class="md-nav__title" for="__nav_8_1">
           <span class="md-nav__icon md-icon"></span>
           Rowsmyth
         </label>
@@ -465,6 +480,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#from_rows" class="md-nav__link">
+    from_rows
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#has" class="md-nav__link">
     has
   </a>
@@ -512,6 +534,20 @@
     <li class="md-nav__item">
       <a href="../" class="md-nav__link">
         Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lazy/" class="md-nav__link">
+        Lazy
       </a>
     </li>
   
@@ -644,6 +680,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#from_rows" class="md-nav__link">
+    from_rows
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#has" class="md-nav__link">
     has
   </a>
@@ -695,16 +738,18 @@
 
 
 <h1 id="module-rowsmythfactory">Module rowsmyth.factory</h1>
-<p>Fluent factory for building Spark DataFrames row by row.</p>
+<p>Fluent factory for building rows of a model and its relations.</p>
 <details class="example">
 <summary>View Source</summary>
-<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Fluent factory for building Spark DataFrames row by row.&quot;&quot;&quot;</span>
+<div class="codehilite"><pre><span></span><code><span class="sd">"""Fluent factory for building rows of a model and its relations."""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
 
@@ -726,15 +771,23 @@
 
 <span class="k">class</span><span class="w"> </span><span class="nc">Factory</span><span class="p">:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Builder for generating rows of a single model (and related children).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_children&quot;</span><span class="p">,</span> <span class="s2">&quot;_model&quot;</span><span class="p">,</span> <span class="s2">&quot;_n&quot;</span><span class="p">,</span> <span class="s2">&quot;_variant&quot;</span><span class="p">,</span> <span class="s2">&quot;_where&quot;</span><span class="p">)</span>
+<span class="sd">    Builder for generating rows of a single model (and related children).</span>
+
+<span class="sd">    Every method returns a new factory, so a configured factory is a reusable</span>
+
+<span class="sd">    template: refining it never mutates the factory it was derived from.</span>
+
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_children"</span><span class="p">,</span> <span class="s2">"_model"</span><span class="p">,</span> <span class="s2">"_n"</span><span class="p">,</span> <span class="s2">"_presets"</span><span class="p">,</span> <span class="s2">"_variant"</span><span class="p">,</span> <span class="s2">"_where"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Model</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">table</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_n</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_variant</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -742,53 +795,105 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_children</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Factory</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_presets</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Factory</span><span class="p">:</span>
 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of rows to generate.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Number of rows to generate (default 1)."""</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
 
-            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Factory.count() requires a non-negative integer&quot;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">"Factory.count() requires a non-negative integer"</span>
 
             <span class="k">raise</span> <span class="n">FactoryError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_n</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_presets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 
-        <span class="k">return</span> <span class="bp">self</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">"Factory.count() cannot be combined with from_rows()"</span>
+
+            <span class="k">raise</span> <span class="n">FactoryError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">clone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy</span><span class="p">()</span>
+
+        <span class="n">clone</span><span class="o">.</span><span class="n">_n</span> <span class="o">=</span> <span class="n">n</span>
+
+        <span class="k">return</span> <span class="n">clone</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Factory</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">"""</span>
+
+<span class="sd">        Generate one row per mapping, bypassing :meth:`Model.generator`.</span>
+
+<span class="sd">        Overrides from :meth:`where` still apply, and every row is validated as</span>
+
+<span class="sd">        usual. Cannot be combined with :meth:`count` or :meth:`variant`.</span>
+
+<span class="sd">        """</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">"Factory.from_rows() cannot be combined with count()"</span>
+
+            <span class="k">raise</span> <span class="n">FactoryError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">"Factory.from_rows() cannot be combined with variant()"</span>
+
+            <span class="k">raise</span> <span class="n">FactoryError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">clone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy</span><span class="p">()</span>
+
+        <span class="n">clone</span><span class="o">.</span><span class="n">_presets</span> <span class="o">=</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">clone</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">where</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">overrides</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Factory</span><span class="p">:</span>
 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Column overrides (scalars, Factory FKs, or callables).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Column overrides (scalars, Factory FKs, or :func:`rowsmyth.lazy`)."""</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_where</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">overrides</span><span class="p">)</span>
+        <span class="n">clone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="bp">self</span>
+        <span class="n">clone</span><span class="o">.</span><span class="n">_where</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">overrides</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">clone</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="n">Factory</span><span class="p">,</span> <span class="n">via</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Factory</span><span class="p">:</span>
 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Attach child rows per parent row (injected parent via ``via``).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Attach child rows per parent row (injected parent via ``via``)."""</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_children</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">child</span><span class="p">,</span> <span class="n">via</span><span class="p">))</span>
+        <span class="n">clone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="bp">self</span>
+        <span class="n">clone</span><span class="o">.</span><span class="n">_children</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">child</span><span class="p">,</span> <span class="n">via</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">clone</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">variant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Factory</span><span class="p">:</span>
 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply a named :func:`rowsmyth.variant` partial override.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Apply a named :func:`rowsmyth.variant` partial override."""</span>
 
         <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">_variants</span><span class="p">:</span>
 
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">__table_name__</span><span class="si">}</span><span class="s2"> has no variant </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">&quot;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">__table_name__</span><span class="si">}</span><span class="s2"> has no variant </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">"</span>
 
             <span class="k">raise</span> <span class="n">UnknownVariantError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_variant</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_presets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 
-        <span class="k">return</span> <span class="bp">self</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">"Factory.variant() cannot be combined with from_rows()"</span>
+
+            <span class="k">raise</span> <span class="n">FactoryError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">clone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy</span><span class="p">()</span>
+
+        <span class="n">clone</span><span class="o">.</span><span class="n">_variant</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="k">return</span> <span class="n">clone</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Model</span><span class="p">]:</span>
 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate rows, register temp views and return root models.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Generate rows into the active dataset and return root models."""</span>
 
         <span class="n">dataset</span> <span class="o">=</span> <span class="n">require_active</span><span class="p">()</span>
 
@@ -806,6 +911,40 @@
 
         <span class="p">]</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Factory</span><span class="p">:</span>
+
+        <span class="n">clone</span> <span class="o">=</span> <span class="n">Factory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">)</span>
+
+        <span class="n">clone</span><span class="o">.</span><span class="n">_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n</span>
+
+        <span class="n">clone</span><span class="o">.</span><span class="n">_variant</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant</span>
+
+        <span class="n">clone</span><span class="o">.</span><span class="n">_where</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_where</span><span class="p">)</span>
+
+        <span class="n">clone</span><span class="o">.</span><span class="n">_children</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_children</span><span class="p">)</span>
+
+        <span class="n">clone</span><span class="o">.</span><span class="n">_presets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_presets</span>
+
+        <span class="k">return</span> <span class="n">clone</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_touch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">acc</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">"""Register every table in this factory tree, even with no rows."""</span>
+
+        <span class="n">acc</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">__table_name__</span><span class="p">,</span> <span class="p">[])</span>
+
+        <span class="k">for</span> <span class="n">child</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_children</span><span class="p">:</span>
+
+            <span class="n">child</span><span class="o">.</span><span class="n">_touch</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_presets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_presets</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate</span><span class="p">(</span>
 
         <span class="bp">self</span><span class="p">,</span>
@@ -818,15 +957,29 @@
 
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate ``_n`` rows and recurse into children.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Generate this factory's rows and recurse into children."""</span>
 
         <span class="n">validate_dataset_base</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_touch</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span>
 
-            <span class="n">attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_row</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">acc</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">injected</span><span class="o">=</span><span class="n">injected</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">preset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sources</span><span class="p">()):</span>
 
-            <span class="n">acc</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">__table_name__</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_row</span><span class="p">(</span>
+
+                <span class="n">dataset</span><span class="p">,</span>
+
+                <span class="n">acc</span><span class="p">,</span>
+
+                <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+
+                <span class="n">injected</span><span class="o">=</span><span class="n">injected</span><span class="p">,</span>
+
+                <span class="n">preset</span><span class="o">=</span><span class="n">preset</span><span class="p">,</span>
+
+            <span class="p">)</span>
+
+            <span class="n">acc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">__table_name__</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
 
             <span class="n">inst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">(</span><span class="o">**</span><span class="n">attrs</span><span class="p">)</span>
 
@@ -850,19 +1003,27 @@
 
         <span class="n">injected</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Model</span><span class="p">],</span>
 
+        <span class="n">preset</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Materialise one row (used by :meth:`create` and parent creation).&quot;&quot;&quot;</span>
-
-        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">()</span>
+<span class="w">        </span><span class="sd">"""Materialise one row (used by :meth:`create` and parent creation)."""</span>
 
         <span class="n">ctx</span> <span class="o">=</span> <span class="n">RowCtx</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">injected</span><span class="p">),</span> <span class="n">acc</span><span class="p">)</span>
 
-        <span class="n">attrs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">generator</span><span class="p">(</span><span class="n">ctx</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">preset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">()</span>
 
-            <span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">apply_variant</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant</span><span class="p">,</span> <span class="n">ctx</span><span class="p">))</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">generator</span><span class="p">(</span><span class="n">ctx</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+                <span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">apply_variant</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant</span><span class="p">,</span> <span class="n">ctx</span><span class="p">))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">attrs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">preset</span><span class="p">)</span>
 
         <span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_where</span><span class="p">)</span>
 
@@ -883,24 +1044,34 @@
 <h2 id="classes">Classes</h2>
 <h3 id="factory">Factory</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Factory</span><span class="p">(</span>
-    <span class="n">table</span><span class="p">:</span> <span class="s1">&#39;type[Model]&#39;</span>
+    <span class="n">table</span><span class="p">:</span> <span class="s1">'type[Model]'</span>
 <span class="p">)</span>
 </code></pre></div>
 
 <p>Builder for generating rows of a single model (and related children).</p>
+<p>Every method returns a new factory, so a configured factory is a reusable
+template: refining it never mutates the factory it was derived from.</p>
 <details class="example">
 <summary>View Source</summary>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="n">Factory</span><span class="p">:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Builder for generating rows of a single model (and related children).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 
-<span class="w">    </span><span class="n">__slots__</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="s2">&quot;_children&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_model&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_n&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_variant&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_where&quot;</span><span class="p">)</span>
+<span class="sd">    Builder for generating rows of a single model (and related children).</span>
+
+<span class="sd">    Every method returns a new factory, so a configured factory is a reusable</span>
+
+<span class="sd">    template: refining it never mutates the factory it was derived from.</span>
+
+<span class="sd">    """</span>
+
+<span class="w">    </span><span class="n">__slots__</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="s2">"_children"</span><span class="p">,</span><span class="w"> </span><span class="s2">"_model"</span><span class="p">,</span><span class="w"> </span><span class="s2">"_n"</span><span class="p">,</span><span class="w"> </span><span class="s2">"_presets"</span><span class="p">,</span><span class="w"> </span><span class="s2">"_variant"</span><span class="p">,</span><span class="w"> </span><span class="s2">"_where"</span><span class="p">)</span>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">table</span><span class="p">:</span><span class="w"> </span><span class="n">type</span><span class="p">[</span><span class="n">Model</span><span class="p">])</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
 
 <span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">table</span>
 
-<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">None</span>
 
 <span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_variant</span><span class="p">:</span><span class="w"> </span><span class="nb">str</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">None</span>
 
@@ -908,53 +1079,105 @@
 
 <span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_children</span><span class="p">:</span><span class="w"> </span><span class="n">list</span><span class="p">[</span><span class="n">tuple</span><span class="p">[</span><span class="n">Factory</span><span class="p">,</span><span class="w"> </span><span class="nb">str</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">None</span><span class="p">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
 
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_presets</span><span class="p">:</span><span class="w"> </span><span class="n">list</span><span class="p">[</span><span class="n">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">Any</span><span class="p">]]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">None</span>
+
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Factory</span><span class="p">:</span>
 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of rows to generate.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Number of rows to generate (default 1)."""</span>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="nb nb-Type">bool</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span>
 
-<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Factory.count() requires a non-negative integer&quot;</span>
+<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Factory.count() requires a non-negative integer"</span>
 
 <span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">FactoryError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_presets</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="bp">self</span>
+<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Factory.count() cannot be combined with from_rows()"</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">FactoryError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">clone</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_copy</span><span class="p">()</span>
+
+<span class="w">        </span><span class="n">clone</span><span class="o">.</span><span class="n">_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">clone</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">from_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">rows</span><span class="p">:</span><span class="w"> </span><span class="n">Iterable</span><span class="p">[</span><span class="n">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">Any</span><span class="p">]])</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Factory</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">"""</span>
+
+<span class="sd">        Generate one row per mapping, bypassing :meth:`Model.generator`.</span>
+
+<span class="sd">        Overrides from :meth:`where` still apply, and every row is validated as</span>
+
+<span class="sd">        usual. Cannot be combined with :meth:`count` or :meth:`variant`.</span>
+
+<span class="sd">        """</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Factory.from_rows() cannot be combined with count()"</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">FactoryError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_variant</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Factory.from_rows() cannot be combined with variant()"</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">FactoryError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">clone</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_copy</span><span class="p">()</span>
+
+<span class="w">        </span><span class="n">clone</span><span class="o">.</span><span class="n">_presets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">dict</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">rows</span><span class="p">]</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">clone</span>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="n">overrides</span><span class="p">:</span><span class="w"> </span><span class="n">Any</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Factory</span><span class="p">:</span>
 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Column overrides (scalars, Factory FKs, or callables).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Column overrides (scalars, Factory FKs, or :func:`rowsmyth.lazy`)."""</span>
 
-<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_where</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">overrides</span><span class="p">)</span>
+<span class="w">        </span><span class="n">clone</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_copy</span><span class="p">()</span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="bp">self</span>
+<span class="w">        </span><span class="n">clone</span><span class="o">.</span><span class="n">_where</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">overrides</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">clone</span>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">child</span><span class="p">:</span><span class="w"> </span><span class="n">Factory</span><span class="p">,</span><span class="w"> </span><span class="n">via</span><span class="p">:</span><span class="w"> </span><span class="nb">str</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">None</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Factory</span><span class="p">:</span>
 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Attach child rows per parent row (injected parent via ``via``).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Attach child rows per parent row (injected parent via ``via``)."""</span>
 
-<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_children</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">child</span><span class="p">,</span><span class="w"> </span><span class="n">via</span><span class="p">))</span>
+<span class="w">        </span><span class="n">clone</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_copy</span><span class="p">()</span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="bp">self</span>
+<span class="w">        </span><span class="n">clone</span><span class="o">.</span><span class="n">_children</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">child</span><span class="p">,</span><span class="w"> </span><span class="n">via</span><span class="p">))</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">clone</span>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">variant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="nb">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Factory</span><span class="p">:</span>
 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply a named :func:`rowsmyth.variant` partial override.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Apply a named :func:`rowsmyth.variant` partial override."""</span>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">_variants</span><span class="p">:</span>
 
-<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="s2">&quot;{self._model.__table_name__} has no variant {name!r}&quot;</span>
+<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="s2">"{self._model.__table_name__} has no variant {name!r}"</span>
 
 <span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">UnknownVariantError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_variant</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">name</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_presets</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="bp">self</span>
+<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Factory.variant() cannot be combined with from_rows()"</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">FactoryError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">clone</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_copy</span><span class="p">()</span>
+
+<span class="w">        </span><span class="n">clone</span><span class="o">.</span><span class="n">_variant</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">name</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">clone</span>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">list</span><span class="p">[</span><span class="n">Model</span><span class="p">]:</span>
 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate rows, register temp views and return root models.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Generate rows into the active dataset and return root models."""</span>
 
 <span class="w">        </span><span class="n">dataset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">require_active</span><span class="p">()</span>
 
@@ -972,6 +1195,40 @@
 
 <span class="w">        </span><span class="p">]</span>
 
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Factory</span><span class="p">:</span>
+
+<span class="w">        </span><span class="n">clone</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Factory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">clone</span><span class="o">.</span><span class="n">_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span>
+
+<span class="w">        </span><span class="n">clone</span><span class="o">.</span><span class="n">_variant</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_variant</span>
+
+<span class="w">        </span><span class="n">clone</span><span class="o">.</span><span class="n">_where</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_where</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">clone</span><span class="o">.</span><span class="n">_children</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_children</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">clone</span><span class="o">.</span><span class="n">_presets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_presets</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">clone</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_touch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">acc</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="p">[</span><span class="n">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">Any</span><span class="p">]]])</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">"""Register every table in this factory tree, even with no rows."""</span>
+
+<span class="w">        </span><span class="n">acc</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">__table_name__</span><span class="p">,</span><span class="w"> </span><span class="p">[])</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">child</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_children</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">child</span><span class="o">.</span><span class="n">_touch</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">list</span><span class="p">[</span><span class="n">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">Any</span><span class="p">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">None</span><span class="p">]:</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_presets</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_presets</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="p">[</span><span class="n">None</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">)</span>
+
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_generate</span><span class="p">(</span>
 
 <span class="w">        </span><span class="bp">self</span><span class="p">,</span>
@@ -984,15 +1241,29 @@
 
 <span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate ``_n`` rows and recurse into children.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Generate this factory's rows and recurse into children."""</span>
 
 <span class="w">        </span><span class="n">validate_dataset_base</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span><span class="w"> </span><span class="n">dataset</span><span class="p">)</span>
 
-<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">):</span>
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_touch</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span>
 
-<span class="w">            </span><span class="n">attrs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_row</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span><span class="w"> </span><span class="n">acc</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">injected</span><span class="o">=</span><span class="n">injected</span><span class="p">)</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="n">preset</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sources</span><span class="p">()):</span>
 
-<span class="w">            </span><span class="n">acc</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">__table_name__</span><span class="p">,</span><span class="w"> </span><span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
+<span class="w">            </span><span class="n">attrs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_row</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">dataset</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">acc</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">injected</span><span class="o">=</span><span class="n">injected</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">preset</span><span class="o">=</span><span class="n">preset</span><span class="p">,</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">acc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">__table_name__</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
 
 <span class="w">            </span><span class="n">inst</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">(</span><span class="o">**</span><span class="n">attrs</span><span class="p">)</span>
 
@@ -1016,19 +1287,27 @@
 
 <span class="w">        </span><span class="n">injected</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">Model</span><span class="p">],</span>
 
+<span class="w">        </span><span class="n">preset</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">Any</span><span class="p">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">None</span><span class="p">,</span>
+
 <span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">Any</span><span class="p">]:</span>
 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Materialise one row (used by :meth:`create` and parent creation).&quot;&quot;&quot;</span>
-
-<span class="w">        </span><span class="n">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">()</span>
+<span class="w">        </span><span class="sd">"""Materialise one row (used by :meth:`create` and parent creation)."""</span>
 
 <span class="w">        </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RowCtx</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="n">dict</span><span class="p">(</span><span class="n">injected</span><span class="p">),</span><span class="w"> </span><span class="n">acc</span><span class="p">)</span>
 
-<span class="w">        </span><span class="n">attrs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">generator</span><span class="p">(</span><span class="n">ctx</span><span class="p">))</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">preset</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
 
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_variant</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
+<span class="w">            </span><span class="n">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">()</span>
 
-<span class="w">            </span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">apply_variant</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span><span class="w"> </span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_variant</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="p">))</span>
+<span class="w">            </span><span class="n">attrs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">generator</span><span class="p">(</span><span class="n">ctx</span><span class="p">))</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_variant</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
+
+<span class="w">                </span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">apply_variant</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span><span class="w"> </span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_variant</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="p">))</span>
+
+<span class="w">        </span><span class="k">else</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">attrs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">(</span><span class="n">preset</span><span class="p">)</span>
 
 <span class="w">        </span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_where</span><span class="p">)</span>
 
@@ -1047,41 +1326,49 @@
 <h4 id="count">count</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">n</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Factory&#39;</span>
+    <span class="n">n</span><span class="p">:</span> <span class="s1">'int'</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Factory'</span>
 </code></pre></div>
 
-<p>Number of rows to generate.</p>
+<p>Number of rows to generate (default 1).</p>
 <details class="example">
 <summary>View Source</summary>
 <div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="kr">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Factory</span><span class="o">:</span>
 
-<span class="w">        </span><span class="s">&quot;&quot;&quot;Number of rows to generate.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="s">"""Number of rows to generate (default 1)."""</span>
 
 <span class="w">        </span><span class="nf">if</span><span class="w"> </span><span class="kr">not</span><span class="w"> </span><span class="n">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">int</span><span class="p">)</span><span class="w"> </span><span class="kr">or</span><span class="w"> </span><span class="n">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">bool</span><span class="p">)</span><span class="w"> </span><span class="kr">or</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="o">:</span>
 
-<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Factory.count() requires a non-negative integer&quot;</span>
+<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Factory.count() requires a non-negative integer"</span>
 
 <span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">FactoryError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-<span class="w">        </span><span class="kr">self</span><span class="p">.</span><span class="n">_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span>
+<span class="w">        </span><span class="nf">if</span><span class="w"> </span><span class="kr">self</span><span class="p">.</span><span class="n">_presets</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="kr">not</span><span class="w"> </span><span class="n">None</span><span class="o">:</span>
 
-<span class="w">        </span><span class="kr">return</span><span class="w"> </span><span class="kr">self</span>
+<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Factory.count() cannot be combined with from_rows()"</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">FactoryError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">clone</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">self</span><span class="p">.</span><span class="n">_copy</span><span class="p">()</span>
+
+<span class="w">        </span><span class="n">clone</span><span class="p">.</span><span class="n">_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span>
+
+<span class="w">        </span><span class="kr">return</span><span class="w"> </span><span class="n">clone</span>
 </code></pre></div>
 
 </details>
 <h4 id="create">create</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span>
     <span class="bp">self</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;list[Model]&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'list[Model]'</span>
 </code></pre></div>
 
-<p>Generate rows, register temp views and return root models.</p>
+<p>Generate rows into the active dataset and return root models.</p>
 <details class="example">
 <summary>View Source</summary>
 <div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="k">create</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">Model</span><span class="o">]</span><span class="err">:</span>
 
-<span class="w">        </span><span class="ss">&quot;&quot;&quot;Generate rows, register temp views and return root models.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="ss">"""Generate rows into the active dataset and return root models."""</span>
 
 <span class="w">        </span><span class="n">dataset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">require_active</span><span class="p">()</span>
 
@@ -1101,12 +1388,56 @@
 </code></pre></div>
 
 </details>
+<h4 id="from_rows">from_rows</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">from_rows</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">rows</span><span class="p">:</span> <span class="s1">'Iterable[dict[str, Any]]'</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Factory'</span>
+</code></pre></div>
+
+<p>Generate one row per mapping, bypassing :meth:<code>Model.generator</code>.</p>
+<p>Overrides from :meth:<code>where</code> still apply, and every row is validated as
+usual. Cannot be combined with :meth:<code>count</code> or :meth:<code>variant</code>.</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">from_rows</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="k">rows</span><span class="o">:</span><span class="w"> </span><span class="n">Iterable</span><span class="err">[</span><span class="n">dict</span><span class="err">[</span><span class="n">str</span><span class="p">,</span><span class="w"> </span><span class="k">Any</span><span class="err">]]</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Factory</span><span class="o">:</span>
+
+<span class="w">        </span><span class="s2">"</span><span class="se">""</span>
+
+<span class="s2">        Generate one row per mapping, bypassing :meth:`Model.generator`.</span>
+
+<span class="s2">        Overrides from :meth:`where` still apply, and every row is validated as</span>
+
+<span class="s2">        usual. Cannot be combined with :meth:`count` or :meth:`variant`.</span>
+
+<span class="s2">        </span><span class="se">""</span><span class="s2">"</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_n</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">None</span><span class="o">:</span>
+
+<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Factory.from_rows() cannot be combined with count()"</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">FactoryError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_variant</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">None</span><span class="o">:</span>
+
+<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Factory.from_rows() cannot be combined with variant()"</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">FactoryError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">clone</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_copy</span><span class="p">()</span>
+
+<span class="w">        </span><span class="k">clone</span><span class="p">.</span><span class="n">_presets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[</span><span class="n">dict</span><span class="p">(</span><span class="k">row</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">rows</span><span class="err">]</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">clone</span>
+</code></pre></div>
+
+</details>
 <h4 id="has">has</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">has</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">child</span><span class="p">:</span> <span class="s1">&#39;Factory&#39;</span><span class="p">,</span>
-    <span class="n">via</span><span class="p">:</span> <span class="s1">&#39;str | None&#39;</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Factory&#39;</span>
+    <span class="n">child</span><span class="p">:</span> <span class="s1">'Factory'</span><span class="p">,</span>
+    <span class="n">via</span><span class="p">:</span> <span class="s1">'str | None'</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Factory'</span>
 </code></pre></div>
 
 <p>Attach child rows per parent row (injected parent via <code>via</code>).</p>
@@ -1114,19 +1445,21 @@
 <summary>View Source</summary>
 <div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">has</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">child</span><span class="o">:</span><span class="w"> </span><span class="n">Factory</span><span class="p">,</span><span class="w"> </span><span class="n">via</span><span class="o">:</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Factory</span><span class="o">:</span>
 
-<span class="w">        </span><span class="s2">&quot;</span><span class="se">&quot;&quot;</span><span class="s2">Attach child rows per parent row (injected parent via ``via``).</span><span class="se">&quot;&quot;</span><span class="s2">&quot;</span>
+<span class="w">        </span><span class="s2">"</span><span class="se">""</span><span class="s2">Attach child rows per parent row (injected parent via ``via``).</span><span class="se">""</span><span class="s2">"</span>
 
-<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_children</span><span class="p">.</span><span class="n">append</span><span class="p">((</span><span class="n">child</span><span class="p">,</span><span class="w"> </span><span class="n">via</span><span class="p">))</span>
+<span class="w">        </span><span class="k">clone</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_copy</span><span class="p">()</span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">self</span>
+<span class="w">        </span><span class="k">clone</span><span class="p">.</span><span class="n">_children</span><span class="p">.</span><span class="n">append</span><span class="p">((</span><span class="n">child</span><span class="p">,</span><span class="w"> </span><span class="n">via</span><span class="p">))</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">clone</span>
 </code></pre></div>
 
 </details>
 <h4 id="variant">variant</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">variant</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">name</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Factory&#39;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="s1">'str'</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Factory'</span>
 </code></pre></div>
 
 <p>Apply a named :func:<code>rowsmyth.variant</code> partial override.</p>
@@ -1134,37 +1467,47 @@
 <summary>View Source</summary>
 <div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">variant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="nb">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Factory</span><span class="p">:</span>
 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply a named :func:`rowsmyth.variant` partial override.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Apply a named :func:`rowsmyth.variant` partial override."""</span>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">_variants</span><span class="p">:</span>
 
-<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="s2">&quot;{self._model.__table_name__} has no variant {name!r}&quot;</span>
+<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="s2">"{self._model.__table_name__} has no variant {name!r}"</span>
 
 <span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">UnknownVariantError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_variant</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">name</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_presets</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="bp">self</span>
+<span class="w">            </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Factory.variant() cannot be combined with from_rows()"</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">FactoryError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">clone</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_copy</span><span class="p">()</span>
+
+<span class="w">        </span><span class="n">clone</span><span class="o">.</span><span class="n">_variant</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">name</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">clone</span>
 </code></pre></div>
 
 </details>
 <h4 id="where">where</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">where</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">overrides</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Factory&#39;</span>
+    <span class="o">**</span><span class="n">overrides</span><span class="p">:</span> <span class="s1">'Any'</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Factory'</span>
 </code></pre></div>
 
-<p>Column overrides (scalars, Factory FKs, or callables).</p>
+<p>Column overrides (scalars, Factory FKs, or :func:<code>rowsmyth.lazy</code>).</p>
 <details class="example">
 <summary>View Source</summary>
 <div class="codehilite"><pre><span></span><code>    def where(self, **overrides: Any) -&gt; Factory:
 
-        &quot;&quot;&quot;Column overrides (scalars, Factory FKs, or callables).&quot;&quot;&quot;
+        """Column overrides (scalars, Factory FKs, or :func:`rowsmyth.lazy`)."""
 
-        self._where.update(overrides)
+        clone = self._copy()
 
-        return self
+        clone._where.update(overrides)
+
+        return clone
 </code></pre></div>
 
 </details>

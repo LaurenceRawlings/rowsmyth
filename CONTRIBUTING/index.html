@@ -378,6 +378,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../docs/upgrade-v2/" class="md-nav__link">
+        Upgrade V2
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../docs/usage/" class="md-nav__link">
         Usage
       </a>
@@ -396,18 +411,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" type="checkbox" id="__nav_8" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_7">
+        <label class="md-nav__link" for="__nav_8">
           Reference
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Reference" data-md-level="1">
-        <label class="md-nav__title" for="__nav_7">
+        <label class="md-nav__title" for="__nav_8">
           <span class="md-nav__icon md-icon"></span>
           Reference
         </label>
@@ -422,18 +437,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7_1" type="checkbox" id="__nav_7_1" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8_1" type="checkbox" id="__nav_8_1" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_7_1">
+        <label class="md-nav__link" for="__nav_8_1">
           Rowsmyth
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Rowsmyth" data-md-level="2">
-        <label class="md-nav__title" for="__nav_7_1">
+        <label class="md-nav__title" for="__nav_8_1">
           <span class="md-nav__icon md-icon"></span>
           Rowsmyth
         </label>
@@ -489,6 +504,20 @@
     <li class="md-nav__item">
       <a href="../reference/rowsmyth/" class="md-nav__link">
         Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/rowsmyth/lazy/" class="md-nav__link">
+        Lazy
       </a>
     </li>
   
@@ -775,12 +804,16 @@ DataFrame assertions (<code>assert_df_equality</code>, <code>assert_column_equal
 <p>Source layout:</p>
 <ul>
 <li><code>src/rowsmyth/model.py</code> - declarative <code>Model</code> base, <code>variant</code> decorator</li>
-<li><code>src/rowsmyth/factory.py</code> - fluent <code>Factory</code> and <code>create()</code></li>
-<li><code>src/rowsmyth/dataset.py</code> - <code>Dataset</code>, <code>RowCtx</code>, active dataset context</li>
-<li><code>src/rowsmyth/resolution.py</code> - FK resolution and validation</li>
-<li><code>src/rowsmyth/pool.py</code> - <code>Pool</code> and deferred pool tokens</li>
+<li><code>src/rowsmyth/factory.py</code> - fluent copy-on-write <code>Factory</code>, <code>create()</code>, <code>from_rows()</code></li>
+<li><code>src/rowsmyth/dataset.py</code> - <code>Dataset</code>, <code>RowCtx</code>, materialisation, pools, integrity</li>
+<li><code>src/rowsmyth/resolution.py</code> - FK resolution, lazy resolution and row validation</li>
+<li><code>src/rowsmyth/lazy.py</code> - <code>Lazy</code> marker and <code>lazy()</code></li>
+<li><code>src/rowsmyth/pool.py</code> - <code>Pool</code> and its distinct-value index</li>
 <li><code>src/rowsmyth/errors.py</code> - rowsmyth exception hierarchy</li>
 </ul>
+<p>Generation must stay free of Spark round trips: rows are appended in the driver
+and a table is materialised on its first read. <code>tests/test_materialisation_contracts.py</code>
+guards this with a counting <code>SparkSession</code> stand-in - keep those assertions green.</p>
 <h2 id="releasing-maintainers-only">Releasing (maintainers only)</h2>
 <div class="codehilite"><pre><span></span><code>cz<span class="w"> </span>bump
 git<span class="w"> </span>push

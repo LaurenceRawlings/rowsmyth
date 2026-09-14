@@ -1,0 +1,1271 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Declarative relational test data as Spark DataFrames with referential integrity">
+      
+      
+      
+        <link rel="canonical" href="https://laurencerawlings.github.io/rowsmyth/docs/upgrade-v2/">
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.4">
+    
+    
+      
+        <title>Upgrade V2 - rowsmyth</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.80dcb947.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4cae4f">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="green" data-md-color-accent="lightgreen">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#upgrading-to-rowsmyth-20" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="rowsmyth" class="md-header__button md-logo" aria-label="rowsmyth" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            rowsmyth
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Upgrade V2
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/LaurenceRawlings/rowsmyth" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    LaurenceRawlings/rowsmyth
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="rowsmyth" class="md-nav__button md-logo" aria-label="rowsmyth" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    rowsmyth
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/LaurenceRawlings/rowsmyth" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    LaurenceRawlings/rowsmyth
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CHANGELOG/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        Security
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design/" class="md-nav__link">
+        Design
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Upgrade V2
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Upgrade V2
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#contents" class="md-nav__link">
+    Contents
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-20" class="md-nav__link">
+    Why 2.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#at-a-glance" class="md-nav__link">
+    At a glance
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-spark-work-is-deferred-until-you-read" class="md-nav__link">
+    1. Spark work is deferred until you read
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-datasetdataframes-is-gone" class="md-nav__link">
+    2. dataset.dataframes is gone
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-integrity-is-enforced-by-default" class="md-nav__link">
+    3. Integrity is enforced by default
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-callables-must-be-wrapped-in-lazy" class="md-nav__link">
+    4. Callables must be wrapped in lazy()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-column-values-are-type-checked" class="md-nav__link">
+    5. Column values are type-checked
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-pools-resolve-in-python" class="md-nav__link">
+    6. Pools resolve in Python
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-factories-are-copy-on-write" class="md-nav__link">
+    7. Factories are copy-on-write
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-count0-registers-an-empty-table" class="md-nav__link">
+    8. count(0) registers an empty table
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-column-names-may-not-shadow-the-model-api" class="md-nav__link">
+    9. Column names may not shadow the Model API
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-renamed-and-removed-symbols" class="md-nav__link">
+    10. Renamed and removed symbols
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#new-in-20" class="md-nav__link">
+    New in 2.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-checklist" class="md-nav__link">
+    Migration checklist
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/" class="md-nav__link">
+        Usage
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" type="checkbox" id="__nav_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8">
+          Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_8">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8_1" type="checkbox" id="__nav_8_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8_1">
+          Rowsmyth
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Rowsmyth" data-md-level="2">
+        <label class="md-nav__title" for="__nav_8_1">
+          <span class="md-nav__icon md-icon"></span>
+          Rowsmyth
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/rowsmyth/dataset/" class="md-nav__link">
+        Dataset
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/rowsmyth/errors/" class="md-nav__link">
+        Errors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/rowsmyth/factory/" class="md-nav__link">
+        Factory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/rowsmyth/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/rowsmyth/lazy/" class="md-nav__link">
+        Lazy
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/rowsmyth/model/" class="md-nav__link">
+        Model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/rowsmyth/pool/" class="md-nav__link">
+        Pool
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/rowsmyth/resolution/" class="md-nav__link">
+        Resolution
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#contents" class="md-nav__link">
+    Contents
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-20" class="md-nav__link">
+    Why 2.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#at-a-glance" class="md-nav__link">
+    At a glance
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-spark-work-is-deferred-until-you-read" class="md-nav__link">
+    1. Spark work is deferred until you read
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-datasetdataframes-is-gone" class="md-nav__link">
+    2. dataset.dataframes is gone
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-integrity-is-enforced-by-default" class="md-nav__link">
+    3. Integrity is enforced by default
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-callables-must-be-wrapped-in-lazy" class="md-nav__link">
+    4. Callables must be wrapped in lazy()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-column-values-are-type-checked" class="md-nav__link">
+    5. Column values are type-checked
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-pools-resolve-in-python" class="md-nav__link">
+    6. Pools resolve in Python
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-factories-are-copy-on-write" class="md-nav__link">
+    7. Factories are copy-on-write
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-count0-registers-an-empty-table" class="md-nav__link">
+    8. count(0) registers an empty table
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-column-names-may-not-shadow-the-model-api" class="md-nav__link">
+    9. Column names may not shadow the Model API
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-renamed-and-removed-symbols" class="md-nav__link">
+    10. Renamed and removed symbols
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#new-in-20" class="md-nav__link">
+    New in 2.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-checklist" class="md-nav__link">
+    Migration checklist
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/LaurenceRawlings/rowsmyth/edit/main/docs/upgrade-v2.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="upgrading-to-rowsmyth-20">Upgrading to rowsmyth 2.0</h1>
+<p>rowsmyth 2.0 optimises row generation and adds extra referential integrity checks.
+Most fixtures need only small edits; this guide lists every
+breaking change with a before/after.</p>
+<h2 id="contents">Contents</h2>
+<ul>
+<li><a href="#upgrading-to-rowsmyth-20">Upgrading to rowsmyth 2.0</a></li>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#why-20">Why 2.0</a></li>
+<li><a href="#at-a-glance">At a glance</a></li>
+<li><a href="#1-spark-work-is-deferred-until-you-read">1. Spark work is deferred until you read</a></li>
+<li><a href="#2-datasetdataframes-is-gone">2. <code>dataset.dataframes</code> is gone</a></li>
+<li><a href="#3-integrity-is-enforced-by-default">3. Integrity is enforced by default</a></li>
+<li><a href="#4-callables-must-be-wrapped-in-lazy">4. Callables must be wrapped in <code>lazy()</code></a></li>
+<li><a href="#5-column-values-are-type-checked">5. Column values are type-checked</a></li>
+<li><a href="#6-pools-resolve-in-python">6. Pools resolve in Python</a></li>
+<li><a href="#7-factories-are-copy-on-write">7. Factories are copy-on-write</a></li>
+<li><a href="#8-count0-registers-an-empty-table">8. <code>count(0)</code> registers an empty table</a></li>
+<li><a href="#9-column-names-may-not-shadow-the-model-api">9. Column names may not shadow the <code>Model</code> API</a></li>
+<li><a href="#10-renamed-and-removed-symbols">10. Renamed and removed symbols</a></li>
+<li><a href="#new-in-20">New in 2.0</a></li>
+<li><a href="#migration-checklist">Migration checklist</a></li>
+</ul>
+<hr />
+<h2 id="why-20">Why 2.0</h2>
+<p>In 1.x every <code>create()</code> call rebuilt the whole table: one <code>createDataFrame</code> plus
+one <code>createOrReplaceTempView</code> per row, over a payload that grew by one row each
+time. Generating <em>n</em> rows serialised <code>n(n+1)/2</code> rows and issued <code>2n</code> Spark
+round trips, so the documented "create rows one at a time" pattern was
+quadratic. A 10,000-row fixture spent tens of minutes issuing tens of thousands
+of sub-100ms queries.</p>
+<p>2.0 keeps generated rows in the driver as plain dicts and touches Spark only
+when a table is read. The same fixture now costs one <code>createDataFrame</code> and one
+temp view registration <strong>per table</strong>, whichever way you create rows.</p>
+<table>
+<thead>
+<tr>
+<th align="right">Rows created one at a time</th>
+<th align="right">1.x <code>createDataFrame</code> calls</th>
+<th align="right">2.0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right">100</td>
+<td align="right">100</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td align="right">400</td>
+<td align="right">400</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td align="right">1,600</td>
+<td align="right">1,600</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th align="right">Rows created one at a time</th>
+<th align="right">1.x rows serialised</th>
+<th align="right">2.0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right">100</td>
+<td align="right">5,050</td>
+<td align="right">100</td>
+</tr>
+<tr>
+<td align="right">400</td>
+<td align="right">80,200</td>
+<td align="right">400</td>
+</tr>
+<tr>
+<td align="right">1,600</td>
+<td align="right">1,280,800</td>
+<td align="right">1,600</td>
+</tr>
+</tbody>
+</table>
+<h2 id="at-a-glance">At a glance</h2>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spark work deferred to first read</td>
+<td>Call <code>dataset.flush()</code> before <code>spark.table()</code> / <code>spark.sql()</code> on generated tables</td>
+</tr>
+<tr>
+<td><code>dataset.dataframes</code> removed</td>
+<td>Use <code>dataset.tables()</code> or <code>dataset.dataframe(name)</code></td>
+</tr>
+<tr>
+<td>Duplicate primary keys raise</td>
+<td>Fix the fixture, or pass <code>integrity="warn"</code> / <code>"off"</code></td>
+</tr>
+<tr>
+<td><code>__foreign_keys__</code> validated on block exit</td>
+<td>Declare them, or leave them undeclared for no checks</td>
+</tr>
+<tr>
+<td>Bare callables are no longer invoked</td>
+<td>Wrap with <code>rowsmyth.lazy(...)</code></td>
+</tr>
+<tr>
+<td>Values are type-checked per row</td>
+<td>Pass values matching the declared Spark type</td>
+</tr>
+<tr>
+<td><code>pool.choice()</code> returns a value, not a token</td>
+<td>Remove any <code>PoolChoice</code> / <code>UnresolvedPoolError</code> handling</td>
+</tr>
+<tr>
+<td>Factory methods return copies</td>
+<td>Keep the returned factory: <code>f = f.count(3)</code></td>
+</tr>
+<tr>
+<td><code>count(0)</code> registers an empty table</td>
+<td>Expect an empty DataFrame instead of <code>TableNotFoundError</code></td>
+</tr>
+<tr>
+<td>Columns may not shadow the <code>Model</code> API</td>
+<td>Rename columns such as <code>key</code>, <code>pk</code>, <code>attrs</code>, <code>create</code></td>
+</tr>
+<tr>
+<td><code>DataframeNotFoundError</code> renamed</td>
+<td>Catch <code>TableNotFoundError</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="1-spark-work-is-deferred-until-you-read">1. Spark work is deferred until you read</h2>
+<p><code>Model.create()</code> and <code>Factory.create()</code> no longer call Spark. Tables are
+materialised on the first read - <code>dataset.dataframe(name)</code>, <code>dataset.tables()</code>,
+<code>dataset.write_all()</code> - or when you call <code>dataset.flush()</code>.</p>
+<p>Nothing changes if you read through the dataset:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">with</span> <span class="n">Base</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span> <span class="k">as</span> <span class="n">dataset</span><span class="p">:</span>
+    <span class="n">Customer</span><span class="o">.</span><span class="n">factory</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+    <span class="n">customers_df</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">dataframe</span><span class="p">(</span><span class="s2">"customers"</span><span class="p">)</span>  <span class="c1"># materialises here</span>
+</code></pre></div>
+
+<p>Code that reads a generated temp view through Spark <strong>during</strong> generation needs
+an explicit flush:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1.x - the temp view was always current</span>
+<span class="k">with</span> <span class="n">Base</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span><span class="n">spark</span><span class="p">)</span> <span class="k">as</span> <span class="n">dataset</span><span class="p">:</span>
+    <span class="n">Role</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"admin"</span><span class="p">)</span>
+    <span class="n">spark</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">"roles"</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># 2.0</span>
+<span class="k">with</span> <span class="n">Base</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span><span class="n">spark</span><span class="p">)</span> <span class="k">as</span> <span class="n">dataset</span><span class="p">:</span>
+    <span class="n">Role</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"admin"</span><span class="p">)</span>
+    <span class="n">dataset</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>            <span class="c1"># or dataset.flush("roles")</span>
+    <span class="n">spark</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">"roles"</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+
+<p>Better still, read rows without Spark at all (see <a href="#new-in-20">New in 2.0</a>):</p>
+<div class="codehilite"><pre><span></span><code><span class="n">dataset</span><span class="o">.</span><span class="n">rows</span><span class="p">(</span><span class="s2">"roles"</span><span class="p">)</span>   <span class="c1"># list[dict]</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">"roles"</span><span class="p">)</span>  <span class="c1"># int</span>
+</code></pre></div>
+
+<p>If you never need temp views, pass <code>views=False</code> to halve the remaining round
+trips:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">with</span> <span class="n">Base</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">views</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">dataset</span><span class="p">:</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+<h2 id="2-datasetdataframes-is-gone">2. <code>dataset.dataframes</code> is gone</h2>
+<p>The dict attribute was a snapshot of eagerly built frames. Use the accessors:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1.x</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">dataframes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">write</span><span class="o">.</span><span class="n">saveAsTable</span><span class="p">(</span><span class="sa">f</span><span class="s2">"main.bronze.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># 2.0</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">tables</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">write</span><span class="o">.</span><span class="n">saveAsTable</span><span class="p">(</span><span class="sa">f</span><span class="s2">"main.bronze.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># or let rowsmyth do it</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">write_all</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="k">lambda</span> <span class="n">table</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"main.bronze.</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">__table_name__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</code></pre></div>
+
+<p><code>dataset.table_names()</code> returns the created table names without materialising
+anything.</p>
+<h2 id="3-integrity-is-enforced-by-default">3. Integrity is enforced by default</h2>
+<p>Datasets run with <code>integrity="raise"</code>.</p>
+<p><strong>Primary keys</strong> are checked as rows are created:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">with</span> <span class="n">Base</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span><span class="n">spark</span><span class="p">)</span> <span class="k">as</span> <span class="n">dataset</span><span class="p">:</span>
+    <span class="n">Thing</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"first"</span><span class="p">)</span>
+    <span class="n">Thing</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"second"</span><span class="p">)</span>   <span class="c1"># DuplicatePrimaryKeyError</span>
+</code></pre></div>
+
+<p><strong>Foreign keys</strong> are checked when the dataset block exits cleanly, so children
+may still be created before their parents. Declare them per model:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Answer</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">__table_name__</span> <span class="o">=</span> <span class="s2">"answers"</span>
+    <span class="n">__primary_key__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"id"</span><span class="p">,)</span>
+    <span class="n">__foreign_keys__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"survey_id"</span><span class="p">:</span> <span class="s2">"surveys.id"</span><span class="p">,</span>
+        <span class="s2">"question_id"</span><span class="p">:</span> <span class="s2">"questions.id"</span><span class="p">,</span>
+    <span class="p">}</span>
+</code></pre></div>
+
+<p>Undeclared foreign keys are not checked, so existing models keep working until
+you declare them. Call <code>dataset.check_integrity()</code> at any point to fail closer
+to the code that created the rows.</p>
+<p>To migrate a large suite gradually, downgrade the mode:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">Base</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">integrity</span><span class="o">=</span><span class="s2">"warn"</span><span class="p">)</span>   <span class="c1"># RowsmythWarning instead</span>
+<span class="n">Base</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">integrity</span><span class="o">=</span><span class="s2">"off"</span><span class="p">)</span>    <span class="c1"># no checks at all</span>
+</code></pre></div>
+
+<h2 id="4-callables-must-be-wrapped-in-lazy">4. Callables must be wrapped in <code>lazy()</code></h2>
+<p>1.x called <em>any</em> callable column value with the row context, so a class,
+builtin or <code>functools.partial</code> passed as data was silently invoked - and for a
+string column, Spark stored the repr of whatever came back.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1.x</span>
+<span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">score</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">())</span>
+
+<span class="c1"># 2.0</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth</span><span class="w"> </span><span class="kn">import</span> <span class="n">lazy</span>
+
+<span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">score</span><span class="o">=</span><span class="n">lazy</span><span class="p">(</span><span class="k">lambda</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()))</span>
+</code></pre></div>
+
+<p>A bare callable is now treated as data, so it fails the type check for its
+column with a message pointing at <code>lazy()</code>.</p>
+<h2 id="5-column-values-are-type-checked">5. Column values are type-checked</h2>
+<p>Every generated value is checked against the column's declared Spark type
+before the row is committed, so a bad value names its own table, column and
+type instead of failing later inside <code>createDataFrame</code>:</p>
+<div class="codehilite"><pre><span></span><code>ColumnTypeError: roles.name: string column expects str, got int
+</code></pre></div>
+
+<p>String columns require <code>str</code> - 1.x let Spark stringify anything. Convert
+explicitly:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span><span class="s2">"id"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid4</span><span class="p">())}</span>       <span class="c1"># not uuid4()</span>
+<span class="p">{</span><span class="s2">"price"</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">(</span><span class="s2">"9.99"</span><span class="p">)}</span>  <span class="c1"># not 9.99 for a decimal column</span>
+</code></pre></div>
+
+<h2 id="6-pools-resolve-in-python">6. Pools resolve in Python</h2>
+<p><code>pool.choice()</code> used to return a deferred <code>PoolChoice</code> token resolved with a
+Spark window join at commit time. It now returns a concrete value immediately:</p>
+<ul>
+<li>A pool name that matches a table in your declarative base resolves from rows
+  already generated in this dataset - no Spark at all.</li>
+<li>Any other name is read once from the Spark session and cached for the rest of
+  the dataset block.</li>
+</ul>
+<div class="codehilite"><pre><span></span><code><span class="s2">"role_id"</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="s2">"roles"</span><span class="p">,</span> <span class="s2">"id"</span><span class="p">)</span><span class="o">.</span><span class="n">choice</span><span class="p">()</span>   <span class="c1"># unchanged in your generator</span>
+</code></pre></div>
+
+<p>Removed: <code>rowsmyth.pool.PoolChoice</code> and <code>UnresolvedPoolError</code>. Pooling a table
+that has no rows yet now raises <code>EmptyPoolError</code> naming the table, and pooling a
+column the table does not declare raises <code>UnknownColumnError</code>.</p>
+<p>Seeded pool selections differ from 1.x: the same seed produces a different (but
+still deterministic) choice. Re-baseline any golden files that pin pooled
+values.</p>
+<h2 id="7-factories-are-copy-on-write">7. Factories are copy-on-write</h2>
+<p><code>count()</code>, <code>where()</code>, <code>has()</code>, <code>variant()</code> and the new <code>from_rows()</code> return a
+new factory instead of mutating the receiver, so a factory is a safe template:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">template</span> <span class="o">=</span> <span class="n">Thing</span><span class="o">.</span><span class="n">factory</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">"A"</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>   <span class="c1"># tag = "A"</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">create</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>                  <span class="c1"># default tag, not "A"</span>
+</code></pre></div>
+
+<p>Code that relied on mutation must keep the result:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1.x - mutated in place</span>
+<span class="n">factory</span> <span class="o">=</span> <span class="n">Thing</span><span class="o">.</span><span class="n">factory</span><span class="p">()</span>
+<span class="n">factory</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">factory</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>          <span class="c1"># 2.0: creates 1 row</span>
+
+<span class="c1"># 2.0</span>
+<span class="n">factory</span> <span class="o">=</span> <span class="n">Thing</span><span class="o">.</span><span class="n">factory</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">factory</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+</code></pre></div>
+
+<h2 id="8-count0-registers-an-empty-table">8. <code>count(0)</code> registers an empty table</h2>
+<p>A zero-row factory now registers an empty DataFrame carrying the declared
+schema, so downstream pipeline code exercises the same path:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">Thing</span><span class="o">.</span><span class="n">factory</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">dataframe</span><span class="p">(</span><span class="s2">"things"</span><span class="p">)</span>   <span class="c1"># 1.x: DataframeNotFoundError, 2.0: 0 rows</span>
+</code></pre></div>
+
+<h2 id="9-column-names-may-not-shadow-the-model-api">9. Column names may not shadow the <code>Model</code> API</h2>
+<p>Columns named after <code>Model</code> members (<code>key</code>, <code>pk</code>, <code>attrs</code>, <code>create</code>, <code>factory</code>,
+<code>registry</code>, <code>dataset</code>, <code>fqn</code>, <code>generator</code>, ...) used to either raise from deep
+inside row construction or silently shadow the API. They are now rejected at
+class definition:</p>
+<div class="codehilite"><pre><span></span><code>ReservedColumnError: things: column names collide with the Model API: ['key', 'pk']
+</code></pre></div>
+
+<p>Rename the column in <code>__definition__</code> (for example <code>key</code> to <code>row_key</code>).</p>
+<h2 id="10-renamed-and-removed-symbols">10. Renamed and removed symbols</h2>
+<table>
+<thead>
+<tr>
+<th>1.x</th>
+<th>2.0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DataframeNotFoundError</code></td>
+<td><code>TableNotFoundError</code></td>
+</tr>
+<tr>
+<td><code>Dataset.dataframes</code></td>
+<td><code>Dataset.tables()</code> / <code>Dataset.dataframe(name)</code></td>
+</tr>
+<tr>
+<td><code>rowsmyth.pool.PoolChoice</code></td>
+<td>removed - <code>Pool.choice()</code> returns a value</td>
+</tr>
+<tr>
+<td><code>UnresolvedPoolError</code></td>
+<td>removed</td>
+</tr>
+<tr>
+<td>bare callable column values</td>
+<td><code>rowsmyth.lazy(fn)</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>DatasetContextError</code> and <code>DatasetLookupError</code> now share a <code>DatasetError</code>
+parent; <code>RowsmythError</code> still roots the whole hierarchy.</p>
+<h2 id="new-in-20">New in 2.0</h2>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dataset.rows(name)</code> / <code>dataset.count(name)</code></td>
+<td>Read generated rows in Python, no Spark</td>
+</tr>
+<tr>
+<td><code>dataset.tables()</code> / <code>dataset.table_names()</code></td>
+<td>Every created table, by name</td>
+</tr>
+<tr>
+<td><code>dataset.flush(name=None)</code></td>
+<td>Materialise pending rows and register temp views</td>
+</tr>
+<tr>
+<td><code>dataset.write_all(...)</code></td>
+<td>Write every created table with <code>saveAsTable</code> or <code>save</code></td>
+</tr>
+<tr>
+<td><code>dataset.check_integrity()</code></td>
+<td>Run foreign key checks early</td>
+</tr>
+<tr>
+<td><code>dataset.view_name(name)</code></td>
+<td>Temp view name for a table</td>
+</tr>
+<tr>
+<td><code>Model.bulk_create(rows)</code> / <code>Factory.from_rows(rows)</code></td>
+<td>Create precomputed rows without <code>generator()</code></td>
+</tr>
+<tr>
+<td><code>Model.__foreign_keys__</code></td>
+<td>Declared <code>{column: "table.column"}</code> relationships</td>
+</tr>
+<tr>
+<td><code>rowsmyth.lazy(fn)</code></td>
+<td>Explicit deferred column value</td>
+</tr>
+<tr>
+<td><code>ctx.dataset</code></td>
+<td>The active <code>Dataset</code> from inside <code>generator()</code></td>
+</tr>
+<tr>
+<td><code>Base.dataset(..., integrity=, views=, view_prefix=)</code></td>
+<td>Integrity mode, temp view control and namespacing</td>
+</tr>
+<tr>
+<td><code>RowsmythWarning</code></td>
+<td>Warning class used by <code>integrity="warn"</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="migration-checklist">Migration checklist</h2>
+<ol>
+<li>Replace <code>dataset.dataframes</code> with <code>dataset.tables()</code>.</li>
+<li>Add <code>dataset.flush()</code> before any direct <code>spark.table()</code> / <code>spark.sql()</code> read
+   of a generated table inside a dataset block.</li>
+<li>Wrap callable column values in <code>lazy(...)</code>.</li>
+<li>Catch <code>TableNotFoundError</code> instead of <code>DataframeNotFoundError</code>.</li>
+<li>Delete any <code>PoolChoice</code> or <code>UnresolvedPoolError</code> handling.</li>
+<li>Keep the return value of every factory method call.</li>
+<li>Run the suite. Fix <code>DuplicatePrimaryKeyError</code>, <code>ForeignKeyViolationError</code>,
+   <code>ColumnTypeError</code> and <code>ReservedColumnError</code> failures - each names the table,
+   column and value at fault. Use <code>integrity="warn"</code> to triage a large suite in
+   one pass.</li>
+<li>Replace hand-maintained table lists with <code>dataset.tables()</code> or
+   <code>dataset.write_all(...)</code>.</li>
+</ol>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+    
+      <nav class="md-footer__inner md-grid" aria-label="Footer">
+        
+          
+          <a href="../design/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Design" rel="prev">
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Previous
+                </span>
+                Design
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../usage/" class="md-footer__link md-footer__link--next" aria-label="Next: Usage" rel="next">
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Next
+                </span>
+                Usage
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+            
+            Powered by
+            <a href="http://timothycrosley.github.io/portray">portray.</a>
+            You too can
+            <a href="http://timothycrosley.github.io/portray">
+              portray</a>
+            your Python project well using automatic documentation.
+          </div>
+        
+      </div>
+    </div>
+  </footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.078830c0.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -261,6 +261,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#what-you-get" class="md-nav__link">
+    What you get
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#databricks-lakeflow" class="md-nav__link">
     Databricks Lakeflow
   </a>
@@ -384,6 +391,21 @@
   
   
     <li class="md-nav__item">
+      <a href="docs/upgrade-v2/" class="md-nav__link">
+        Upgrade V2
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="docs/usage/" class="md-nav__link">
         Usage
       </a>
@@ -402,18 +424,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" type="checkbox" id="__nav_8" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_7">
+        <label class="md-nav__link" for="__nav_8">
           Reference
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Reference" data-md-level="1">
-        <label class="md-nav__title" for="__nav_7">
+        <label class="md-nav__title" for="__nav_8">
           <span class="md-nav__icon md-icon"></span>
           Reference
         </label>
@@ -428,18 +450,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7_1" type="checkbox" id="__nav_7_1" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8_1" type="checkbox" id="__nav_8_1" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_7_1">
+        <label class="md-nav__link" for="__nav_8_1">
           Rowsmyth
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Rowsmyth" data-md-level="2">
-        <label class="md-nav__title" for="__nav_7_1">
+        <label class="md-nav__title" for="__nav_8_1">
           <span class="md-nav__icon md-icon"></span>
           Rowsmyth
         </label>
@@ -495,6 +517,20 @@
     <li class="md-nav__item">
       <a href="reference/rowsmyth/" class="md-nav__link">
         Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/rowsmyth/lazy/" class="md-nav__link">
+        Lazy
       </a>
     </li>
   
@@ -597,6 +633,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#what-you-get" class="md-nav__link">
+    What you get
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#databricks-lakeflow" class="md-nav__link">
     Databricks Lakeflow
   </a>
@@ -665,11 +708,14 @@
 
 
 <h1 id="rowsmyth">rowsmyth</h1>
-<p>A blacksmith forges metal. A rowsmyth forges rows - mythical ones that exist only in your tests. <code>rowsmyth</code> is declarative relational test and seed data for Apache Spark: generate rows <strong>one at a time</strong> with real foreign-key integrity, then materialise ordinary <code>DataFrame</code>s and temp views.</p>
+<p>A blacksmith forges metal. A rowsmyth forges rows - mythical ones that exist only in your tests. <code>rowsmyth</code> is declarative relational test and seed data for Apache Spark: describe each table once, generate rows with real foreign-key integrity, then materialise ordinary <code>DataFrame</code>s and temp views.</p>
+<p>Row generation is pure Python. Spark is touched only when you read a table, so
+creating rows one at a time costs the same round trips as creating them in
+bulk: one <code>createDataFrame</code> and one temp view registration per table.</p>
 <h2 id="install">Install</h2>
-<div class="codehilite"><pre><span></span><code>uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;rowsmyth[spark]&quot;</span>
+<div class="codehilite"><pre><span></span><code>uv<span class="w"> </span>add<span class="w"> </span><span class="s2">"rowsmyth[spark]"</span>
 <span class="c1"># or</span>
-pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;rowsmyth[spark]&quot;</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"rowsmyth[spark]"</span>
 </code></pre></div>
 
 <p>Requires Python 3.12+, PySpark 4.0+ and Java 17+ when running Spark locally.
@@ -681,63 +727,110 @@ pip<span class="w"> </span>install<span class="w"> </span>rowsmyth
 </code></pre></div>
 
 <p>Java must be on your <code>PATH</code> or via <code>JAVA_HOME</code> when running Spark locally.</p>
+<p>Upgrading from 1.x? See the <a href="docs/upgrade-v2/">v2 upgrade guide</a>.</p>
 <h2 id="quick-start">Quick start</h2>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pyspark.sql</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparkSession</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyspark.sql.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">LongType</span><span class="p">,</span> <span class="n">StringType</span><span class="p">,</span> <span class="n">StructField</span><span class="p">,</span> <span class="n">StructType</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth</span><span class="w"> </span><span class="kn">import</span> <span class="n">declarative_base</span><span class="p">,</span> <span class="n">variant</span>
 
-<span class="n">spark</span> <span class="o">=</span> <span class="n">SparkSession</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">master</span><span class="p">(</span><span class="s2">&quot;local[*]&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">getOrCreate</span><span class="p">()</span>
+<span class="n">spark</span> <span class="o">=</span> <span class="n">SparkSession</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">master</span><span class="p">(</span><span class="s2">"local[*]"</span><span class="p">)</span><span class="o">.</span><span class="n">getOrCreate</span><span class="p">()</span>
 <span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">Role</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="n">__table_name__</span> <span class="o">=</span> <span class="s2">&quot;roles&quot;</span>
-    <span class="n">__primary_key__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,)</span>
+    <span class="n">__table_name__</span> <span class="o">=</span> <span class="s2">"roles"</span>
+    <span class="n">__primary_key__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"id"</span><span class="p">,)</span>
     <span class="n">__definition__</span> <span class="o">=</span> <span class="n">StructType</span><span class="p">([</span>
-        <span class="n">StructField</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">LongType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
-        <span class="n">StructField</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="n">StructField</span><span class="p">(</span><span class="s2">"id"</span><span class="p">,</span> <span class="n">LongType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="n">StructField</span><span class="p">(</span><span class="s2">"name"</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
     <span class="p">])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sequence</span><span class="p">(),</span>
-            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;guest&quot;</span><span class="p">]),</span>
+            <span class="s2">"id"</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sequence</span><span class="p">(),</span>
+            <span class="s2">"name"</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">"admin"</span><span class="p">,</span> <span class="s2">"user"</span><span class="p">,</span> <span class="s2">"guest"</span><span class="p">]),</span>
         <span class="p">}</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="n">__table_name__</span> <span class="o">=</span> <span class="s2">&quot;users&quot;</span>
-    <span class="n">__primary_key__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,)</span>
+    <span class="n">__table_name__</span> <span class="o">=</span> <span class="s2">"users"</span>
+    <span class="n">__primary_key__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"id"</span><span class="p">,)</span>
+    <span class="n">__foreign_keys__</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"role_id"</span><span class="p">:</span> <span class="s2">"roles.id"</span><span class="p">}</span>
     <span class="n">__definition__</span> <span class="o">=</span> <span class="n">StructType</span><span class="p">([</span>
-        <span class="n">StructField</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">LongType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
-        <span class="n">StructField</span><span class="p">(</span><span class="s2">&quot;role_id&quot;</span><span class="p">,</span> <span class="n">LongType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
-        <span class="n">StructField</span><span class="p">(</span><span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="n">StructField</span><span class="p">(</span><span class="s2">"id"</span><span class="p">,</span> <span class="n">LongType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="n">StructField</span><span class="p">(</span><span class="s2">"role_id"</span><span class="p">,</span> <span class="n">LongType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="n">StructField</span><span class="p">(</span><span class="s2">"email"</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
     <span class="p">])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sequence</span><span class="p">(),</span>
-            <span class="s2">&quot;role_id&quot;</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="s2">&quot;roles&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">choice</span><span class="p">(),</span>
-            <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">faker</span><span class="o">.</span><span class="n">unique</span><span class="o">.</span><span class="n">ascii_email</span><span class="p">(),</span>
+            <span class="s2">"id"</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sequence</span><span class="p">(),</span>
+            <span class="s2">"role_id"</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="s2">"roles"</span><span class="p">,</span> <span class="s2">"id"</span><span class="p">)</span><span class="o">.</span><span class="n">choice</span><span class="p">(),</span>
+            <span class="s2">"email"</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">faker</span><span class="o">.</span><span class="n">unique</span><span class="o">.</span><span class="n">ascii_email</span><span class="p">(),</span>
         <span class="p">}</span>
 
     <span class="nd">@variant</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">inactive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;inactive@example.com&quot;</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"email"</span><span class="p">:</span> <span class="s2">"inactive@example.com"</span><span class="p">}</span>
 
 
 <span class="k">with</span> <span class="n">Base</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span> <span class="k">as</span> <span class="n">dataset</span><span class="p">:</span>
-    <span class="n">admin</span> <span class="o">=</span> <span class="n">Role</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">)</span>
-    <span class="n">user</span> <span class="o">=</span> <span class="n">Role</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">)</span>
-    <span class="n">users</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">factory</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">variant</span><span class="p">(</span><span class="s2">&quot;inactive&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+    <span class="n">admin</span> <span class="o">=</span> <span class="n">Role</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"admin"</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">Role</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"user"</span><span class="p">)</span>
+    <span class="n">users</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">factory</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">variant</span><span class="p">(</span><span class="s2">"inactive"</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
 
-    <span class="n">role_ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">admin</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">}</span>
-    <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">created_user</span><span class="o">.</span><span class="n">role_id</span> <span class="ow">in</span> <span class="n">role_ids</span> <span class="k">for</span> <span class="n">created_user</span> <span class="ow">in</span> <span class="n">users</span><span class="p">)</span>
-    <span class="n">users_df</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">dataframe</span><span class="p">(</span><span class="s2">&quot;users&quot;</span><span class="p">)</span>
-    <span class="c1"># users_df is a DataFrame; temp view &quot;users&quot; is registered</span>
+    <span class="k">assert</span> <span class="n">dataset</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">"users"</span><span class="p">)</span> <span class="o">==</span> <span class="mi">10</span>           <span class="c1"># Python, no Spark</span>
+    <span class="n">users_df</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">dataframe</span><span class="p">(</span><span class="s2">"users"</span><span class="p">)</span>         <span class="c1"># materialises + registers "users"</span>
+<span class="c1"># duplicate primary keys and broken foreign keys fail here</span>
 </code></pre></div>
 
+<h2 id="what-you-get">What you get</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>API</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One row at a time</td>
+<td><code>Role.create(name="admin")</code></td>
+</tr>
+<tr>
+<td>Batches with relationships</td>
+<td><code>User.factory().count(10).has(Post.factory().count(3), via="author_id").create()</code></td>
+</tr>
+<tr>
+<td>Precomputed rows</td>
+<td><code>Answer.bulk_create(rows)</code></td>
+</tr>
+<tr>
+<td>Deferred values</td>
+<td><code>.where(score=lazy(lambda ctx: ctx.random.random()))</code></td>
+</tr>
+<tr>
+<td>Driver-side reads</td>
+<td><code>dataset.rows("users")</code>, <code>dataset.count("users")</code></td>
+</tr>
+<tr>
+<td>Spark output</td>
+<td><code>dataset.dataframe("users")</code>, <code>dataset.tables()</code></td>
+</tr>
+<tr>
+<td>Bulk persistence</td>
+<td><code>dataset.write_all(name=lambda t: f"main.bronze.{t.__table_name__}")</code></td>
+</tr>
+<tr>
+<td>Referential integrity</td>
+<td><code>__primary_key__</code>, <code>__foreign_keys__</code>, <code>dataset.check_integrity()</code></td>
+</tr>
+</tbody>
+</table>
+<p>Rows are validated as they are generated: unknown columns, missing NOT NULL
+values, wrong column types, duplicate primary keys and broken declared foreign
+keys all fail with the table, column and value at fault.</p>
 <h2 id="databricks-lakeflow">Databricks Lakeflow</h2>
 <p>A <code>Model</code> subclass carries all the metadata your Lakeflow pipeline and Unity Catalog need - schema, comment, tags and data quality expectations - in one place.</p>
 <h3 id="define-a-table">Define a table</h3>
@@ -749,41 +842,41 @@ pip<span class="w"> </span>install<span class="w"> </span>rowsmyth
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">Customer</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="n">__table_name__</span> <span class="o">=</span> <span class="s2">&quot;customers&quot;</span>
-    <span class="n">__catalog__</span> <span class="o">=</span> <span class="s2">&quot;main&quot;</span>
-    <span class="n">__schema__</span> <span class="o">=</span> <span class="s2">&quot;commerce&quot;</span>
-    <span class="n">__comment__</span> <span class="o">=</span> <span class="s2">&quot;One row per customer account&quot;</span>
-    <span class="n">__primary_key__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,)</span>
-    <span class="n">__table_tags__</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;layer&quot;</span><span class="p">:</span> <span class="s2">&quot;silver&quot;</span><span class="p">,</span> <span class="s2">&quot;pii&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">}</span>
+    <span class="n">__table_name__</span> <span class="o">=</span> <span class="s2">"customers"</span>
+    <span class="n">__catalog__</span> <span class="o">=</span> <span class="s2">"main"</span>
+    <span class="n">__schema__</span> <span class="o">=</span> <span class="s2">"commerce"</span>
+    <span class="n">__comment__</span> <span class="o">=</span> <span class="s2">"One row per customer account"</span>
+    <span class="n">__primary_key__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"id"</span><span class="p">,)</span>
+    <span class="n">__table_tags__</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"layer"</span><span class="p">:</span> <span class="s2">"silver"</span><span class="p">,</span> <span class="s2">"pii"</span><span class="p">:</span> <span class="s2">"true"</span><span class="p">}</span>
     <span class="n">__expectations__</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;id_not_null&quot;</span><span class="p">:</span> <span class="s2">&quot;id IS NOT NULL&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;email_not_null&quot;</span><span class="p">:</span> <span class="s2">&quot;email IS NOT NULL&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;valid_tier&quot;</span><span class="p">:</span> <span class="s2">&quot;tier IN (&#39;standard&#39;, &#39;premium&#39;)&quot;</span><span class="p">,</span>
+        <span class="s2">"id_not_null"</span><span class="p">:</span> <span class="s2">"id IS NOT NULL"</span><span class="p">,</span>
+        <span class="s2">"email_not_null"</span><span class="p">:</span> <span class="s2">"email IS NOT NULL"</span><span class="p">,</span>
+        <span class="s2">"valid_tier"</span><span class="p">:</span> <span class="s2">"tier IN ('standard', 'premium')"</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="n">__definition__</span> <span class="o">=</span> <span class="n">StructType</span><span class="p">([</span>
-        <span class="n">StructField</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">LongType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="n">StructField</span><span class="p">(</span><span class="s2">"id"</span><span class="p">,</span> <span class="n">LongType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
         <span class="n">StructField</span><span class="p">(</span>
-            <span class="s2">&quot;email&quot;</span><span class="p">,</span>
+            <span class="s2">"email"</span><span class="p">,</span>
             <span class="n">StringType</span><span class="p">(),</span>
             <span class="kc">False</span><span class="p">,</span>
             <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;comment&quot;</span><span class="p">:</span> <span class="s2">&quot;Customer email, PII&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;pii&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;classification&quot;</span><span class="p">:</span> <span class="s2">&quot;restricted&quot;</span><span class="p">},</span>
+                <span class="s2">"comment"</span><span class="p">:</span> <span class="s2">"Customer email, PII"</span><span class="p">,</span>
+                <span class="s2">"tags"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"pii"</span><span class="p">:</span> <span class="s2">"true"</span><span class="p">,</span> <span class="s2">"classification"</span><span class="p">:</span> <span class="s2">"restricted"</span><span class="p">},</span>
             <span class="p">},</span>
         <span class="p">),</span>
-        <span class="n">StructField</span><span class="p">(</span><span class="s2">&quot;tier&quot;</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="n">StructField</span><span class="p">(</span><span class="s2">"tier"</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
     <span class="p">])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sequence</span><span class="p">(),</span>
-            <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">faker</span><span class="o">.</span><span class="n">unique</span><span class="o">.</span><span class="n">ascii_email</span><span class="p">(),</span>
-            <span class="s2">&quot;tier&quot;</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">([</span><span class="s2">&quot;standard&quot;</span><span class="p">,</span> <span class="s2">&quot;premium&quot;</span><span class="p">],</span> <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s2">"id"</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sequence</span><span class="p">(),</span>
+            <span class="s2">"email"</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">faker</span><span class="o">.</span><span class="n">unique</span><span class="o">.</span><span class="n">ascii_email</span><span class="p">(),</span>
+            <span class="s2">"tier"</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">([</span><span class="s2">"standard"</span><span class="p">,</span> <span class="s2">"premium"</span><span class="p">],</span> <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
         <span class="p">}</span>
 
     <span class="nd">@variant</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">premium</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;tier&quot;</span><span class="p">:</span> <span class="s2">&quot;premium&quot;</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"tier"</span><span class="p">:</span> <span class="s2">"premium"</span><span class="p">}</span>
 </code></pre></div>
 
 <h3 id="lakeflow-pipeline">Lakeflow pipeline</h3>
@@ -800,7 +893,7 @@ pip<span class="w"> </span>install<span class="w"> </span>rowsmyth
 <span class="p">)</span>
 <span class="nd">@dp</span><span class="o">.</span><span class="n">expect_all_or_fail</span><span class="p">(</span><span class="n">Customer</span><span class="o">.</span><span class="n">__expectations__</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">customers</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;main.bronze.raw_customers&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">"main.bronze.raw_customers"</span><span class="p">)</span>
 </code></pre></div>
 
 <h3 id="apply-unity-catalog-metadata">Apply Unity Catalog metadata</h3>
@@ -820,19 +913,22 @@ pip<span class="w"> </span>install<span class="w"> </span>rowsmyth
 <span class="n">spark</span> <span class="o">=</span> <span class="n">SparkSession</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">getOrCreate</span><span class="p">()</span>
 
 <span class="k">with</span> <span class="n">Base</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span> <span class="k">as</span> <span class="n">dataset</span><span class="p">:</span>
-    <span class="n">customers</span> <span class="o">=</span> <span class="n">Customer</span><span class="o">.</span><span class="n">factory</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
-    <span class="n">customers_df</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">dataframe</span><span class="p">(</span><span class="s2">&quot;customers&quot;</span><span class="p">)</span>
+    <span class="n">Customer</span><span class="o">.</span><span class="n">factory</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
 
-<span class="c1"># Option A - ingest volume (pipeline reads parquet from path)</span>
-<span class="n">customers_df</span><span class="o">.</span><span class="n">write</span><span class="o">.</span><span class="n">mode</span><span class="p">(</span><span class="s2">&quot;overwrite&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">parquet</span><span class="p">(</span>
-    <span class="s2">&quot;/Volumes/main/bronze/ingest/raw_customers/&quot;</span>
-<span class="p">)</span>
+    <span class="c1"># Option A - ingest volume (pipeline reads parquet from path)</span>
+    <span class="n">dataset</span><span class="o">.</span><span class="n">write_all</span><span class="p">(</span>
+        <span class="nb">format</span><span class="o">=</span><span class="s2">"parquet"</span><span class="p">,</span>
+        <span class="n">path</span><span class="o">=</span><span class="k">lambda</span> <span class="n">table</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"/Volumes/main/bronze/ingest/raw_</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">__table_name__</span><span class="si">}</span><span class="s2">/"</span><span class="p">,</span>
+    <span class="p">)</span>
 
-<span class="c1"># Option B - persistent bronze table</span>
-<span class="n">customers_df</span><span class="o">.</span><span class="n">write</span><span class="o">.</span><span class="n">mode</span><span class="p">(</span><span class="s2">&quot;overwrite&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">saveAsTable</span><span class="p">(</span><span class="s2">&quot;main.bronze.raw_customers&quot;</span><span class="p">)</span>
+    <span class="c1"># Option B - persistent bronze tables, one per model</span>
+    <span class="n">dataset</span><span class="o">.</span><span class="n">write_all</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="k">lambda</span> <span class="n">table</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"main.bronze.raw_</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">__table_name__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div>
 
-<p>See <a href="docs/usage/">docs/usage.md</a> for the complete API reference.</p>
+<p><code>write_all()</code> covers every table the dataset created, so adding a model never
+leaves a hand-maintained list behind.</p>
+<p>See <a href="docs/usage/">docs/usage.md</a> for the complete API reference and
+<a href="docs/upgrade-v2/">docs/upgrade-v2.md</a> for the 1.x to 2.0 migration.</p>
 <h2 id="development">Development</h2>
 <div class="codehilite"><pre><span></span><code>make<span class="w"> </span>install
 make<span class="w"> </span><span class="nb">test</span><span class="w">        </span><span class="c1"># requires JAVA_HOME / java on PATH</span>

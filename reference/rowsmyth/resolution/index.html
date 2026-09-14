@@ -288,6 +288,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../docs/upgrade-v2/" class="md-nav__link">
+        Upgrade V2
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../docs/usage/" class="md-nav__link">
         Usage
       </a>
@@ -308,18 +323,18 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" type="checkbox" id="__nav_8" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_7">
+        <label class="md-nav__link" for="__nav_8">
           Reference
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Reference" data-md-level="1">
-        <label class="md-nav__title" for="__nav_7">
+        <label class="md-nav__title" for="__nav_8">
           <span class="md-nav__icon md-icon"></span>
           Reference
         </label>
@@ -336,18 +351,18 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7_1" type="checkbox" id="__nav_7_1" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8_1" type="checkbox" id="__nav_8_1" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_7_1">
+        <label class="md-nav__link" for="__nav_8_1">
           Rowsmyth
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Rowsmyth" data-md-level="2">
-        <label class="md-nav__title" for="__nav_7_1">
+        <label class="md-nav__title" for="__nav_8_1">
           <span class="md-nav__icon md-icon"></span>
           Rowsmyth
         </label>
@@ -403,6 +418,20 @@
     <li class="md-nav__item">
       <a href="../" class="md-nav__link">
         Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lazy/" class="md-nav__link">
+        Lazy
       </a>
     </li>
   
@@ -658,13 +687,21 @@
 <p>Foreign-key resolution and row validation.</p>
 <details class="example">
 <summary>View Source</summary>
-<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Foreign-key resolution and row validation.&quot;&quot;&quot;</span>
+<div class="codehilite"><pre><span></span><code><span class="sd">"""Foreign-key resolution and row validation."""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">decimal</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth.errors</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+
+    <span class="n">ColumnTypeError</span><span class="p">,</span>
 
     <span class="n">CompoundPrimaryKeyError</span><span class="p">,</span>
 
@@ -674,7 +711,11 @@
 
 <span class="p">)</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth.lazy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lazy</span>
+
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyspark.sql.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataType</span><span class="p">,</span> <span class="n">StructField</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">RowCtx</span>
 
@@ -684,7 +725,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">new_parent</span><span class="p">(</span><span class="n">factory</span><span class="p">:</span> <span class="n">Factory</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">RowCtx</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create one parent row and append it to the accumulator.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Create one parent row and append it to the accumulator."""</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_dataset_base</span>
 
@@ -698,7 +739,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">resolve_fk</span><span class="p">(</span><span class="n">child_factory</span><span class="p">:</span> <span class="n">Factory</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">RowCtx</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve a Factory used as a column value to a primary key.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Resolve a Factory used as a column value to a primary key."""</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_dataset_base</span>
 
@@ -712,9 +753,9 @@
 
         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
 
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">__table_name__</span><span class="si">}</span><span class="s2">: Factory() as column value requires a &quot;</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">__table_name__</span><span class="si">}</span><span class="s2">: Factory() as column value requires a "</span>
 
-            <span class="s2">&quot;single-column primary key; use ctx.parent() for compound keys&quot;</span>
+            <span class="s2">"single-column primary key; use ctx.parent() for compound keys"</span>
 
         <span class="p">)</span>
 
@@ -732,7 +773,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">resolve_row_values</span><span class="p">(</span><span class="n">attrs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">RowCtx</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve Factory and callable values in place.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Resolve Factory and lazy values in place."""</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth.factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">Factory</span>
 
@@ -742,23 +783,21 @@
 
             <span class="n">attrs</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_fk</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">slot</span><span class="o">=</span><span class="n">col</span><span class="p">)</span>
 
-        <span class="k">elif</span> <span class="nb">callable</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Lazy</span><span class="p">):</span>
 
-            <span class="n">attrs</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+            <span class="n">attrs</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_row</span><span class="p">(</span><span class="n">table</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Model</span><span class="p">],</span> <span class="n">attrs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate one generated row against the model schema.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Validate one generated row against the model schema."""</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">__table_name__</span>
 
-    <span class="n">field_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">__definition__</span><span class="o">.</span><span class="n">fields</span><span class="p">}</span>
-
-    <span class="n">unknown</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span> <span class="o">-</span> <span class="n">field_names</span><span class="p">)</span>
+    <span class="n">unknown</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span> <span class="o">-</span> <span class="n">table</span><span class="o">.</span><span class="n">_field_names</span><span class="p">())</span>
 
     <span class="k">if</span> <span class="n">unknown</span><span class="p">:</span>
 
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: unknown columns: </span><span class="si">{</span><span class="n">unknown</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: unknown columns: </span><span class="si">{</span><span class="n">unknown</span><span class="si">}</span><span class="s2">"</span>
 
         <span class="k">raise</span> <span class="n">UnknownColumnError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
@@ -768,23 +807,25 @@
 
     <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">__definition__</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
 
-        <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">nullable</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">field</span><span class="o">.</span><span class="n">nullable</span><span class="p">:</span>
+
+                <span class="p">(</span><span class="n">missing</span> <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">attrs</span> <span class="k">else</span> <span class="n">nulls</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
             <span class="k">continue</span>
 
-        <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">_accepted_types</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">dataType</span><span class="p">)):</span>
 
-            <span class="n">missing</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-
-        <span class="k">elif</span> <span class="n">attrs</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-
-            <span class="n">nulls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ColumnTypeError</span><span class="p">(</span><span class="n">_type_error</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
 
     <span class="n">invalid</span> <span class="o">=</span> <span class="n">missing</span> <span class="o">+</span> <span class="n">nulls</span>
 
     <span class="k">if</span> <span class="n">invalid</span><span class="p">:</span>
 
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: NOT NULL columns without a value: </span><span class="si">{</span><span class="n">invalid</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: NOT NULL columns without a value: </span><span class="si">{</span><span class="n">invalid</span><span class="si">}</span><span class="s2">"</span>
 
         <span class="k">raise</span> <span class="n">MissingRequiredColumnError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
@@ -800,11 +841,123 @@
 
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run a named variant method and return its partial override.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Run a named variant method and return its partial override."""</span>
 
     <span class="n">method</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">_variants</span><span class="p">[</span><span class="n">variant_name</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">method</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ctx</span><span class="p">))</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_type_error</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="n">StructField</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="n">accepted</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+
+        <span class="nb">sorted</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">_accepted_types</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">dataType</span><span class="p">))</span>
+
+    <span class="p">)</span>
+
+    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">dataType</span><span class="o">.</span><span class="n">simpleString</span><span class="p">()</span><span class="si">}</span><span class="s2"> column expects "</span>
+
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">accepted</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span>
+
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">; wrap callables in rowsmyth.lazy() to defer them per row"</span>
+
+    <span class="k">return</span> <span class="n">msg</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_accepted_types</span><span class="p">(</span><span class="n">data_type</span><span class="p">:</span> <span class="n">DataType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+
+    <span class="k">return</span> <span class="n">_type_map</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data_type</span><span class="p">),</span> <span class="p">(</span><span class="nb">object</span><span class="p">,))</span>
+
+<span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_type_map</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyspark.sql.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+
+        <span class="n">ArrayType</span><span class="p">,</span>
+
+        <span class="n">BinaryType</span><span class="p">,</span>
+
+        <span class="n">BooleanType</span><span class="p">,</span>
+
+        <span class="n">ByteType</span><span class="p">,</span>
+
+        <span class="n">DateType</span><span class="p">,</span>
+
+        <span class="n">DayTimeIntervalType</span><span class="p">,</span>
+
+        <span class="n">DecimalType</span><span class="p">,</span>
+
+        <span class="n">DoubleType</span><span class="p">,</span>
+
+        <span class="n">FloatType</span><span class="p">,</span>
+
+        <span class="n">IntegerType</span><span class="p">,</span>
+
+        <span class="n">LongType</span><span class="p">,</span>
+
+        <span class="n">MapType</span><span class="p">,</span>
+
+        <span class="n">Row</span><span class="p">,</span>
+
+        <span class="n">ShortType</span><span class="p">,</span>
+
+        <span class="n">StringType</span><span class="p">,</span>
+
+        <span class="n">StructType</span><span class="p">,</span>
+
+        <span class="n">TimestampNTZType</span><span class="p">,</span>
+
+        <span class="n">TimestampType</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">integers</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">,)</span>
+
+    <span class="n">reals</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+
+        <span class="n">ArrayType</span><span class="p">:</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">),</span>
+
+        <span class="n">BinaryType</span><span class="p">:</span> <span class="p">(</span><span class="nb">bytearray</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">),</span>
+
+        <span class="n">BooleanType</span><span class="p">:</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,),</span>
+
+        <span class="n">ByteType</span><span class="p">:</span> <span class="n">integers</span><span class="p">,</span>
+
+        <span class="n">DateType</span><span class="p">:</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">,),</span>
+
+        <span class="n">DayTimeIntervalType</span><span class="p">:</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">,),</span>
+
+        <span class="n">DecimalType</span><span class="p">:</span> <span class="p">(</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,),</span>
+
+        <span class="n">DoubleType</span><span class="p">:</span> <span class="n">reals</span><span class="p">,</span>
+
+        <span class="n">FloatType</span><span class="p">:</span> <span class="n">reals</span><span class="p">,</span>
+
+        <span class="n">IntegerType</span><span class="p">:</span> <span class="n">integers</span><span class="p">,</span>
+
+        <span class="n">LongType</span><span class="p">:</span> <span class="n">integers</span><span class="p">,</span>
+
+        <span class="n">MapType</span><span class="p">:</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,),</span>
+
+        <span class="n">ShortType</span><span class="p">:</span> <span class="n">integers</span><span class="p">,</span>
+
+        <span class="n">StringType</span><span class="p">:</span> <span class="p">(</span><span class="nb">str</span><span class="p">,),</span>
+
+        <span class="n">StructType</span><span class="p">:</span> <span class="p">(</span><span class="n">Row</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">),</span>
+
+        <span class="n">TimestampNTZType</span><span class="p">:</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,),</span>
+
+        <span class="n">TimestampType</span><span class="p">:</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,),</span>
+
+    <span class="p">}</span>
 </code></pre></div>
 
 </details>
@@ -815,11 +968,11 @@
 <h2 id="functions">Functions</h2>
 <h3 id="apply_variant">apply_variant</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_variant</span><span class="p">(</span>
-    <span class="n">table</span><span class="p">:</span> <span class="s1">&#39;type[Model]&#39;</span><span class="p">,</span>
-    <span class="n">obj</span><span class="p">:</span> <span class="s1">&#39;Model&#39;</span><span class="p">,</span>
-    <span class="n">variant_name</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span><span class="p">,</span>
-    <span class="n">ctx</span><span class="p">:</span> <span class="s1">&#39;RowCtx&#39;</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;dict[str, Any]&#39;</span>
+    <span class="n">table</span><span class="p">:</span> <span class="s1">'type[Model]'</span><span class="p">,</span>
+    <span class="n">obj</span><span class="p">:</span> <span class="s1">'Model'</span><span class="p">,</span>
+    <span class="n">variant_name</span><span class="p">:</span> <span class="s1">'str'</span><span class="p">,</span>
+    <span class="n">ctx</span><span class="p">:</span> <span class="s1">'RowCtx'</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'dict[str, Any]'</span>
 </code></pre></div>
 
 <p>Run a named variant method and return its partial override.</p>
@@ -837,7 +990,7 @@
 
 <span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, Any</span><span class="o">]</span><span class="err">:</span>
 
-<span class="w">    </span><span class="ss">&quot;&quot;&quot;Run a named variant method and return its partial override.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="ss">"""Run a named variant method and return its partial override."""</span>
 
 <span class="w">    </span><span class="k">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">table</span><span class="p">.</span><span class="n">_variants</span><span class="o">[</span><span class="n">variant_name</span><span class="o">]</span>
 
@@ -847,9 +1000,9 @@
 </details>
 <h3 id="new_parent">new_parent</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">new_parent</span><span class="p">(</span>
-    <span class="n">factory</span><span class="p">:</span> <span class="s1">&#39;Factory&#39;</span><span class="p">,</span>
-    <span class="n">ctx</span><span class="p">:</span> <span class="s1">&#39;RowCtx&#39;</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Model&#39;</span>
+    <span class="n">factory</span><span class="p">:</span> <span class="s1">'Factory'</span><span class="p">,</span>
+    <span class="n">ctx</span><span class="p">:</span> <span class="s1">'RowCtx'</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Model'</span>
 </code></pre></div>
 
 <p>Create one parent row and append it to the accumulator.</p>
@@ -857,7 +1010,7 @@
 <summary>View Source</summary>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">new_parent</span><span class="p">(</span><span class="n">factory</span><span class="p">:</span> <span class="n">Factory</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">RowCtx</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create one parent row and append it to the accumulator.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Create one parent row and append it to the accumulator."""</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_dataset_base</span>
 
@@ -873,10 +1026,10 @@
 </details>
 <h3 id="resolve_fk">resolve_fk</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">resolve_fk</span><span class="p">(</span>
-    <span class="n">child_factory</span><span class="p">:</span> <span class="s1">&#39;Factory&#39;</span><span class="p">,</span>
-    <span class="n">ctx</span><span class="p">:</span> <span class="s1">&#39;RowCtx&#39;</span><span class="p">,</span>
-    <span class="n">slot</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Any&#39;</span>
+    <span class="n">child_factory</span><span class="p">:</span> <span class="s1">'Factory'</span><span class="p">,</span>
+    <span class="n">ctx</span><span class="p">:</span> <span class="s1">'RowCtx'</span><span class="p">,</span>
+    <span class="n">slot</span><span class="p">:</span> <span class="s1">'str'</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Any'</span>
 </code></pre></div>
 
 <p>Resolve a Factory used as a column value to a primary key.</p>
@@ -884,7 +1037,7 @@
 <summary>View Source</summary>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">resolve_fk</span><span class="p">(</span><span class="n">child_factory</span><span class="p">:</span> <span class="n">Factory</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">RowCtx</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve a Factory used as a column value to a primary key.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Resolve a Factory used as a column value to a primary key."""</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_dataset_base</span>
 
@@ -898,9 +1051,9 @@
 
         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
 
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">__table_name__</span><span class="si">}</span><span class="s2">: Factory() as column value requires a &quot;</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">__table_name__</span><span class="si">}</span><span class="s2">: Factory() as column value requires a "</span>
 
-            <span class="s2">&quot;single-column primary key; use ctx.parent() for compound keys&quot;</span>
+            <span class="s2">"single-column primary key; use ctx.parent() for compound keys"</span>
 
         <span class="p">)</span>
 
@@ -920,17 +1073,17 @@
 </details>
 <h3 id="resolve_row_values">resolve_row_values</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">resolve_row_values</span><span class="p">(</span>
-    <span class="n">attrs</span><span class="p">:</span> <span class="s1">&#39;dict[str, Any]&#39;</span><span class="p">,</span>
-    <span class="n">ctx</span><span class="p">:</span> <span class="s1">&#39;RowCtx&#39;</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;None&#39;</span>
+    <span class="n">attrs</span><span class="p">:</span> <span class="s1">'dict[str, Any]'</span><span class="p">,</span>
+    <span class="n">ctx</span><span class="p">:</span> <span class="s1">'RowCtx'</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'None'</span>
 </code></pre></div>
 
-<p>Resolve Factory and callable values in place.</p>
+<p>Resolve Factory and lazy values in place.</p>
 <details class="example">
 <summary>View Source</summary>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">resolve_row_values</span><span class="p">(</span><span class="n">attrs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">RowCtx</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve Factory and callable values in place.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Resolve Factory and lazy values in place."""</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">rowsmyth.factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">Factory</span>
 
@@ -940,17 +1093,17 @@
 
             <span class="n">attrs</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_fk</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">slot</span><span class="o">=</span><span class="n">col</span><span class="p">)</span>
 
-        <span class="k">elif</span> <span class="nb">callable</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Lazy</span><span class="p">):</span>
 
-            <span class="n">attrs</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+            <span class="n">attrs</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
 </code></pre></div>
 
 </details>
 <h3 id="validate_row">validate_row</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validate_row</span><span class="p">(</span>
-    <span class="n">table</span><span class="p">:</span> <span class="s1">&#39;type[Model]&#39;</span><span class="p">,</span>
-    <span class="n">attrs</span><span class="p">:</span> <span class="s1">&#39;dict[str, Any]&#39;</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;None&#39;</span>
+    <span class="n">table</span><span class="p">:</span> <span class="s1">'type[Model]'</span><span class="p">,</span>
+    <span class="n">attrs</span><span class="p">:</span> <span class="s1">'dict[str, Any]'</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'None'</span>
 </code></pre></div>
 
 <p>Validate one generated row against the model schema.</p>
@@ -958,17 +1111,15 @@
 <summary>View Source</summary>
 <div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">validate_row</span><span class="p">(</span><span class="nc">table</span><span class="err">:</span><span class="w"> </span><span class="n">type</span><span class="o">[</span><span class="n">Model</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="nl">attrs</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, Any</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
 
-<span class="w">    </span><span class="ss">&quot;&quot;&quot;Validate one generated row against the model schema.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="ss">"""Validate one generated row against the model schema."""</span>
 
 <span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">table</span><span class="p">.</span><span class="n">__table_name__</span>
 
-<span class="w">    </span><span class="n">field_names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="n">field</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">field</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nc">table</span><span class="p">.</span><span class="n">__definition__</span><span class="p">.</span><span class="n">fields</span><span class="err">}</span>
-
-<span class="w">    </span><span class="k">unknown</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sorted</span><span class="p">(</span><span class="k">set</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">field_names</span><span class="p">)</span>
+<span class="w">    </span><span class="k">unknown</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sorted</span><span class="p">(</span><span class="k">set</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nc">table</span><span class="p">.</span><span class="n">_field_names</span><span class="p">())</span>
 
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="k">unknown</span><span class="err">:</span>
 
-<span class="w">        </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="ss">&quot;{name}: unknown columns: {unknown}&quot;</span>
+<span class="w">        </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="ss">"{name}: unknown columns: {unknown}"</span>
 
 <span class="w">        </span><span class="n">raise</span><span class="w"> </span><span class="n">UnknownColumnError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
@@ -978,23 +1129,25 @@
 
 <span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">field</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nc">table</span><span class="p">.</span><span class="n">__definition__</span><span class="p">.</span><span class="nl">fields</span><span class="p">:</span>
 
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">field</span><span class="p">.</span><span class="nl">nullable</span><span class="p">:</span>
+<span class="w">        </span><span class="k">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">attrs</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">field</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="k">value</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">field</span><span class="p">.</span><span class="nl">nullable</span><span class="p">:</span>
+
+<span class="w">                </span><span class="p">(</span><span class="n">missing</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">field</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">attrs</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">nulls</span><span class="p">).</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
 
 <span class="w">            </span><span class="k">continue</span>
 
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">field</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">attrs</span><span class="p">:</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">isinstance</span><span class="p">(</span><span class="k">value</span><span class="p">,</span><span class="w"> </span><span class="n">_accepted_types</span><span class="p">(</span><span class="n">field</span><span class="p">.</span><span class="n">dataType</span><span class="p">))</span><span class="err">:</span>
 
-<span class="w">            </span><span class="n">missing</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
-
-<span class="w">        </span><span class="n">elif</span><span class="w"> </span><span class="n">attrs</span><span class="o">[</span><span class="n">field.name</span><span class="o">]</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
-
-<span class="w">            </span><span class="n">nulls</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">ColumnTypeError</span><span class="p">(</span><span class="n">_type_error</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">field</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="p">))</span>
 
 <span class="w">    </span><span class="n">invalid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">missing</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">nulls</span>
 
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nl">invalid</span><span class="p">:</span>
 
-<span class="w">        </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="ss">&quot;{name}: NOT NULL columns without a value: {invalid}&quot;</span>
+<span class="w">        </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="ss">"{name}: NOT NULL columns without a value: {invalid}"</span>
 
 <span class="w">        </span><span class="n">raise</span><span class="w"> </span><span class="n">MissingRequiredColumnError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 </code></pre></div>
